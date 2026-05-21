@@ -1,1 +1,27 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+
+/* Định nghĩa các biến màu sắc tương ứng với từng Theme */
+:root {
+    --color-theme: #2563eb;
+    --color-theme-light: #3b82f6;
+}
+
+[data-theme="purple"] {
+    --color-theme: #9333ea;
+    --color-theme-light: #a855f7;
+}
+
+[data-theme="emerald"] {
+    --color-theme: #059669;
+    --color-theme-light: #10b981;
+}
+
+[data-theme="amber"] {
+    --color-theme: #d97706;
+    --color-theme-light: #f59e0b;
+}
+
+@theme {
+    --color-theme: var(--color-theme);
+    --color-theme-light: var(--color-theme-light);
+}

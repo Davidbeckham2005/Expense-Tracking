@@ -2,16 +2,15 @@ import { useState } from 'react';
 import { Wallet, ArrowUpRight, ArrowDownRight, History, PieChart } from 'lucide-react';
 import NavBar from './NavBar';
 import type { TabType } from '../types/tab';
-import Login from './UserLogin';
-
+import Setting from './Setting';
 export default function DashBroad() {
     const [tab, setTab] = useState<TabType>('home');
 
 
     return (
-        <div className="min-h-screen bg-gray-50 text-gray-800">
+        <div className="min-h-screen bg-white">
             <div className="grid grid-cols-1 lg:grid-cols-12 min-h-screen">
-                <div className="lg:col-span-3 text-white p-6 shadow-xl lg:sticky lg:top-0 lg:h-screen flex flex-col justify-between bg-gradient-to-b from-blue-600 to-blue-800">
+                <div className="lg:col-span-12 text-white">
                     <NavBar tab={tab} setTab={setTab}></NavBar>
                 </div>
                 <main className="lg:col-span-9 p-4 md:p-8 max-w-7xl w-full mx-auto">
@@ -110,13 +109,8 @@ export default function DashBroad() {
 
                         </div>
                     )}
-                    {tab === 'add' && (
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 max-w-md mx-auto">
-                            <h2 className="text-xl font-bold text-gray-800 mb-4">Thêm giao dịch mới</h2>
-                            <p className="text-gray-400 text-sm">Giao diện form thêm chi tiêu sẽ đặt ở đây...</p>
-                        </div>
-                    )}
-                    { tab === 'login' && (<Login></Login>)}
+                    {tab === 'khac' && <Setting></Setting>}
+
                 </main>
             </div>
         </div>
