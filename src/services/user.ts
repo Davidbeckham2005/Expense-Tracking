@@ -1,13 +1,19 @@
 import { supabase } from "../lib/supabase";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
-export async function signUp(email: string, password: string) {
+export async function signUp(email: string, password: string, name: string) {
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+            data: {
+                full_name: name, // Lưu tên người dùng vào metadata của Supabase Auth
+            },
+        },
     });
     if (error) {
         throw error;
     }
+  
     return data;
 }
 export async function signIn(email: string, password: string) {

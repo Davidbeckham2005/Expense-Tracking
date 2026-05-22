@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { signIn } from '../services/user';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Wallet } from 'lucide-react';
+import toast from 'react-hot-toast';
 export default function Login() {
     const Navigate = useNavigate();
     const [email, setEmail] = useState("");
@@ -13,12 +14,14 @@ export default function Login() {
         e.preventDefault();
         if (!email || !password) { return; }
         try {
-            setIsLoading(true);
+            setIsLoading(true);1
             const res = await signIn(email, password);
             console.log(res);
             Navigate('/', { replace: true });
+            toast.success("Đăng nhập thành công!");
         } catch (err) {
             console.error(err);
+            toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
         } finally {
             setIsLoading(false);
         }
@@ -97,6 +100,12 @@ export default function Login() {
                     <span>{isLoading ? "Đang xử lý..." : "Đăng nhập"}</span>
                     {!isLoading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
                 </button>
+                <p className="text-center mt-6 text-sm text-slate-400">
+                    Đã chưa có tài khoản?{" "}
+                    <Link to="/Register" className="text-theme hover:text-theme-300 font-semibold transition-colors">
+                        Đăng ký
+                    </Link>
+                </p>
             </form>
         </div>
 

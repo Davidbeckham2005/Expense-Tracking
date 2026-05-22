@@ -1,6 +1,7 @@
 import { PlusCircle, Calendar, BarChart3, MoreHorizontal, LogOut } from 'lucide-react';
 import type { TabType } from '../types/tab';
 import { useAuth } from "../context/AuthContext";
+import { toast } from 'react-hot-toast';
 interface ITabs {
     name: string;
     icon: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>>;
@@ -22,6 +23,7 @@ export default function NavBar({ tab, setTab }: IHeaderProps) {
     const { isAuthenticated, logout } = useAuth();
     const handleLogout = async () => {
         await logout();
+        toast.success("Đăng xuất thành công");
     }
     return (<div>
         <div className="flex flex-row items-center justify-center gap-6 bg-white backdrop-blur-md border border-theme-light/30 rounded-xl px-4 py-3">
