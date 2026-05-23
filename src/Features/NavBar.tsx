@@ -3,7 +3,6 @@ import type { TabType } from '../types/tab';
 import { useAuth } from "../context/AuthContext";
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
 interface ITabs {
     name: string;
     icon: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>>;
