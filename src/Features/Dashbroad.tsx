@@ -3,8 +3,10 @@ import { Wallet, ArrowUpRight, ArrowDownRight, History, PieChart } from 'lucide-
 import NavBar from './NavBar';
 import type { TabType } from '../types/tab';
 import Setting from './Setting';
+import Input from './Input';
+import ListCategory from '../component/Category/ListCategory';
 export default function DashBroad() {
-    const [tab, setTab] = useState<TabType>('home');
+    const [tab, setTab] = useState<TabType>('category');
 
 
     return (
@@ -14,7 +16,7 @@ export default function DashBroad() {
                     <NavBar tab={tab} setTab={setTab}></NavBar>
                 </div>
                 <main className="lg:col-span-9 p-4 md:p-8 max-w-7xl w-full mx-auto">
-
+                    {tab === 'category' && <ListCategory></ListCategory>}
                     {tab === 'home' && (
                         // Grid con cho Trang chủ: Khoảng cách các thành phần là gap-6
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -110,7 +112,7 @@ export default function DashBroad() {
                         </div>
                     )}
                     {tab === 'khac' && <Setting></Setting>}
-
+                    {tab === 'nhap-vao' && <Input></Input>}
                 </main>
             </div>
         </div>

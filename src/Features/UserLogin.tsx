@@ -14,7 +14,7 @@ export default function Login() {
         e.preventDefault();
         if (!email || !password) { return; }
         try {
-            setIsLoading(true);1
+            setIsLoading(true);
             const res = await signIn(email, password);
             console.log(res);
             Navigate('/', { replace: true });

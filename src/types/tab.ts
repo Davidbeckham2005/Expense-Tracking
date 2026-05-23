@@ -1,1 +1,1 @@
-export type TabType = 'home' | 'nhap-vao' | 'lich' | 'bao-cao' | 'khac';
+export type TabType = 'home' | 'nhap-vao' | 'lich' | 'bao-cao' | 'khac' | 'category' | 'setting';

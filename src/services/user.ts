@@ -13,7 +13,7 @@ export async function signUp(email: string, password: string, name: string) {
     if (error) {
         throw error;
     }
-  
+
     return data;
 }
 export async function signIn(email: string, password: string) {
@@ -29,6 +29,10 @@ export async function signIn(email: string, password: string) {
 }
 export async function signOut() {
     const { error } = await supabase.auth.signOut();
+    // const {
+    //     data: { session }
+    // } = await supabase.auth.getSession();
+    // console.log("Current session after sign out:", session);
     if (error) {
         throw error;
     }

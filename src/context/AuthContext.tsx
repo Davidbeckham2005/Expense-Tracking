@@ -45,7 +45,6 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
             await signOut();
         } catch (err) {
             console.error("Error signing out:", err);
-        } finally {
             setIsLoading(false);
         }
     }
