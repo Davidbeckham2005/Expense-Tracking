@@ -11,11 +11,11 @@ export default function DashBroad() {
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="grid grid-cols-1 lg:grid-cols-12 min-h-screen">
+            <div className="grid grid-cols-1 lg:grid-cols-12">
                 <div className="lg:col-span-12 text-white">
                     <NavBar tab={tab} setTab={setTab}></NavBar>
                 </div>
-                <main className="lg:col-span-9 p-4 md:p-8 max-w-7xl w-full mx-auto">
+                <main className="lg:col-span-12 p-4 md:p-8 max-w-6xl w-full mx-auto">
                     {tab === 'category' && <ListCategory></ListCategory>}
                     {tab === 'home' && (
                         // Grid con cho Trang chủ: Khoảng cách các thành phần là gap-6

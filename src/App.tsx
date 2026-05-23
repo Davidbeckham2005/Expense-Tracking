@@ -4,7 +4,7 @@ import AppRouter from './Routes';
 export default function App() {
   return (
     <AuthProvider>
-      <Toaster position='top-right'></Toaster>
+      <Toaster position='bottom-right'></Toaster>
       <AppRouter></AppRouter>
     </AuthProvider>
   );

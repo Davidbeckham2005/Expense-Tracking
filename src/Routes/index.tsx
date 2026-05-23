@@ -6,8 +6,8 @@ import DashBroad from '../Features/Dashbroad';
 import ProtectedRouter from './ProtectedRouter'
 
 // category pages
-import AddCategory from '../component/Category/AddCategory';
-import ListCategory from '../component/Category/ListCategory';
+// import AddCategory from '../component/Category/AddCategory';
+// import ListCategory from '../component/Category/ListCategory';
 
 export default function AppRouter() {
     return (
@@ -18,8 +18,8 @@ export default function AppRouter() {
 
                 <Route element={<ProtectedRouter />}>
                     <Route path='/' element={<DashBroad />} />
-                    <Route path='/category/add' element={<AddCategory open={true} onClose={() => { }} />} />
-                    <Route path='/category/list' element={<ListCategory />} />
+                    {/* <Route path='/category/add' element={<AddCategory open={true} onClose={() => { }} />} />
+                    <Route path='/category/list' element={<ListCategory />} /> */}
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

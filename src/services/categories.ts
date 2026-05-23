@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase'
-import type { ICategory } from '../types/ICategories'
-export async function createCategory(category: ICategory, userId?: string) {
+import type { ICategory, ICreateCategory, IUpdateCategoryDto } from '../types/ICategories'
+export async function createCategory(category: ICreateCategory, userId?: string) {
     const { data, error } = await supabase.from('categories').insert(
         [{
             ...category,
@@ -26,12 +26,13 @@ export async function getCategories(userId?: string) {
     }
     return data;
 }
-export async function updateCategory(categoryId: string, updates: Partial<ICategory>, userId?: string) {
+export async function updateCategory(categoryId: string, updates: IUpdateCategoryDto, userId?: string) {
     const { data, error } = await supabase
         .from('categories')
         .update(updates)
         .eq('id', categoryId)
         .eq('user_id', userId)
+        .eq('is_deleted', false)
         .select()
         .single();
     if (error) {
@@ -44,7 +45,8 @@ export async function deleteCategory(categoryId: string, userId?: string) {
         .from('categories')
         .update({ is_deleted: true })
         .eq('id', categoryId)
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .eq('is_deleted', false);
     if (error) {
         throw error;
     }
