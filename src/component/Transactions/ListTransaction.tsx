@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useTransactionStore } from "../../store/useTransactionStore";
 import { useCategoryStore } from "../../store/useCategoryStore";
-
+import { colors } from '../../constants/color'
+import { icons } from '../../constants/icon'
 import type { IDBTransaction } from "../../types/Transactions";
 
 export default function ListTransaction() {
@@ -17,7 +18,6 @@ export default function ListTransaction() {
             categories.map((cate) => [cate.id, cate])
         )
     }, [categories])
-    console.log('categoryMap', categoryMap);
     // filter theo tháng
     const filteredTransactions = useMemo(() => {
         return transactions.filter((transaction) =>
@@ -60,7 +60,7 @@ export default function ListTransaction() {
     const balance = totalIncome - totalExpense;
 
     return (
-        <div className="p-4 space-y-6">
+        <div className="min-h-screen">
             {/* Tổng quan tháng */}
             <div className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
                 <div className="flex items-center justify-between">
@@ -78,21 +78,21 @@ export default function ListTransaction() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-green-50 rounded-xl p-3">
+                    <div className=" rounded-xl p-3">
                         <p className="text-sm text-gray-500">Thu</p>
                         <p className="font-bold text-green-600">
                             {totalIncome.toLocaleString()}đ
                         </p>
                     </div>
 
-                    <div className="bg-red-50 rounded-xl p-3">
+                    <div className=" rounded-xl p-3">
                         <p className="text-sm text-gray-500">Chi</p>
                         <p className="font-bold text-red-600">
                             {totalExpense.toLocaleString()}đ
                         </p>
                     </div>
 
-                    <div className="bg-blue-50 rounded-xl p-3">
+                    <div className="0 rounded-xl p-3">
                         <p className="text-sm text-gray-500">Số dư</p>
                         <p className="font-bold text-blue-600">
                             {balance.toLocaleString()}đ
@@ -121,7 +121,7 @@ export default function ListTransaction() {
                     return (
                         <div key={date} className="space-y-3">
                             {/* header ngày */}
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between border-b border-gray-300/50 pb-2">
                                 <h3 className="font-semibold">
                                     {new Date(date).toLocaleDateString("vi-VN", {
                                         weekday: "long",
@@ -145,29 +145,23 @@ export default function ListTransaction() {
                             <div className="space-y-2">
                                 {dayTransactions.map((transaction) => {
                                     const category = categoryMap[transaction.category_id];
-
+                                    const Icon = icons[category.icon as keyof typeof icons];
                                     return (
 
                                         <div
                                             key={transaction.id}
-                                            className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between"
+                                            className="bg-white text-sm shadow-sm p-4 flex items-center justify-between border-b border-gray-400/50"
                                         >
-                                            <div className="flex">
-                                                <p className="font-medium">
-                                                    {transaction.note || "Không có ghi chú"}
-                                                </p>
-
-                                                <p className="text-sm text-gray-400">
-                                                    {transaction.type === "income"
-                                                        ? "Khoản thu"
-                                                        : "Khoản chi"}
-                                                </p>
+                                            <div className="flex  space-x-3">
+                                                {Icon && <Icon className="w-5 h-5 text-white" style={{ color: colors[category.color as keyof typeof colors] || "#E5E7EB" }} />}
+                                                <p className="">{category.name} </p>
+                                                <p className="text-gray-400">{transaction.note ? `(${transaction.note})` : ""}</p>
                                             </div>
 
                                             <p
                                                 className={`font-bold ${transaction.type === "income"
                                                     ? "text-green-600"
-                                                    : "text-red-600"
+                                                    : ""
                                                     }`}
                                             >
                                                 {transaction.type === "income" ? "+" : "-"}

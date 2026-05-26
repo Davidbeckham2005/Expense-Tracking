@@ -34,7 +34,7 @@ export default function ListCategory() {
 
     return (
 
-        <div className="space-y-4">
+        <div className="min-h-screen space-y-6">
             <div className="flex gap-2">
                 <button
                     onClick={() => setActiveType("expense")}

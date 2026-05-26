@@ -102,7 +102,7 @@ export default function ExpenseManager() {
     }
 
     return (
-        <div className="">
+        <div className="min-h-screen">
             <div className="flex gap-2 max-w-xs mx-auto mb-4">
                 <button type="button"
                     onClick={() => { setValue('type', 'expense'); setValue('category_id', '') }}
@@ -279,9 +279,9 @@ export default function ExpenseManager() {
                         <button type="submit"
                             className="w-full bg-theme py-2 rounded-xs text-white font-medium"
                         >
-                            {isLoading? (
+                            {isLoading ? (
                                 <Loading></Loading>
-                            ): (
+                            ) : (
                                 `${currentType === 'expense' ? 'Nhập Khoản Chi' : 'Nhập Khoản Thu'}`
                             )}
                         </button>
