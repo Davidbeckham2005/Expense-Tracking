@@ -9,9 +9,8 @@ import { colors } from '../constants/color';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 
-import type { ICreateTransaction, IDBTransaction, ITransactionFormData } from '../types/Transactions';
+import type {  ITransactionFormData } from '../types/Transactions';
 import { type TransactionInput, transactionSchema } from '../Schemas/transaction.schemas';
-import type { TCategoryType } from '../types/ICategories';
 import toast from 'react-hot-toast';
 import Loading from '../component/Loading';
 export default function ExpenseManager() {
