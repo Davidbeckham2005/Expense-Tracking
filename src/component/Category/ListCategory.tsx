@@ -15,7 +15,7 @@ export default function ListCategory() {
     const [activeType, setActiveType] = useState<TCategoryType>('expense');
     const { deleteCategory } = useCategoryStore();
     const { user } = useAuth();
-    const { categories, fetchCategories, isLoading } = useCategoryStore();
+    const { categories } = useCategoryStore();
     const [showCreateCategory, setShowCreateCategory] = useState(false);
     const [showUpdateForm, setshowUpdateForm] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null);
@@ -31,12 +31,7 @@ export default function ListCategory() {
         }
     }
     const filteredCategories = categories.filter((cat) => cat.type === activeType);
-    useEffect(() => {
-        fetchCategories(user?.id);
-    }, []);
-    if (isLoading) {
-        return <Loading></Loading>
-    }
+
     return (
 
         <div className="space-y-4">

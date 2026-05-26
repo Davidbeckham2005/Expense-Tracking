@@ -30,7 +30,7 @@ export default function NavBar({ tab, setTab }: IHeaderProps) {
         navigate('/login');
     }
     return (<div>
-        <div className="flex flex-row items-center justify-center gap-6 bg-white backdrop-blur-md border border-theme-light/30 rounded-xl px-4 py-3">
+        <div className="flex flex-row items-center justify-center gap-6 bg-white backdrop-blur-md border border-gray-200 rounded-xl px-4 py-3">
 
             <nav className="flex flex-row items-center gap-2 flex-1 max-w-2xl">
                 {tabs.map(({ icon: Icon, id, name }) => {
