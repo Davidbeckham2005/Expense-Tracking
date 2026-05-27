@@ -21,3 +21,13 @@ export const colors = {
     stone: '#78716C',
     zinc: '#71717A',
 }
+
+export const COLORS = [
+    "#3B82F6",
+    "#EF4444",
+    "#22C55E",
+    "#FACC15",
+    "#A855F7",
+    "#EC4899",
+    "#F97316",
+];
