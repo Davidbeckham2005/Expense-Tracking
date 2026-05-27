@@ -102,7 +102,7 @@ export default function ListTransaction() {
                 </div>
             )}
             <div onClick={() => setSelectedDay(null)}
-                className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
+                className="bg-white rounded-2xl border-b border-gray-300 p-4 space-y-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold">
                         Tổng quan tháng
@@ -133,7 +133,7 @@ export default function ListTransaction() {
                     </div>
 
                     <div className="0 rounded-xl p-3">
-                        <p className="text-sm text-gray-500">Số dư</p>
+                        <p className="text-sm text-gray-500">Tổng</p>
                         <p className="font-bold text-blue-600">
                             {balance.toLocaleString()}đ
                         </p>
@@ -144,7 +144,7 @@ export default function ListTransaction() {
             {/* Danh sách giao dịch */}
             <div className="space-y-5">
                 {sortedDates.length === 0 && (
-                    <div className="text-center text-gray-400 py-10">
+                    <div onClick={() => setSelectedDay(null)} className="text-center text-gray-400 py-10">
                         Không có giao dịch trong tháng này
                     </div>
                 )}
@@ -156,8 +156,8 @@ export default function ListTransaction() {
                     return (
                         <div key={date} className="space-y-3">
                             {/* header ngày */}
-                            <div className="flex items-center justify-between border-b border-gray-300/50 pb-2">
-                                <h3 className="font-semibold">
+                            <div className="flex items-center justify-between border-b border-gray-300/50 rounded-lg px-2 bg-gray-300">
+                                <h3 className="font-semibold  text-sm">
                                     {new Date(date).toLocaleDateString("vi-VN", {
                                         weekday: "long",
                                         day: "2-digit",

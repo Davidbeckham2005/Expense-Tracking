@@ -37,10 +37,9 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
             type: transaction?.type || 'expense',
             category_id: transaction?.category_id || '',
             note: transaction?.note || '',
-            transaction_date: transaction?.transaction_date || new Date().toISOString().split('T')[0],
+            transaction_date: transaction?.transaction_date.split('T')[0] || new Date().toISOString().split('T')[0],
         },
     });
-
     const currentType = watch('type');
     const currentCategoryId = watch('category_id');
 

@@ -20,7 +20,7 @@ export default memo(function CalendarDay({ day, monthStart, data, currentDay, on
                 ${isSameMonth(day, monthStart) ? "" : "opacity-30"}`}>
             <div className="font-semibold px-2">{format(day, "d")}</div>
             {data && (
-                <div className="mt-1 font-medium text-[10px] sm:text-xs md:text-sm flex flex-col ">
+                <div className="mt-1 font-medium text-[10px] sm:text-xs md:text-sm flex flex-col px-1">
                     <div className="text-green-500 hidden md:inline">
                         +{formatVND(data.income)}
                     </div>
