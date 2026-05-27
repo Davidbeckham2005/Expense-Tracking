@@ -3,10 +3,10 @@ import { useTransactionStore } from "../../store/useTransactionStore";
 import { useCategoryStore } from "../../store/useCategoryStore";
 import { colors } from '../../constants/color'
 import { icons } from '../../constants/icon'
-
+import Calandar from "../calandar";
 import TransactionForm from './Transaction_Form';
 
-import type { IDBTransaction } from "../../types/Transactions";
+import type { IDBTransaction, GroupedTransactions } from "../../types/Transactions";
 
 export default function ListTransaction() {
     const { transactions } = useTransactionStore();
@@ -31,14 +31,27 @@ export default function ListTransaction() {
     // group theo ngày
     const groupedTransactions = useMemo(() => {
         return filteredTransactions.reduce(
-            (groups: Record<string, IDBTransaction[]>, transaction) => {
-                const date = transaction.transaction_date;
+            (groups: Record<string, GroupedTransactions>, transaction) => {
+                const date = transaction.transaction_date.split("T")[0];;
 
                 if (!groups[date]) {
-                    groups[date] = [];
+                    groups[date] = {
+                        income: 0,
+                        expense: 0,
+                        balance: 0,
+                        transactions: []
+                    };
                 }
 
-                groups[date].push(transaction);
+                groups[date].transactions.push(transaction);
+                if (transaction.type === "income") {
+                    groups[date].balance += transaction.amount;
+                    groups[date].income += transaction.amount;
+                }
+                if (transaction.type === "expense") {
+                    groups[date].balance -= transaction.amount;
+                    groups[date].expense += transaction.amount;
+                }
 
                 return groups;
             },
@@ -64,10 +77,11 @@ export default function ListTransaction() {
 
     return (
         <div className="min-h-screen">
+            <Calandar grouped={groupedTransactions} />
             {open && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-                    <div className="relative z-10 w-full max-w-xl bg-white rounded-2xl shadow-xl p-4 mx-4 max-h-[86vh] overflow-y-auto">
+                    <div className="relative z-10 w-full max-w-xl bg-white rounded-2xl shadow-xl p-4 mx-4 max-h-[86vh] overflow-y-auto no-scrollbar">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-semibold text-center w-full">
                                 Cập nhật giao dịch
@@ -129,12 +143,7 @@ export default function ListTransaction() {
 
                 {sortedDates.map((date) => {
                     const dayTransactions = groupedTransactions[date];
-
-                    const totalDay = dayTransactions.reduce((sum, item) => {
-                        return item.type === "income"
-                            ? sum + item.amount
-                            : sum - item.amount;
-                    }, 0);
+                    const totalDay = dayTransactions.income - dayTransactions.expense;
 
                     return (
                         <div key={date} className="space-y-3">
@@ -161,27 +170,21 @@ export default function ListTransaction() {
 
                             {/* items */}
                             <div className="space-y-2">
-                                {dayTransactions.map((transaction) => {
+                                {dayTransactions.transactions.map((transaction) => {
                                     const category = categoryMap[transaction.category_id];
                                     const Icon = icons[category.icon as keyof typeof icons];
                                     return (
 
                                         <div onClick={() => { setSelectedTransaction(transaction); setOpen(true) }}
                                             key={transaction.id}
-                                            className="bg-white text-sm shadow-sm p-4 flex items-center justify-between border-b border-gray-400/50"
-                                        >
-                                            <div className="flex  space-x-3">
-                                                {Icon && <Icon className="w-5 h-5 text-white" style={{ color: colors[category.color as keyof typeof colors] || "#E5E7EB" }} />}
-                                                <p className="">{category.name} </p>
-                                                <p className="text-gray-400">{transaction.note ? `(${transaction.note})` : ""}</p>
+                                            className="text-sm hover:bg-gray-100 flex items-center justify-between border-b border-gray-400/50">
+                                            <div className="flex px-2 space-x-3">
+                                                {Icon && <Icon className="w-4 h-4 text-white" style={{ color: colors[category.color as keyof typeof colors] || "#E5E7EB" }} />}
+                                                <p>{category.name} </p>
+                                                <p className="text-gray-600/80">{transaction.note ? `(${transaction.note})` : ""}</p>
                                             </div>
-
                                             <p
-                                                className={`font-bold ${transaction.type === "income"
-                                                    ? "text-green-600"
-                                                    : ""
-                                                    }`}
-                                            >
+                                                className={`font-bold ${transaction.type === "income" ? "text-green-600" : ""}`}>
                                                 {transaction.type === "income" ? "+" : "-"}
                                                 {transaction.amount.toLocaleString()}đ
                                             </p>

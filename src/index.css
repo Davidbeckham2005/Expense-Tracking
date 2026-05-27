@@ -25,3 +25,12 @@
     --color-theme: var(--color-theme);
     --color-theme-light: var(--color-theme-light);
 }
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

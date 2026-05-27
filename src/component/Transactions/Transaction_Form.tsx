@@ -3,7 +3,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 
-import { isEqual } from 'lodash';
 
 import { useAuth } from '../../context/AuthContext';
 import { useTransactionStore } from '../../store/useTransactionStore';
@@ -258,7 +257,11 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
                         className="w-full outline-none" />
                 </div>
                 {/* CATEGORY */}
-                <div className="p-2 border border-zinc-800 max-h-40 overflow-y-auto">
+                <div className="p-2 border border-zinc-800 max-h-40 overflow-y-auto no-scrollbar">
+                    {errors.category_id && (<p className="text-red-400 text-xs mt-2">
+                        {errors.category_id.message}
+                    </p>
+                    )}
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                         {filteredCategories.map((cat) => {
                             const Icon = icons[cat.icon as IconName];
@@ -269,17 +272,14 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
                                     key={cat.id}
                                     type="button"
                                     onClick={() => setValue('category_id', cat.id, { shouldValidate: true, })}
-                                    className={`p-3 rounded-lg border ${isSelected ? 'bg-amber-100' : 'border-zinc-800'}`} >
+                                    className={`p-3 rounded-lg border ${isSelected ? 'bg-theme/30' : 'border-zinc-800'}`} >
                                     {Icon && (<Icon className="w-5 h-5 mx-auto" style={{ color: colors[cat.color as TColor], }} />)}
                                     <p className="text-xs mt-2">{cat.name}</p>
                                 </button>
                             );
                         })}
                     </div>
-                    {errors.category_id && (<p className="text-red-400 text-xs mt-2">
-                        {errors.category_id.message}
-                    </p>
-                    )}
+
                 </div>
 
                 {/* SUBMIT */}

@@ -37,5 +37,11 @@ export interface ITransactionFormData {
     transaction_date: string;
     tags?: string[],
 }
-
+export interface GroupedTransactions {
+    income: number;
+    balance: number;
+    expense: number;
+    transactions: IDBTransaction[];
+}
+export type GroupedTransactionMap = Record<string, GroupedTransactions>;
 export type TTransactionType = 'income' | 'expense';
