@@ -1,4 +1,4 @@
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, format, addDays } from "date-fns";
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays } from "date-fns";
 
 export const buildCalendarDays = (date: Date) => {
     const start = startOfWeek(startOfMonth(date));
