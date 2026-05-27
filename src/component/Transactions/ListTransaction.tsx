@@ -6,6 +6,8 @@ import { icons } from '../../constants/icon'
 import Calandar from "../calandar";
 import TransactionForm from './Transaction_Form';
 
+import { format } from "date-fns";
+
 import type { IDBTransaction, GroupedTransactions } from "../../types/Transactions";
 
 export default function ListTransaction() {
@@ -14,8 +16,8 @@ export default function ListTransaction() {
     const [open, setOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState<IDBTransaction | null>(null);
     // tháng hiện tại
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const selectedMonth = format(currentDate, "yyyy-MM");
     const categoryMap = useMemo(() => {
         return Object.fromEntries(
             categories.map((cate) => [cate.id, cate])
@@ -77,7 +79,7 @@ export default function ListTransaction() {
 
     return (
         <div className="min-h-screen">
-            <Calandar grouped={groupedTransactions} />
+            <Calandar grouped={groupedTransactions} currentDate={currentDate} setCurrentDate={setCurrentDate} />
             {open && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
@@ -103,8 +105,8 @@ export default function ListTransaction() {
                     {/* chọn tháng */}
                     <input
                         type="month"
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(e.target.value)}
+                        value={format(currentDate, "yyyy-MM")}
+                        onChange={(e) => { const [year, month] = e.target.value.split("-"); setCurrentDate(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
                         className="border rounded-lg px-3 py-2"
                     />
                 </div>

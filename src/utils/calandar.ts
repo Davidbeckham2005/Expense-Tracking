@@ -14,3 +14,28 @@ export const buildCalendarDays = (date: Date) => {
 
     return days;
 };
+
+export const handleNextMonth = (selectedMonth: string) => {
+    const date = new Date(selectedMonth);
+
+    date.setMonth(date.getMonth() + 1);
+
+    const newMonth =
+        `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+    return newMonth;
+};
+export const handlePrevMonth = (selectedMonth: string) => {
+    const date = new Date(selectedMonth);
+
+    date.setMonth(date.getMonth() - 1);
+
+    const newMonth =
+        `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+    return newMonth;
+};

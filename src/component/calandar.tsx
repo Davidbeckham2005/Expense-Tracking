@@ -2,15 +2,17 @@ import type { GroupedTransactionMap } from "../types/Transactions"
 import { format, isSameMonth, isToday } from "date-fns";
 import { buildCalendarDays } from "../utils/calandar";
 
-import { useState } from "react"
+// import { useState } from "react"
 import { formatVND } from "../utils/format";
 
 interface CalandarProps {
     grouped: GroupedTransactionMap,
+    currentDate: Date,
+    setCurrentDate: (date: Date) => void,
 }
 
-export default function Calandar({ grouped }: CalandarProps) {
-    const [currentDate, setCurrentDate] = useState(new Date());
+export default function Calandar({ grouped, currentDate, setCurrentDate }: CalandarProps) {
+    // const [currentDate, setCurrentDate] = useState(new Date());
     const days = buildCalendarDays(currentDate);
     const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     return (
