@@ -3,16 +3,19 @@ import { useTransactionStore } from "../../store/useTransactionStore";
 import { useCategoryStore } from "../../store/useCategoryStore";
 import { colors } from '../../constants/color'
 import { icons } from '../../constants/icon'
+
+import TransactionForm from './Transaction_Form';
+
 import type { IDBTransaction } from "../../types/Transactions";
 
 export default function ListTransaction() {
     const { transactions } = useTransactionStore();
     const { categories } = useCategoryStore();
+    const [open, setOpen] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState<IDBTransaction | null>(null);
     // tháng hiện tại
     const currentMonth = new Date().toISOString().slice(0, 7);
-
     const [selectedMonth, setSelectedMonth] = useState(currentMonth);
-
     const categoryMap = useMemo(() => {
         return Object.fromEntries(
             categories.map((cate) => [cate.id, cate])
@@ -61,7 +64,22 @@ export default function ListTransaction() {
 
     return (
         <div className="min-h-screen">
-            {/* Tổng quan tháng */}
+            {open && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
+                    <div className="relative z-10 w-full max-w-xl bg-white rounded-2xl shadow-xl p-4 mx-4 max-h-[86vh] overflow-y-auto">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-semibold text-center w-full">
+                                Cập nhật giao dịch
+                            </h2>
+                            <button onClick={() => setOpen(false)} className=" w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                ✕
+                            </button>
+                        </div>
+                        <TransactionForm mode="update" transaction={selectedTransaction} onClose={() => setOpen(false)} />
+                    </div>
+                </div>
+            )}
             <div className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold">
@@ -148,7 +166,7 @@ export default function ListTransaction() {
                                     const Icon = icons[category.icon as keyof typeof icons];
                                     return (
 
-                                        <div
+                                        <div onClick={() => { setSelectedTransaction(transaction); setOpen(true) }}
                                             key={transaction.id}
                                             className="bg-white text-sm shadow-sm p-4 flex items-center justify-between border-b border-gray-400/50"
                                         >
@@ -169,12 +187,13 @@ export default function ListTransaction() {
                                             </p>
                                         </div>
                                     )
-                                })}
-                            </div>
-                        </div>
+                                })
+                                }
+                            </div >
+                        </div >
                     );
                 })}
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

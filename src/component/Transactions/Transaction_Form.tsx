@@ -3,6 +3,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 
+import { isEqual } from 'lodash';
+
 import { useAuth } from '../../context/AuthContext';
 import { useTransactionStore } from '../../store/useTransactionStore';
 import { useCategoryStore } from '../../store/useCategoryStore';
@@ -19,14 +21,12 @@ import Loading from '../../component/Loading';
 
 interface TransactionFormProps {
     mode?: 'create' | 'update';
-    transaction?: IDBTransaction;
-    onSuccess?: () => void;
-    onOpen?: boolean;
+    transaction?: IDBTransaction | null;
     onClose?: () => void;
 }
 // l
 
-export default function TransactionForm({ mode = 'create', transaction, onSuccess, onOpen, onClose }: TransactionFormProps) {
+export default function TransactionForm({ mode = 'create', transaction, onClose }: TransactionFormProps) {
     const { user } = useAuth();
     const { addTransaction, updateTransaction, } = useTransactionStore();
     const { categories } = useCategoryStore();
@@ -129,10 +129,17 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                 });
             }
             if (mode === 'update' && transaction) {
+                const hasChanges = transaction.amount !== data.amount || transaction.type !== data.type ||
+                    transaction.note !== data.note ||
+                    transaction.transaction_date !== data.transaction_date;
+                if (!hasChanges) {
+                    toast.error('Không có thay nào!');
+                    return;
+                }
                 await updateTransaction(transaction.id, data, user?.id);
                 toast.success('Cập nhật giao dịch thành công!');
+                onClose?.();
             }
-            onSuccess?.();
         } catch (error) {
             console.error(error);
             toast.error(mode === 'create' ? 'Không thể thêm giao dịch' : 'Không thể cập nhật giao dịch');

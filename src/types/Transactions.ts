@@ -17,7 +17,7 @@ export interface ICreateTransaction {
     category_id: string;
     note?: string;
     transaction_date: string;
-    
+
     // tags?: string[],
 }
 export interface IUpdateTransactionDto {
@@ -26,7 +26,7 @@ export interface IUpdateTransactionDto {
     category_id?: string;
     note?: string;
     transaction_date?: string;
-    tags?: string[],
+    // tags?: string[],
 }
 
 export interface ITransactionFormData {
