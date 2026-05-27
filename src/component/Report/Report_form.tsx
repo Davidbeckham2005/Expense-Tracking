@@ -2,9 +2,9 @@ import { useCategoryStore } from "../../store/useCategoryStore";
 import { useTransactionStore } from "../../store/useTransactionStore";
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
-import type { IDBTransaction, GroupedTransactions } from "../../types/Transactions";
+import type { IDBTransaction, GroupedTransactions, TTransactionType } from "../../types/Transactions";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
-
+import { formatVND, percentFormat } from "../../utils/format";
 const COLORS = [
     "#3B82F6",
     "#EF4444",
@@ -20,6 +20,7 @@ export default function ReportTransaction() {
     const { transactions } = useTransactionStore();
     const { categories } = useCategoryStore();
 
+    const [currentType, setCurrentType] = useState<TTransactionType>("expense");
     const [currentMonth, setcurrentMonth] = useState(new Date());
     const selectedMonth = format(currentMonth, "yyyy-MM");
 
@@ -39,62 +40,76 @@ export default function ReportTransaction() {
             return matchMonth;
         })
     }, [transactions, selectedMonth, search, categoryMap]);
+    const totalIncome = filteredTransactions
+        .filter((t) => t.type === "income")
+        .reduce((sum, t) => sum + t.amount, 0);
 
-    const groupedTransactions = useMemo(() => {
-        return filteredTransactions.reduce(
-            (groups: Record<string, GroupedTransactions>, transaction) => {
-                const date = transaction.transaction_date.split("T")[0];;
+    const totalExpense = filteredTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
 
-                if (!groups[date]) {
-                    groups[date] = {
-                        income: 0,
-                        expense: 0,
-                        balance: 0,
-                        transactions: []
-                    };
-                }
+    // const balance = totalIncome - totalExpense;
+    // const groupedTransactions = useMemo(() => {
+    //     return filteredTransactions.reduce(
+    //         (groups: Record<string, GroupedTransactions>, transaction) => {
+    //             const date = transaction.transaction_date.split("T")[0];;
 
-                groups[date].transactions.push(transaction);
-                if (transaction.type === "income") {
-                    groups[date].balance += transaction.amount;
-                    groups[date].income += transaction.amount;
-                }
-                if (transaction.type === "expense") {
-                    groups[date].balance -= transaction.amount;
-                    groups[date].expense += transaction.amount;
-                }
+    //             if (!groups[date]) {
+    //                 groups[date] = {
+    //                     income: 0,
+    //                     expense: 0,
+    //                     balance: 0,
+    //                     transactions: []
+    //                 };
+    //             }
 
-                return groups;
-            },
-            {}
-        );
-    }, [filteredTransactions]);
+    //             groups[date].transactions.push(transaction);
+    //             if (transaction.type === "income") {
+    //                 groups[date].balance += transaction.amount;
+    //                 groups[date].income += transaction.amount;
+    //             }
+    //             if (transaction.type === "expense") {
+    //                 groups[date].balance -= transaction.amount;
+    //                 groups[date].expense += transaction.amount;
+    //             }
+
+    //             return groups;
+    //         },
+    //         {}
+    //     );
+    // }, [filteredTransactions]);
     const categoryChartData = useMemo(() => {
-        const map = new Map<string, number>();
-
-        filteredTransactions
-            .filter((t) => t.type === "expense")
+        const map = new Map<string, { name: string, value: number }>();
+        filteredTransactions.filter((t) => t.type === currentType)
             .forEach((trans) => {
                 const category = categoryMap[trans.category_id];
-
                 if (!category) return;
+                const categoryId = trans.category_id;
+                const currentData = map.get(categoryId)
 
-                map.set(
-                    category.name,
-                    (map.get(category.name) || 0) + trans.amount
-                );
+                if (currentData) {
+                    currentData.value += trans.amount;
+                } else {
+                    map.set(categoryId, { name: category.name, value: trans.amount });
+                }
             });
-
-        return Array.from(map.entries()).map(([name, value]) => ({
-            name,
-            value,
-        }));
-    }, [filteredTransactions, categoryMap]);
+        const allData = Array.from(map.values());
+        if (allData.length === 0) {
+            return [{ name: "Không có dữ liệu", value: 1 }];
+        }
+        const chartData = allData.map((date) => {
+            return {
+                name: date.name,
+                value: date.value
+            }
+        })
+        return chartData;
+    }, [filteredTransactions, categoryMap, currentType]);
     return (
         <div className="w-full h-[400px] bg-white rounded-2xl p-4 shadow-md">
             <h2 className="text-2xl font-bold mb-4">Báo cáo giao dịch</h2>
             <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+                <PieChart key={currentType}>
                     <Pie
                         data={categoryChartData}
                         dataKey="value"
@@ -102,7 +117,7 @@ export default function ReportTransaction() {
                         cx="50%"
                         cy="50%"
                         outerRadius={120}
-                        label
+                        label={(entry) => `${entry.name}: ${percentFormat(entry.value, currentType === 'income' ? totalIncome : totalExpense)}`}
                     >
                         {categoryChartData.map((_, index) => (
                             <Cell
@@ -112,9 +127,23 @@ export default function ReportTransaction() {
                         ))}
                     </Pie>
 
-                    <Tooltip />
+                    <Tooltip
+                        formatter={(value, name) => [formatVND(Number(value)) + 'đ', name]}
+                    />
                     <Legend />
                 </PieChart>
             </ResponsiveContainer>
+            <div className="col-span-3 md:col-span-1 gap-2 flex items-center justify-between max-w-90 w-full mx-auto rounded-xl text-gray-600/80">
+                <button
+                    type="button"
+                    onClick={() => { setCurrentType("expense"); }}
+                    className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'expense' ? 'bg-red-600/80 text-white' : ''}`}>Tiền chi
+                </button>
+                <button
+                    type="button"
+                    onClick={() => { setCurrentType("income"); }}
+                    className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'income' ? 'bg-green-600/80 text-white' : ''}`}>Tiền thu
+                </button>
+            </div>
         </div>)
 }
