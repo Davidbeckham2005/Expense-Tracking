@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { icons } from '../../constants/icon';
 import { colors } from '../../constants/color';
-import type { TCategoryType } from "../../types/ICategories";
-import type { ICategory, ICategoryFormData } from '../../types/ICategories';
+import type { TCategoryType, IconName, ICategoryFormData, ICategory, TColor } from "../../types/ICategories";
+
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -14,22 +14,22 @@ type Props = {
 
 export default function CategoryForm({ open, onClose, mode, initialData, onSubmit, type }: Props) {
     const [name, setName] = useState('');
-    const [selectedIcon, setSelectedIcon] = useState('');
-    const [selectedColor, setSelectedColor] = useState('');
+    const [selectedIcon, setSelectedIcon] = useState<IconName | undefined>(undefined);
+    const [selectedColor, setSelectedColor] = useState<TColor | undefined>(undefined);
 
     useEffect(() => {
         if (mode === 'edit' && initialData) {
             setName(initialData.name);
-            setSelectedIcon(initialData.icon || '');
-            setSelectedColor(initialData.color || '');
+            setSelectedIcon(initialData.icon || undefined);
+            setSelectedColor(initialData.color || undefined);
 
         }
     }, [mode, initialData]);
     const handleSubmit = () => {
         const payload: ICategoryFormData = {
             name,
-            icon: selectedIcon,
-            color: selectedColor,
+            icon: selectedIcon || undefined,
+            color: selectedColor || undefined,
             type: type || 'expense',
         };
         // console.log(payload);
@@ -83,7 +83,7 @@ export default function CategoryForm({ open, onClose, mode, initialData, onSubmi
                             <button
                                 key={key}
                                 onClick={() =>
-                                    setSelectedIcon(key)
+                                    setSelectedIcon(key as IconName)
                                 }
                                 className={`flex h-12 w-12 items-center justify-center rounded-xl border transition
                   ${selectedIcon === key
@@ -109,7 +109,7 @@ export default function CategoryForm({ open, onClose, mode, initialData, onSubmi
                             <button
                                 key={key}
                                 onClick={() =>
-                                    setSelectedColor(key)
+                                    setSelectedColor(key as TColor)
                                 }
                                 className={`h-10 w-[1/7] border-2 transition rounded-xl
                 ${selectedColor === key

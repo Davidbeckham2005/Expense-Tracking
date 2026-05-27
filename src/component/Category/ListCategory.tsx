@@ -1,16 +1,14 @@
 import { useAuth } from "../../context/AuthContext";
 import { useCategoryStore } from "../../store/useCategoryStore";
-import { useEffect } from "react";
 import { useState } from "react";
 import { icons } from '../../constants/icon';
 import { colors } from '../../constants/color';
 import type { ICategory } from '../../types/ICategories'
 import AddCategory from "./AddCategory";
 import UpdateCategory from './UpdateCategory'
-import Loading from "../Loading";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
-import type { TCategoryType } from "../../types/ICategories";
+import type { TCategoryType, IconName } from "../../types/ICategories";
 export default function ListCategory() {
     const [activeType, setActiveType] = useState<TCategoryType>('expense');
     const { deleteCategory } = useCategoryStore();
@@ -77,7 +75,7 @@ export default function ListCategory() {
                 ) : (
                     <div className="space-y-2">
                         {filteredCategories.map((category) => {
-                            const Icon = icons[category.icon as keyof typeof icons];
+                            const Icon = icons[category.icon as IconName];
                             return (
                                 <div onClick={() => { if (category.is_default) return; setshowUpdateForm(true), setSelectedCategory(category) }}
                                     key={category.id}
