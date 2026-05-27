@@ -21,8 +21,8 @@ interface TransactionFormProps {
     mode?: 'create' | 'update';
     transaction?: IDBTransaction;
     onSuccess?: () => void;
-    onOpen: boolean;
-    onClose: () => void;
+    onOpen?: boolean;
+    onClose?: () => void;
 }
 // l
 
@@ -210,7 +210,7 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                 </div>
                 {/* KEYBOARD */}
                 {showKeyboard && (
-                    <div ref={keyboardRef} className="p-2 space-y-2">
+                    <div ref={keyboardRef} className="p-2 space-y-2 border border-zinc-800">
                         <div className="grid grid-cols-3 gap-2">
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9,
                             ].map((num) => (
@@ -218,20 +218,23 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                                     key={num}
                                     type="button"
                                     onClick={() => handleKeyPress(num.toString())}
-                                    className="bg-zinc-900 py-3 rounded">{num}
+                                    className="border border-zinc-800 py-3  rounded-lg">{num}
                                 </button>
                             ))}
 
                             <button
+                                className="border border-zinc-800 py-3 rounded-lg"
                                 type="button"
                                 onClick={() => handleKeyPress('000')}>.000
                             </button>
                             <button
+                                className="border border-zinc-800 rounded-lg"
                                 type="button"
                                 onClick={() => handleKeyPress('0')}>0
                             </button>
 
                             <button
+                                className="border border-zinc-800 py-3 bg-red-500 text-white rounded-lg"
                                 type="button"
                                 onClick={() => handleKeyPress('BACKSPACE')}>⌫
                             </button>
@@ -248,8 +251,8 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                         className="w-full outline-none" />
                 </div>
                 {/* CATEGORY */}
-                <div className="p-2 border border-zinc-800">
-                    <div className="grid grid-cols-3 gap-2">
+                <div className="p-2 border border-zinc-800 max-h-40 overflow-y-auto">
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                         {filteredCategories.map((cat) => {
                             const Icon = icons[cat.icon as IconName];
                             const isSelected = currentCategoryId === cat.id;
@@ -266,7 +269,6 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                             );
                         })}
                     </div>
-
                     {errors.category_id && (<p className="text-red-400 text-xs mt-2">
                         {errors.category_id.message}
                     </p>
@@ -274,11 +276,11 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                 </div>
 
                 {/* SUBMIT */}
-                <div className="p-4">
+                <div className="p-4 max-w-md mx-auto">
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-theme py-3 text-white rounded-lg flex items-center justify-center"
+                        className="w-full bg-theme py-3 text-white rounded-lg flex items-center justify-center hover:scale-95 transition-transform disabled:bg-gray-400"
                     >
                         {isLoading ? (
                             <Loading />

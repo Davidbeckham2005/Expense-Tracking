@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import NavBar from './NavBar';
 import type { TabType } from '../types/tab';
 import Setting from './Setting';
-import ExpenseManager from './Input';
+import ExpenseManager from '../component/Transactions/AddTransaction';
 import ListCategory from '../component/Category/ListCategory';
 import { useAuth } from '../context/AuthContext';
 import { useCategoryStore } from '../store/useCategoryStore';
