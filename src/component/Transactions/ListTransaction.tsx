@@ -6,6 +6,8 @@ import { icons } from '../../constants/icon'
 import Calandar from "../useCalendar";
 import TransactionForm from './Transaction_Form';
 
+import { Search, X } from "lucide-react";
+
 import { format } from "date-fns";
 
 import type { IDBTransaction, GroupedTransactions } from "../../types/Transactions";
@@ -26,15 +28,18 @@ export default function ListTransaction() {
             categories.map((cate) => [cate.id, cate])
         )
     }, [categories])
+    const [search, setSearch] = useState("");
 
     const filteredTransactions = useMemo(() => {
         return transactions.filter((trans) => {
+            const matchSearch = !search || trans.note?.toLowerCase().includes(search.toLowerCase()) || categoryMap[trans.category_id]?.name.toLowerCase().includes(search.toLowerCase());
+            if (!matchSearch) return false;
             const date = trans.transaction_date.split("T")[0];
             const matchMonth = date.startsWith(selectedMonth);
             const matchDay = !selectedDay || date.startsWith(selectedDay);
             return matchMonth && matchDay;
         })
-    }, [transactions, selectedMonth, selectedDay]);
+    }, [transactions, selectedMonth, selectedDay, search, categoryMap]);
 
     const groupedTransactions = useMemo(() => {
         return filteredTransactions.reduce(
@@ -84,6 +89,7 @@ export default function ListTransaction() {
 
     return (
         <div className="min-h-screen">
+
             <Calandar setMonth={setcurrentMonth} currentDay={selectedDay} setCurrentDay={setSelectedDay} />
             {open && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -104,7 +110,7 @@ export default function ListTransaction() {
             <div onClick={() => setSelectedDay(null)}
                 className="bg-white rounded-2xl border-b border-gray-300 p-4 space-y-4">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold">
+                    <h2 className="text-sm md:text-xl font-bold">
                         Tổng quan tháng
                     </h2>
 
@@ -113,10 +119,33 @@ export default function ListTransaction() {
                         type="month"
                         value={format(currentMonth, "yyyy-MM")}
                         onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentMonth(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
-                        className="border rounded-lg px-3 py-2"
+                        className="border rounded-lg px-3 py-1 text-sm outline-none"
                     />
                 </div>
+                <div className="relative w-full">
+                    {/* icon search */}
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
 
+                    <div className="w-full flex items-center justify-end">
+                        <input
+                            type="text"
+                            placeholder="Tìm kiếm"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="max-w-md pl-10 pr-10 rounded-xl border border-gray-200 bg-white shadow-sm outline-none"
+                        />
+                    </div>
+
+                    {/* nút clear */}
+                    {search && (
+                        <button
+                            onClick={() => setSearch("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    )}
+                </div>
                 <div className="grid grid-cols-3 gap-3">
                     <div className=" rounded-xl p-3">
                         <p className="text-sm text-gray-500">Thu</p>

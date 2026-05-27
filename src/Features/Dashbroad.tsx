@@ -18,6 +18,9 @@ export default function DashBroad() {
         fetchCategories(user?.id);
         fetchTransactions(user?.id);
     }, []);
+    if (isLoading || isTransactionsLoading) {
+        return <Loading></Loading>;
+    }
 
 
     return (
@@ -25,8 +28,9 @@ export default function DashBroad() {
             <div className="grid grid-cols-1 lg:grid-cols-12">
                 <div className="lg:col-span-12 text-white">
                     <NavBar tab={tab} setTab={setTab}></NavBar>
+
                 </div>
-                {(isLoading || isTransactionsLoading) && <Loading></Loading>}
+
                 <main className="lg:col-span-12 p-4 md:p-8 max-w-6xl w-full mx-auto">
                     {tab === 'category' && <ListCategory></ListCategory>}
                     {tab === 'lich' && <ListTransaction></ListTransaction>}
