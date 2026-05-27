@@ -8,7 +8,7 @@ import AddCategory from "./AddCategory";
 import UpdateCategory from './UpdateCategory'
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
-import type { TCategoryType, IconName } from "../../types/ICategories";
+import type { TCategoryType, IconName , TColor} from "../../types/ICategories";
 export default function ListCategory() {
     const [activeType, setActiveType] = useState<TCategoryType>('expense');
     const { deleteCategory } = useCategoryStore();
@@ -101,7 +101,7 @@ export default function ListCategory() {
                                             className="w-10 h-10 flex items-center justify-center rounded-full"
 
                                         >
-                                            {Icon && <Icon className="w-5 h-5 text-white" style={{ color: colors[category.color as keyof typeof colors] || "#E5E7EB" }} />}
+                                            {Icon && <Icon className="w-5 h-5 text-white" style={{ color: colors[category.color as TColor] || "#E5E7EB" }} />}
                                         </div>
 
                                         <h3 className="font-medium text-state-700">{category.name}</h3>

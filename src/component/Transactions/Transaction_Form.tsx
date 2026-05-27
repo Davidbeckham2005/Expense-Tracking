@@ -10,6 +10,7 @@ import { useCategoryStore } from '../../store/useCategoryStore';
 import { transactionSchema } from '../../Schemas/transaction.schemas';
 
 import type { IDBTransaction, ITransactionFormData, ICreateTransaction } from '../../types/Transactions';
+import type { TColor, IconName } from '../../types/ICategories';
 
 import { icons } from '../../constants/icon';
 import { colors } from '../../constants/color';
@@ -37,7 +38,7 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
             type: transaction?.type || 'expense',
             category_id: transaction?.category_id || '',
             note: transaction?.note || '',
-            transaction_date:transaction?.transaction_date ||new Date().toISOString().split('T')[0],
+            transaction_date: transaction?.transaction_date || new Date().toISOString().split('T')[0],
         },
     });
 
@@ -118,8 +119,7 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
             if (mode === 'create') {
                 await addTransaction(data, user?.id);
                 toast.success('Giao dịch đã được thêm thành công!');
-                reset(
-                {
+                reset({
                     amount: 0,
                     type: 'expense',
                     category_id: '',
@@ -135,7 +135,7 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
             onSuccess?.();
         } catch (error) {
             console.error(error);
-            toast.error(mode === 'create'? 'Không thể thêm giao dịch': 'Không thể cập nhật giao dịch');
+            toast.error(mode === 'create' ? 'Không thể thêm giao dịch' : 'Không thể cập nhật giao dịch');
         } finally {
             setIsLoading(false);
         }
@@ -151,20 +151,13 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                         setValue('category_id', '');
                     }}
                     className={`flex-1 py-2 text-sm font-medium transition-colors
-          ${currentType === 'expense'
-                            ? 'bg-red-600 text-white'
-                            : 'text-zinc-400'
-                        }`}>Tiền chi
+          ${currentType === 'expense' ? 'bg-red-600 text-white' : 'text-zinc-400'}`}>Tiền chi
                 </button>
                 <button
                     type="button"
-                    onClick={() => {
-                        setValue('type', 'income');
-                        setValue('category_id', '');}}
+                    onClick={() => { setValue('type', 'income'); setValue('category_id', ''); }}
                     className={`flex-1 py-2 text-sm font-medium transition-colors
-          ${currentType === 'income'
-                            ? 'bg-green-600 text-white'
-                            : 'text-zinc-400'}`}>Tiền thu
+          ${currentType === 'income' ? 'bg-green-600 text-white' : 'text-zinc-400'}`}>Tiền thu
                 </button>
             </div>
 
@@ -192,7 +185,7 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                     <span className="text-[10px] uppercase font-bold">
                         Số tiền
                     </span>
-{/* tai sao o dau co control ? boi vi  */}
+                    {/* tai sao o dau co control ? boi vi  */}
                     <Controller
                         name="amount"
                         control={control}
@@ -204,8 +197,8 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                                 onFocus={() =>
                                     setShowKeyboard(true)}
                                 onChange={(e) => {
-                                    const rawValue =e.target.value.replace(/\D/g, ''); 
-                                    onChange(rawValue? parseInt(rawValue): 0
+                                    const rawValue = e.target.value.replace(/\D/g, '');
+                                    onChange(rawValue ? parseInt(rawValue) : 0
                                     );
                                 }}
                                 className="w-full outline-none"
@@ -224,31 +217,23 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                                 <button
                                     key={num}
                                     type="button"
-                                    onClick={() =>
-                                        handleKeyPress(
-                                            num.toString()
-                                        )
-                                    }
-                                    className="bg-zinc-900 py-3 rounded"
-                                >{num}
+                                    onClick={() => handleKeyPress(num.toString())}
+                                    className="bg-zinc-900 py-3 rounded">{num}
                                 </button>
                             ))}
 
                             <button
                                 type="button"
-                                onClick={() =>handleKeyPress('000')}
-                            >.000
+                                onClick={() => handleKeyPress('000')}>.000
                             </button>
-                            <button  
-                            type="button"
-                                onClick={() =>handleKeyPress('0')}>
-                                0
+                            <button
+                                type="button"
+                                onClick={() => handleKeyPress('0')}>0
                             </button>
 
                             <button
                                 type="button"
-                                onClick={() =>handleKeyPress('BACKSPACE')}>
-                                ⌫
+                                onClick={() => handleKeyPress('BACKSPACE')}>⌫
                             </button>
                         </div>
                     </div>)}
@@ -260,58 +245,31 @@ export default function TransactionForm({ mode = 'create', transaction, onSucces
                         type="text"
                         {...register('note')}
                         placeholder="Nhập ghi chú..."
-                        className="w-full outline-none"/>
+                        className="w-full outline-none" />
                 </div>
                 {/* CATEGORY */}
                 <div className="p-2 border border-zinc-800">
                     <div className="grid grid-cols-3 gap-2">
                         {filteredCategories.map((cat) => {
-                            const Icon = icons[cat.icon as keyof typeof icons];
-                            const isSelected =currentCategoryId === cat.id;
+                            const Icon = icons[cat.icon as IconName];
+                            const isSelected = currentCategoryId === cat.id;
 
                             return (
                                 <button
                                     key={cat.id}
                                     type="button"
-                                    onClick={() =>
-                                        setValue(
-                                            'category_id',
-                                            cat.id,
-                                            {
-                                                shouldValidate: true,
-                                            }
-                                        )
-                                    }
-                                    className={`p-3 rounded-lg border
-                  ${isSelected
-                                            ? 'bg-amber-100'
-                                            : 'border-zinc-800'
-                                        }`}
-                                >
-                                    {Icon && (
-                                        <Icon
-                                            className="w-5 h-5 mx-auto"
-                                            style={{
-                                                color:
-                                                    colors[
-                                                    cat.color as keyof typeof colors
-                                                    ],
-                                            }}
-                                        />
-                                    )}
-
-                                    <p className="text-xs mt-2">
-                                        {cat.name}
-                                    </p>
+                                    onClick={() => setValue('category_id', cat.id, { shouldValidate: true, })}
+                                    className={`p-3 rounded-lg border ${isSelected ? 'bg-amber-100' : 'border-zinc-800'}`} >
+                                    {Icon && (<Icon className="w-5 h-5 mx-auto" style={{ color: colors[cat.color as TColor], }} />)}
+                                    <p className="text-xs mt-2">{cat.name}</p>
                                 </button>
                             );
                         })}
                     </div>
 
-                    {errors.category_id && (
-                        <p className="text-red-400 text-xs mt-2">
-                            {errors.category_id.message}
-                        </p>
+                    {errors.category_id && (<p className="text-red-400 text-xs mt-2">
+                        {errors.category_id.message}
+                    </p>
                     )}
                 </div>
 
