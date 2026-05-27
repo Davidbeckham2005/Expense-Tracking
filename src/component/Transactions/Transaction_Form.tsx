@@ -256,7 +256,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
                         className="w-full outline-none" />
                 </div>
                 {/* CATEGORY */}
-                <div className="p-2 border border-zinc-800 max-h-40 overflow-y-auto no-scrollbar">
+                <div className="p-2 border border-zinc-800 max-h-45 overflow-y-auto no-scrollbar">
                     {errors.category_id && (<p className="text-red-400 text-xs mt-2">
                         {errors.category_id.message}
                     </p>

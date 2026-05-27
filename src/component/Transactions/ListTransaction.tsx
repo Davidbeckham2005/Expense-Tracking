@@ -5,21 +5,23 @@ import { colors } from '../../constants/color'
 import { icons } from '../../constants/icon'
 import Calandar from "../useCalendar";
 import TransactionForm from './Transaction_Form';
-
-import { Search, X } from "lucide-react";
+import type { IconName } from "../../types/ICategories";
+import { Search, CirclePlus } from "lucide-react";
 
 import { format } from "date-fns";
 
-import type { IDBTransaction, GroupedTransactions } from "../../types/Transactions";
+
+import type { IDBTransaction, GroupedTransactions, TTransactionType } from "../../types/Transactions";
 
 export default function ListTransaction() {
     const { transactions } = useTransactionStore();
     const { categories } = useCategoryStore();
-    const [open, setOpen] = useState(false);
+    const [openUpdate, setopenUpdate] = useState(false);
+    const [openCreate, setopenCreate] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState<IDBTransaction | null>(null);
 
     const [selectedDay, setSelectedDay] = useState<string | null>(null);
-
+    const [currentType, setCurrentType] = useState<TTransactionType | null>(null);
     const [currentMonth, setcurrentMonth] = useState(new Date());
     const selectedMonth = format(currentMonth, "yyyy-MM");
 
@@ -37,9 +39,10 @@ export default function ListTransaction() {
             const date = trans.transaction_date.split("T")[0];
             const matchMonth = date.startsWith(selectedMonth);
             const matchDay = !selectedDay || date.startsWith(selectedDay);
-            return matchMonth && matchDay;
+            const matchType = !currentType || trans.type === currentType;
+            return matchMonth && matchDay && matchType;
         })
-    }, [transactions, selectedMonth, selectedDay, search, categoryMap]);
+    }, [transactions, selectedMonth, selectedDay, search, categoryMap, currentType]);
 
     const groupedTransactions = useMemo(() => {
         return filteredTransactions.reduce(
@@ -86,65 +89,91 @@ export default function ListTransaction() {
         .reduce((sum, t) => sum + t.amount, 0);
 
     const balance = totalIncome - totalExpense;
-
     return (
         <div className="min-h-screen">
-
             <Calandar setMonth={setcurrentMonth} currentDay={selectedDay} setCurrentDay={setSelectedDay} />
-            {open && (
+            {openUpdate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setopenUpdate(false)} />
                     <div className="relative z-10 w-full max-w-xl bg-white rounded-2xl shadow-xl p-4 mx-4 max-h-[86vh] overflow-y-auto no-scrollbar">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-semibold text-center w-full">
                                 Cập nhật giao dịch
                             </h2>
-                            <button onClick={() => setOpen(false)} className=" w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                            <button onClick={() => setopenUpdate(false)} className=" w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
                                 ✕
                             </button>
                         </div>
-                        <TransactionForm mode="update" transaction={selectedTransaction} onClose={() => setOpen(false)} />
+                        <TransactionForm mode="update" transaction={selectedTransaction} onClose={() => setopenUpdate(false)} />
                     </div>
                 </div>
             )}
-            <div onClick={() => setSelectedDay(null)}
-                className="bg-white rounded-2xl border-b border-gray-300 p-4 space-y-4">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-sm md:text-xl font-bold">
-                        Tổng quan tháng
-                    </h2>
-
-                    {/* chọn tháng */}
-                    <input
-                        type="month"
-                        value={format(currentMonth, "yyyy-MM")}
-                        onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentMonth(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
-                        className="border rounded-lg px-3 py-1 text-sm outline-none"
-                    />
+            {openCreate && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setopenCreate(false)} />
+                    <div className="relative z-10 w-full max-w-xl bg-white rounded-2xl shadow-xl p-4 mx-4 max-h-[86vh] overflow-y-auto no-scrollbar">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-semibold text-center w-full">
+                                Thêm giao dịch mới
+                            </h2>
+                            <button onClick={() => setopenCreate(false)} className=" w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                ✕
+                            </button>
+                        </div>
+                        <TransactionForm mode="create" transaction={selectedTransaction} onClose={() => setopenCreate(false)} />
+                    </div>
                 </div>
+            )}
+            <div onClick={() => setSelectedDay(null)} className="bg-white rounded-2xl border-b border-gray-300 p-4 space-y-4">
                 <div className="relative w-full">
-                    {/* icon search */}
-                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
 
-                    <div className="w-full flex items-center justify-end">
+                    <div className="flex items-center justify-start">
+
                         <input
                             type="text"
                             placeholder="Tìm kiếm"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="max-w-md pl-10 pr-10 rounded-xl border border-gray-200 bg-white shadow-sm outline-none"
+                            className="max-w-md pl-8 pr-10 rounded-xl border border-gray-200 bg-white shadow-sm outline-none"
                         />
                     </div>
 
-                    {/* nút clear */}
-                    {search && (
+
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 items-center justify-between">
+                    <h2 className="text-sm md:text-xl font-bold">
+                        Tổng quan tháng
+                    </h2>
+
+                    <div className="col-span-3 md:col-span-1 gap-2 flex items-center justify-between max-w-90 w-full mx-auto rounded-xl text-gray-600/80">
                         <button
-                            onClick={() => setSearch("")}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                        >
-                            <X className="w-4 h-4" />
+                            type="button"
+                            onClick={() => { setCurrentType(null); }}
+                            className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === null ? 'bg-blue-600/80 text-white' : ''}`}>Tất cả
                         </button>
-                    )}
+                        <button
+                            type="button"
+                            onClick={() => { setCurrentType("expense"); }}
+                            className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'expense' ? 'bg-red-600/80 text-white' : ''}`}>Tiền chi
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setCurrentType("income"); }}
+                            className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'income' ? 'bg-green-600/80 text-white' : ''}`}>Tiền thu
+                        </button>
+                    </div>
+                    <CirclePlus className="cursor-pointer hover:scale-110 transition-transform" onClick={() => setopenCreate(true)}> </CirclePlus>
+                    <div className="col-span-2 md:col-span-1 flex items-center justify-end gap-2">
+
+                        <input
+                            type="month"
+                            value={format(currentMonth, "yyyy-MM")}
+                            onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentMonth(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
+                            className="border rounded-lg px-3 py-1 text-sm outline-none"
+                        />
+                    </div>
+
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                     <div className=" rounded-xl p-3">
@@ -206,18 +235,18 @@ export default function ListTransaction() {
                             </div>
 
                             {/* items */}
-                            <div className="space-y-2">
+                            <div className="">
                                 {dayTransactions.transactions.map((transaction) => {
                                     const category = categoryMap[transaction.category_id];
-                                    const Icon = icons[category.icon as keyof typeof icons];
+                                    const Icon = icons[category?.icon as IconName];
                                     return (
 
-                                        <div onClick={() => { setSelectedTransaction(transaction); setOpen(true) }}
+                                        <div onClick={() => { setSelectedTransaction(transaction); setopenUpdate(true) }}
                                             key={transaction.id}
-                                            className="text-sm hover:bg-gray-100 flex items-center justify-between border-b border-gray-400/50">
+                                            className="py-2 text-sm hover:bg-gray-100 flex items-center justify-between border-b border-gray-400/50">
                                             <div className="flex px-2 space-x-3">
                                                 {Icon && <Icon className="w-4 h-4 text-white" style={{ color: colors[category.color as keyof typeof colors] || "#E5E7EB" }} />}
-                                                <p>{category.name} </p>
+                                                <p>{category?.name || "Không xác định"} </p>
                                                 <p className="text-gray-600/80">{transaction.note ? `(${transaction.note})` : ""}</p>
                                             </div>
                                             <p

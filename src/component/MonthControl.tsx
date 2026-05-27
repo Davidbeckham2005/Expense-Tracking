@@ -3,6 +3,7 @@ interface MonthControlProps {
     setMonth: (date: Date) => void,
     currentDate: Date
 }
+// currentDate la ngay hien tai.
 export default function MonthControl({ setMonth, currentDate }: MonthControlProps) {
     return (
         <div className="w-full">

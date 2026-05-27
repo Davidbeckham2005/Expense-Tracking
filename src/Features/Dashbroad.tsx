@@ -9,6 +9,7 @@ import { useCategoryStore } from '../store/useCategoryStore';
 import Loading from '../component/Loading';
 import { useTransactionStore } from '../store/useTransactionStore';
 import ListTransaction from '../component/Transactions/ListTransaction';
+import ReportTransaction from '../component/Report/Report_form';
 export default function DashBroad() {
     const { fetchCategories, isLoading } = useCategoryStore();
     const { fetchTransactions, isLoading: isTransactionsLoading } = useTransactionStore();
@@ -35,6 +36,7 @@ export default function DashBroad() {
                     {tab === 'category' && <ListCategory></ListCategory>}
                     {tab === 'lich' && <ListTransaction></ListTransaction>}
                     {tab === 'khac' && <Setting></Setting>}
+                    {tab === 'bao-cao' && <ReportTransaction></ReportTransaction>}
                     {tab === 'nhap-vao' && <ExpenseManager></ExpenseManager>}
                 </main>
             </div>

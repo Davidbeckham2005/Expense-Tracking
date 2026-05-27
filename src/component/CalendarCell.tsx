@@ -15,7 +15,7 @@ export default memo(function CalendarDay({ day, monthStart, data, currentDay, on
     const key = format(day, "yyyy-MM-dd");
 
     return (
-        <div onClick={() => onSelect(key)} className={`h-9 md:h-20 text-xs cursor-pointer border rounded-lg
+        <div onClick={() => onSelect(key)} className={`h-9 md:h-20 text-xs cursor-pointer border rounded-lg bg-theme-light/20
                 ${currentDay === key ? "ring-2 ring-theme-500" : ""}
                 ${isSameMonth(day, monthStart) ? "" : "opacity-30"}`}>
             <div className="font-semibold px-2">{format(day, "d")}</div>
