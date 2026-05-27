@@ -3,7 +3,7 @@ import { useTransactionStore } from "../../store/useTransactionStore";
 import { useCategoryStore } from "../../store/useCategoryStore";
 import { colors } from '../../constants/color'
 import { icons } from '../../constants/icon'
-import Calandar from "../calandar";
+import Calandar from "../useCalendar";
 import TransactionForm from './Transaction_Form';
 
 import { format } from "date-fns";
@@ -15,22 +15,27 @@ export default function ListTransaction() {
     const { categories } = useCategoryStore();
     const [open, setOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState<IDBTransaction | null>(null);
-    // tháng hiện tại
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const selectedMonth = format(currentDate, "yyyy-MM");
+
+    const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
+    const [currentMonth, setcurrentMonth] = useState(new Date());
+    const selectedMonth = format(currentMonth, "yyyy-MM");
+
     const categoryMap = useMemo(() => {
         return Object.fromEntries(
             categories.map((cate) => [cate.id, cate])
         )
     }, [categories])
-    // filter theo tháng
-    const filteredTransactions = useMemo(() => {
-        return transactions.filter((transaction) =>
-            transaction.transaction_date.startsWith(selectedMonth)
-        );
-    }, [transactions, selectedMonth]);
 
-    // group theo ngày
+    const filteredTransactions = useMemo(() => {
+        return transactions.filter((trans) => {
+            const date = trans.transaction_date.split("T")[0];
+            const matchMonth = date.startsWith(selectedMonth);
+            const matchDay = !selectedDay || date.startsWith(selectedDay);
+            return matchMonth && matchDay;
+        })
+    }, [transactions, selectedMonth, selectedDay]);
+
     const groupedTransactions = useMemo(() => {
         return filteredTransactions.reduce(
             (groups: Record<string, GroupedTransactions>, transaction) => {
@@ -79,7 +84,7 @@ export default function ListTransaction() {
 
     return (
         <div className="min-h-screen">
-            <Calandar grouped={groupedTransactions} currentDate={currentDate} setCurrentDate={setCurrentDate} />
+            <Calandar setMonth={setcurrentMonth} currentDay={selectedDay} setCurrentDay={setSelectedDay} />
             {open && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
@@ -96,7 +101,8 @@ export default function ListTransaction() {
                     </div>
                 </div>
             )}
-            <div className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
+            <div onClick={() => setSelectedDay(null)}
+                className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold">
                         Tổng quan tháng
@@ -105,8 +111,8 @@ export default function ListTransaction() {
                     {/* chọn tháng */}
                     <input
                         type="month"
-                        value={format(currentDate, "yyyy-MM")}
-                        onChange={(e) => { const [year, month] = e.target.value.split("-"); setCurrentDate(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
+                        value={format(currentMonth, "yyyy-MM")}
+                        onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentMonth(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
                         className="border rounded-lg px-3 py-2"
                     />
                 </div>

@@ -21,6 +21,11 @@
     --color-theme-light: #f59e0b;
 }
 
+@theme {
+    --color-theme: var(--color-theme);
+    --color-theme-light: var(--color-theme-light);
+}
+
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
