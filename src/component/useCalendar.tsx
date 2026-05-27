@@ -4,6 +4,8 @@ import { buildCalendarDays } from "../utils/calandar";
 import CalendarCell from "./CalendarCell";
 import { useState, useMemo } from "react"
 import { useTransactionStore } from '../store/useTransactionStore'
+import MonthControl from './MonthControl'
+
 interface CalandarProps {
     setMonth: (date: Date) => void,
     currentDay: string | null,
@@ -60,17 +62,7 @@ export default function Calandar({ setMonth, currentDay, setCurrentDay }: Caland
     return (
         <div className=" bg-white rounded-2xl shadow ">
             {/* Header */}
-            <div className="flex justify-between items-center mb-4 px-2 text-xl">
-                <button onClick={() => setMonth(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))}>
-                    ←
-                </button>
-                <h2 className="text-lg font-semibold">
-                    {format(currentDate, "MM/yyyy")}
-                </h2>
-                <button onClick={() => setMonth(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))}>
-                    →
-                </button>
-            </div>
+            <MonthControl setMonth={setMonth} currentDate={currentDate} />
 
             <div className="grid grid-cols-7 text-center text-xs text-gray-500 mb-2">
                 {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((d) => (
