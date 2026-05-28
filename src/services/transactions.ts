@@ -49,3 +49,12 @@ export async function deleteTransaction(transactionId: string, userId?: string) 
         .eq('is_deleted', false);
     if (error) throw error;
 }
+export async function deleteTransactions(transactionIDs: string[], userId?: string) {
+    const {error} = await supabase 
+    .from('transactions')
+    .update({is_deleted: true})
+    .in('id',transactionIDs)
+    .eq('user_id', userId)
+    .eq('is_deleted',false)
+    if(error) throw error;
+}

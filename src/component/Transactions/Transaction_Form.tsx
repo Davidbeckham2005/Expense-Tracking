@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
+import AddCategory from '../Category/AddCategory';
 
+import { Plus } from 'lucide-react';
 
 import { useAuth } from '../../context/AuthContext';
 import { useTransactionStore } from '../../store/useTransactionStore';
@@ -22,12 +24,16 @@ interface TransactionFormProps {
     mode?: 'create' | 'update';
     transaction?: IDBTransaction | null;
     onClose?: () => void;
+    id?: string | null,
 }
 // l
 
-export default function TransactionForm({ mode = 'create', transaction, onClose }: TransactionFormProps) {
+export default function TransactionForm({ mode = 'create', transaction, onClose, id }: TransactionFormProps) {
     const { user } = useAuth();
-    const { addTransaction, updateTransaction, } = useTransactionStore();
+    const [showCreateCategory, setShowCreateCategory] = useState(false);
+
+
+    const { addTransaction, updateTransaction, deleteTransaction } = useTransactionStore();
     const { categories } = useCategoryStore();
 
     const { control, register, handleSubmit, getValues, setValue, watch, reset, formState: { errors }, } = useForm<ICreateTransaction>({
@@ -49,9 +55,19 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
     const [showKeyboard, setShowKeyboard] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const keyboardRef = useRef<HTMLDivElement>(null);
-
+    const HandleDelete = async () => {
+        try {
+            setIsLoading(true);
+            await deleteTransaction(id!, user?.id);
+            toast.success('Xóa giao dịch thành công!');
+        } catch (e) {
+            toast.error('Không thể xóa giao dịch!');
+        } finally {
+            setIsLoading(false)
+        }
+    }
     useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
+        function handleClickOutside(event: PointerEvent) {
             if (
                 keyboardRef.current &&
                 !keyboardRef.current.contains(event.target as Node)
@@ -59,12 +75,11 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
                 setShowKeyboard(false);
             }
         }
-        document.addEventListener('mousedown', handleClickOutside);
+
+        document.addEventListener("pointerdown", handleClickOutside);
+
         return () => {
-            document.removeEventListener(
-                'mousedown',
-                handleClickOutside
-            );
+            document.removeEventListener("pointerdown", handleClickOutside);
         };
     }, []);
 
@@ -112,6 +127,9 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
         setValue('amount', newAmount, { shouldValidate: true, });
     };
     const onSubmit = async (data: ITransactionFormData) => {
+        const active = document.activeElement as HTMLElement;
+        active?.blur(); // QUAN TRỌNG
+        setShowKeyboard(false);
         try {
             setIsLoading(true);
             if (mode === 'create') {
@@ -146,7 +164,15 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
         }
     };
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen" >
+            {showCreateCategory && (
+                <AddCategory
+                    type={currentType}
+                    open={showCreateCategory}
+                    onClose={() => setShowCreateCategory(false)}
+
+                />
+            )}
             <div className="flex gap-2 max-w-xs mx-auto mb-4">
                 {/* switch type transactions */}
                 <button
@@ -199,8 +225,11 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
                                 type="text"
                                 inputMode="none"
                                 value={formatDisplay(value)}
-                                onFocus={() =>
-                                    setShowKeyboard(true)}
+                                onFocus={() => {
+                                    requestAnimationFrame(() => {
+                                        setShowKeyboard(true);
+                                    });
+                                }}
                                 onChange={(e) => {
                                     const rawValue = e.target.value.replace(/\D/g, '');
                                     onChange(rawValue ? parseInt(rawValue) : 0
@@ -215,7 +244,9 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
                 </div>
                 {/* KEYBOARD */}
                 {showKeyboard && (
-                    <div ref={keyboardRef} className="p-2 space-y-2 border border-zinc-800">
+                    <div ref={keyboardRef}
+                        className="p-2 space-y-2 border border-zinc-800"
+                        onPointerDown={(e) => e.stopPropagation()}>
                         <div className="grid grid-cols-3 gap-2">
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9,
                             ].map((num) => (
@@ -268,6 +299,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
 
                             return (
                                 <button
+                                    title={cat.name}
                                     key={cat.id}
                                     type="button"
                                     onClick={() => setValue('category_id', cat.id, { shouldValidate: true, })}
@@ -275,8 +307,16 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
                                     {Icon && (<Icon className="w-5 h-5 mx-auto" style={{ color: colors[cat.color as TColor], }} />)}
                                     <p className="text-xs mt-2">{cat.name}</p>
                                 </button>
+
                             );
                         })}
+                        <button
+                            title="Thêm mới danh mục"
+                            className="p-3 rounded-lg border border-zinc-800 flex items-center justify-center text-sm text-gray-500"
+                            type="button"
+                            onClick={() => setShowCreateCategory(true)}>
+                            <Plus></Plus>
+                        </button>
                     </div>
 
                 </div>
@@ -285,6 +325,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
                 <div className="p-4 max-w-md mx-auto">
                     <button
                         type="submit"
+                        title={mode === 'create' ? 'Thêm giao dịch' : 'Cập nhật giao dịch'}
                         disabled={isLoading}
                         className="w-full bg-theme py-3 text-white rounded-lg flex items-center justify-center hover:scale-95 transition-transform disabled:bg-gray-400"
                     >
@@ -298,8 +339,11 @@ export default function TransactionForm({ mode = 'create', transaction, onClose 
                             'Cập nhật giao dịch'
                         )}
                     </button>
+                    {mode === "update" && (<button className="w-full bg-red-500 text-white py-3 rounded-lg mt-2" type="button" onClick={() => HandleDelete()}>
+                        Xóa
+                    </button>)}
                 </div>
-            </form>
-        </div>
+            </form >
+        </div >
     );
 }

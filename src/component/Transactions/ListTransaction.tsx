@@ -95,7 +95,7 @@ export default function ListTransaction() {
             {openUpdate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/40" onClick={() => setopenUpdate(false)} />
-                    <div className="relative z-10 w-full max-w-xl bg-white rounded-2xl shadow-xl p-4 mx-4 max-h-[86vh] overflow-y-auto no-scrollbar">
+                    <div className="relative z-10 w-full max-w-xl bg-white rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-semibold text-center w-full">
                                 Cập nhật giao dịch
@@ -104,7 +104,7 @@ export default function ListTransaction() {
                                 ✕
                             </button>
                         </div>
-                        <TransactionForm mode="update" transaction={selectedTransaction} onClose={() => setopenUpdate(false)} />
+                        <TransactionForm mode="update" transaction={selectedTransaction} onClose={() => setopenUpdate(false)}  id={selectedTransaction?.id}/>
                     </div>
                 </div>
             )}
