@@ -339,11 +339,16 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                             'Cập nhật giao dịch'
                         )}
                     </button>
-                    {mode === "update" && (<button className="w-full bg-red-500 text-white py-3 rounded-lg mt-2" type="button" onClick={() => HandleDelete()}>
+                    {mode === "update" && (<button className="w-full bg-red-500 text-white py-3 rounded-lg mt-2" type="button" onClick={() => {
+                        if (window.confirm("Bạn có chắc muốn xóa danh mục này?")) {
+                            HandleDelete();
+                        }
+                    }}>
                         Xóa
                     </button>)}
                 </div>
             </form >
+
         </div >
     );
 }

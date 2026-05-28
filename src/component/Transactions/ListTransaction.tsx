@@ -6,15 +6,17 @@ import { icons } from '../../constants/icon'
 import Calandar from "../useCalendar";
 import TransactionForm from './Transaction_Form';
 import type { IconName } from "../../types/ICategories";
-import { Search, CirclePlus } from "lucide-react";
-
+import { Search, CirclePlus, Settings, Trash2 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 import { format } from "date-fns";
 
+import { toast } from "react-hot-toast";
 
 import type { IDBTransaction, GroupedTransactions, TTransactionType } from "../../types/Transactions";
 
 export default function ListTransaction() {
-    const { transactions } = useTransactionStore();
+    const { user } = useAuth()
+    const { transactions, deleteTransactions } = useTransactionStore();
     const { categories } = useCategoryStore();
     const [openUpdate, setopenUpdate] = useState(false);
     const [openCreate, setopenCreate] = useState(false);
@@ -24,6 +26,9 @@ export default function ListTransaction() {
     const [currentType, setCurrentType] = useState<TTransactionType | null>(null);
     const [currentMonth, setcurrentMonth] = useState(new Date());
     const selectedMonth = format(currentMonth, "yyyy-MM");
+
+    const [selectedTransactionIds, setSelectedTransactionIds] = useState<string[]>([]);
+    const [isSetting, setIsSetting] = useState(false);
 
     const categoryMap = useMemo(() => {
         return Object.fromEntries(
@@ -89,6 +94,28 @@ export default function ListTransaction() {
         .reduce((sum, t) => sum + t.amount, 0);
 
     const balance = totalIncome - totalExpense;
+
+    const handleSelectTransaction = (transactionId: string, isSelected: boolean) => {
+        if (isSelected) {
+            setSelectedTransactionIds((prev) => [...prev, transactionId]);
+        } else {
+            setSelectedTransactionIds((prev) =>
+                prev.filter((id) => id !== transactionId)
+            );
+        }
+    }
+    const handleDelete = async () => {
+        if (selectedTransactionIds.length === 0) return;
+        try {
+            await deleteTransactions(selectedTransactionIds, user?.id);
+            setSelectedTransactionIds([]);
+            toast.success("Xóa giao dịch thành công");
+
+        } catch (error) {
+            console.error("Failed to delete transactions:", error);
+            toast.error("Failed to delete transactions");
+        }
+    }
     return (
         <div className="min-h-screen">
             <Calandar setMonth={setcurrentMonth} currentDay={selectedDay} setCurrentDay={setSelectedDay} />
@@ -104,7 +131,7 @@ export default function ListTransaction() {
                                 ✕
                             </button>
                         </div>
-                        <TransactionForm mode="update" transaction={selectedTransaction} onClose={() => setopenUpdate(false)}  id={selectedTransaction?.id}/>
+                        <TransactionForm mode="update" transaction={selectedTransaction} onClose={() => setopenUpdate(false)} id={selectedTransaction?.id} />
                     </div>
                 </div>
             )}
@@ -163,7 +190,10 @@ export default function ListTransaction() {
                             className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'income' ? 'bg-green-600/80 text-white' : ''}`}>Tiền thu
                         </button>
                     </div>
-                    <CirclePlus className="cursor-pointer hover:scale-110 transition-transform" onClick={() => setopenCreate(true)}> </CirclePlus>
+                    <div className="flex space-x-2 ">
+                        <CirclePlus className="cursor-pointer hover:scale-110 transition-transform" onClick={() => setopenCreate(true)}> </CirclePlus>
+                        <Settings onClick={() => { { setIsSetting(!isSetting) }; { setSelectedTransactionIds([]) } }}> </Settings>
+                    </div>
                     <div className="col-span-2 md:col-span-1 flex items-center justify-end gap-2">
 
                         <input
@@ -200,6 +230,15 @@ export default function ListTransaction() {
             </div>
 
             {/* Danh sách giao dịch */}
+            {isSetting && (<div className="w-full my-2">
+                <div className="flex justify-end w-full"
+                    onClick={() => {
+                        if (window.confirm("Bạn có chắc muốn xóa những giao dịch này?")) {
+                            handleDelete();
+                        }
+                    }}>
+                    <span></span> <Trash2 className={'cursor-pointer hover:scale-110 transition-transform' + `${selectedTransactionIds.length > 0 ? ' text-red-500' : ''}`} /> </div>
+            </div>)}
             <div className="space-y-5">
                 {sortedDates.length === 0 && (
                     <div onClick={() => setSelectedDay(null)} className="text-center text-gray-400 py-10">
@@ -213,7 +252,6 @@ export default function ListTransaction() {
 
                     return (
                         <div key={date} className="space-y-3">
-                            {/* header ngày */}
                             <div className="flex items-center justify-between border-b border-gray-300/50 rounded-lg px-2 bg-gray-300">
                                 <h3 className="font-semibold  text-sm">
                                     {new Date(date).toLocaleDateString("vi-VN", {
@@ -222,7 +260,6 @@ export default function ListTransaction() {
                                         month: "2-digit",
                                     })}
                                 </h3>
-
                                 <p
                                     className={`font-bold ${totalDay >= 0
                                         ? "text-green-600"
@@ -240,20 +277,28 @@ export default function ListTransaction() {
                                     const category = categoryMap[transaction.category_id];
                                     const Icon = icons[category?.icon as IconName];
                                     return (
+                                        <div className="flex ">
+                                            {isSetting && (<input
 
-                                        <div onClick={() => { setSelectedTransaction(transaction); setopenUpdate(true) }}
-                                            key={transaction.id}
-                                            className="py-2 text-sm hover:bg-gray-100 flex items-center justify-between border-b border-gray-400/50">
-                                            <div className="flex px-2 space-x-3">
-                                                {Icon && <Icon className="w-4 h-4 text-white" style={{ color: colors[category.color as keyof typeof colors] || "#E5E7EB" }} />}
-                                                <p>{category?.name || "Không xác định"} </p>
-                                                <p className="text-gray-600/80">{transaction.note ? `(${transaction.note})` : ""}</p>
+                                                type="checkbox"
+                                                className="mr-2"
+                                                checked={selectedTransactionIds.includes(transaction.id)}
+                                                onChange={(e) => { handleSelectTransaction(transaction.id, e.target.checked) }}
+                                            />)}
+                                            <div key={transaction.id}
+                                                className="flex-1 py-2 text-sm hover:bg-gray-100 flex items-center justify-between border-b border-gray-400/50"
+                                                onClick={() => { setSelectedTransaction(transaction); setopenUpdate(true) }}>
+                                                <div className="flex px-2 space-x-3">
+                                                    {Icon && <Icon className="w-4 h-4 text-white" style={{ color: colors[category.color as keyof typeof colors] || "#E5E7EB" }} />}
+                                                    <p>{category?.name || "Không xác định"} </p>
+                                                    <p className="text-gray-600/80">{transaction.note ? `(${transaction.note})` : ""}</p>
+                                                </div>
+                                                <p
+                                                    className={`font-bold ${transaction.type === "income" ? "text-green-600" : ""}`}>
+                                                    {transaction.type === "income" ? "+" : "-"}
+                                                    {transaction.amount.toLocaleString()}đ
+                                                </p>
                                             </div>
-                                            <p
-                                                className={`font-bold ${transaction.type === "income" ? "text-green-600" : ""}`}>
-                                                {transaction.type === "income" ? "+" : "-"}
-                                                {transaction.amount.toLocaleString()}đ
-                                            </p>
                                         </div>
                                     )
                                 })

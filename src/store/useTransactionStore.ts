@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createTransaction, getTransactions, updateTransaction, deleteTransaction } from '../services/transactions';
+import { createTransaction, getTransactions, updateTransaction, deleteTransaction, deleteTransactions } from '../services/transactions';
 import type { IDBTransaction, ICreateTransaction, IUpdateTransactionDto } from '../types/Transactions';
 interface TransactionState {
     transactions: IDBTransaction[]
@@ -8,6 +8,7 @@ interface TransactionState {
     addTransaction: (transaction: ICreateTransaction, userId?: string) => Promise<void>
     updateTransaction: (transactionId: string, updates: IUpdateTransactionDto, userId?: string) => Promise<void>
     deleteTransaction: (transactionId: string, userId?: string) => Promise<void>
+    deleteTransactions: (transactionIDs: string[], userId?: string) => Promise<void>
 }
 
 export const useTransactionStore = create<TransactionState>((set) => ({
@@ -68,6 +69,21 @@ export const useTransactionStore = create<TransactionState>((set) => ({
         }
         catch (error) {
             console.error('Failed to delete transaction:', error);
+        }
+        finally {
+            set({ isLoading: false });
+        }
+    },
+    deleteTransactions: async (transactionIDs: string[], userId?: string) => {
+        try {
+            set({ isLoading: true });
+            await deleteTransactions(transactionIDs, userId);
+            set((state) => ({
+                transactions: state.transactions.filter((tx) => !transactionIDs.includes(tx.id)),
+            }));
+        }
+        catch (error) {
+            console.error('Failed to delete transactions:', error);
         }
         finally {
             set({ isLoading: false });
