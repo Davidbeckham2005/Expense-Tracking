@@ -12,7 +12,7 @@ interface PieChartProps {
 
 export default function PieChartComponent({ categoryChartData, totalIncome, totalExpense, currentType }: PieChartProps) {
     return (
-        <PieChart key={currentType}>
+        <PieChart key={currentType} >
             <Pie
                 data={categoryChartData}
                 dataKey="value"

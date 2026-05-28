@@ -14,7 +14,7 @@ export default function MonthControl({ setMonth, currentDate }: MonthControlProp
                 >
                     ‹
                 </button>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 flex-1 bg-linear-to from-theme/5 to-theme/10 border border-theme/20 rounded-lg py-2 px-4 select-none">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 flex-1 bg-linear-to from-theme/5 to-theme/10 border border-theme/20 rounded-lg px-4 select-none">
                     <h2 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-zinc-100 tracking-wide">
                         {format(currentDate, "MM/yyyy")}
                     </h2>
