@@ -1,5 +1,5 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
-import { formatVND, percentFormat } from "../../utils/format";
+import { formatVND, percentFormat, formatChartValue } from "../../utils/format";
 import { COLORS } from "../../constants/color";
 import type { TTransactionType } from "../../types/Transactions";
 
@@ -31,7 +31,7 @@ export default function PieChartComponent({ categoryChartData, totalIncome, tota
             </Pie>
 
             <Tooltip
-                formatter={(value, name) => [formatVND(Number(value)) + 'đ', name]}
+                formatter={(value, name) => [formatChartValue(Number(value)), name]}
             />
             <Legend />
         </PieChart>

@@ -12,8 +12,9 @@ import type { TColor, IconName } from "../../types/ICategories"
 import { icons } from "../../constants/icon";
 import { colors } from "../../constants/color";
 import LineChartComponent from "../Chart/LineChart";
-import ReportForPieChart from "./Repost_for_piechart";
-
+import ReportForPieChart from "./Report_for_piechart";
+import ReportForLineChart from "./Report_for_linechart";
+import BarChartComponent from "../Chart/BarChart";
 type chartDate = 'pie' | 'line' | 'bar';
 
 export default function ReportTransaction() {
@@ -121,10 +122,10 @@ export default function ReportTransaction() {
                 </div>
 
             </div>
-            <div className="w-full h-[400px] bg-white rounded-2xl p-4 shadow-md border my-2">
+            <div className="w-full h-[400px] bg-white rounded-2xl shadow-md border my-2 p-4">
                 <div className="flex h-full">
-                    <ChartSwitcher chartType={currentChart} setChartType={setCurrentChart} />
-                    <div className="flex-1 ml-4 p-2">
+                    <div className="hidden md:block"><ChartSwitcher chartType={currentChart} setChartType={setCurrentChart}></ChartSwitcher></div>
+                    <div className="flex-1 md:ml-4 md:p-2">
                         <ResponsiveContainer width="100%" height="100%" >
                             {currentChart === "pie" && (
                                 <PieChartComponent categoryChartData={categoryChartData} totalIncome={totalIncome} totalExpense={totalExpense} currentType={currentType} />
@@ -132,11 +133,15 @@ export default function ReportTransaction() {
                             {currentChart === "line" && (
                                 <LineChartComponent dailyData={map_with_date} />
                             )}
+                            {currentChart === "bar" && (
+                                <BarChartComponent dailyData={map_with_date} />
+                            )}
+
                         </ResponsiveContainer>
                     </div>
                 </div>
             </div>
-            <div className="col-span-3 md:col-span-1 gap-2 flex items-center justify-between max-w-md w-full mx-auto rounded-xl text-gray-600/80 my-2">
+            {currentChart === 'pie' && (<div className="col-span-3 md:col-span-1 gap-2 flex items-center justify-between max-w-md w-full mx-auto rounded-xl text-gray-600/80 my-2">
                 <button
                     type="button"
                     onClick={() => { setCurrentType("expense"); }}
@@ -147,37 +152,15 @@ export default function ReportTransaction() {
                     onClick={() => { setCurrentType("income"); }}
                     className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'income' ? 'bg-green-600/80 text-white' : ''}`}>Thu Nhập
                 </button>
-            </div>
+            </div>)}
             {currentChart === "pie" && (
                 <ReportForPieChart map_with_category={map_with_category} currentType={currentType} totalExpense={totalExpense} totalIncome={totalIncome} />
             )}
 
-            {currentChart === "line" && (
-                map_with_date.length === 0 ? (
-                    <p className="text-center text-gray-500">Không có dữ liệu</p>
-                ) : (
-                    <div className="space-y-2">
-                        {map_with_date.map((item) => {
-                            return (
-                                <div key={item.date} className={`flex items-center border-b-2 border-gray-400/40 rounded-lg transition pr-2`}>
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="flex-1 flex items-center justify-center">
-                                            {item.date}
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4 ml-auto">
-                                        <div className="text-green-600 hover:text-gray-700">+ {formatVND(item.income)}đ
-                                        </div>
-                                        <div className="text-red-600 hover:text-gray-700">- {formatVND(item.expense)}đ
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                )
+            {(currentChart === "line" || currentChart === "bar") && (
+                <ReportForLineChart map_with_date={map_with_date} />
             )}
+
         </div>
     )
 }

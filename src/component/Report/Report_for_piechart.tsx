@@ -15,7 +15,7 @@ interface ReportForPieChartProps {
     totalIncome: number;
     totalExpense: number;
 }
-export default function ReportForPieChart({ map_with_category,currentType,totalExpense,totalIncome }: ReportForPieChartProps) {
+export default function ReportForPieChart({ map_with_category, currentType, totalExpense, totalIncome }: ReportForPieChartProps) {
 
     return (
         map_with_category.length === 0 ? (
@@ -24,6 +24,7 @@ export default function ReportForPieChart({ map_with_category,currentType,totalE
             <div className="space-y-2">
                 {map_with_category.map((item) => {
                     const Icon = icons[item.category.icon as IconName];
+                    const percent = percentFormat((item.value), currentType === 'income' ? totalIncome : totalExpense)
                     return (
                         <div key={item.category.id} className={`flex items-center border-b-2 border-gray-400/40 rounded-lg transition pr-2`}>
                             <div className="flex items-center justify-between gap-3">
@@ -35,10 +36,11 @@ export default function ReportForPieChart({ map_with_category,currentType,totalE
                                 <h3 className="font-medium text-state-700">{item.category.name}</h3>
                             </div>
 
-                            <div className="flex items-center gap-4 ml-auto">
-                                <div className="text-stone-900 hover:text-gray-700"> {formatVND(item.value)}đ
+                            <div className="flex ml-auto max-w-44 w-full">
+                                <div className="flex-1 text-right text-stone-900 hover:text-gray-700 text-nowrap"> {formatVND(item.value)}đ
                                 </div>
-                                <div className="text-stone-500 hover:text-gray-700"> {percentFormat((item.value), currentType === 'income' ? totalIncome : totalExpense)}
+                                <div className={`flex-1 text-right text-stone-500 hover:text-gray-700 text-nowrap`}>
+                                    {percent}
                                 </div>
                             </div>
                         </div>
