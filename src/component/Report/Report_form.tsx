@@ -4,26 +4,28 @@ import { format } from "date-fns";
 import { useMemo, useState } from "react";
 import type { TTransactionType } from "../../types/Transactions";
 import { ResponsiveContainer } from "recharts";
-import { formatVND, percentFormat } from "../../utils/format";
+import { formatVND } from "../../utils/format";
 import PieChartComponent from "../Chart/PieChart"
 import MonthControl from "../MonthControl";
 import ChartSwitcher from "./ChartSwitcher";
-import type { TColor, IconName } from "../../types/ICategories"
-import { icons } from "../../constants/icon";
-import { colors } from "../../constants/color";
+
+import YearControl from "../YearControl";
 import LineChartComponent from "../Chart/LineChart";
 import ReportForPieChart from "./Report_for_piechart";
 import ReportForLineChart from "./Report_for_linechart";
 import BarChartComponent from "../Chart/BarChart";
 type chartDate = 'pie' | 'line' | 'bar';
-
+type FilterMode = "month" | "year";
 export default function ReportTransaction() {
     const { transactions } = useTransactionStore();
     const [currentChart, setCurrentChart] = useState<chartDate>("line");
     const { categories } = useCategoryStore();
     const [currentType, setCurrentType] = useState<TTransactionType>("expense");
     const [currentDate, setcurrentDate] = useState(new Date());
+    const [filterMode, setFilterMode] = useState<FilterMode>("month");
+
     const selectedMonth = format(currentDate, "yyyy-MM");
+    const selectedYear = format(currentDate, "yyyy");
 
     const categoryMap = useMemo(() => {
         return Object.fromEntries(
@@ -34,10 +36,15 @@ export default function ReportTransaction() {
     const filteredTransactions = useMemo(() => {
         return transactions.filter((trans) => {
             const date = trans.transaction_date.split("T")[0];
-            const matchMonth = date.startsWith(selectedMonth);
-            return matchMonth;
+            if (filterMode === "month") {
+                return date.startsWith(selectedMonth);
+            }
+            if (filterMode === "year") {
+                return date.startsWith(selectedYear);
+            }
         })
-    }, [transactions, selectedMonth, categoryMap]);
+    }, [transactions, selectedMonth, selectedYear, categoryMap, filterMode]);
+    // console.log("filteredTransactions", filteredTransactions, selectedMonth, selectedYear);
     const totalIncome = filteredTransactions
         .filter((t) => t.type === "income")
         .reduce((sum, t) => sum + t.amount, 0);
@@ -103,8 +110,14 @@ export default function ReportTransaction() {
     return (
         <div className="min-h-screen">
             <h2 className="text-lg md:text-2xl font-bold mb-2">Báo cáo giao dịch</h2>
-            <div className="w-full max-w-4xl mx-auto space-y-2 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl p-3 shadow-sm">
-                <MonthControl currentDate={currentDate} setMonth={setcurrentDate} />
+
+            <div className="w-full max-w-4xl mx-auto space-y-2 border border-gray-100 rounded-xl p-3 shadow-sm">
+                <div className="flex flex-1  w-full border border-gray-200 rounded-lg">
+                    <button type="button" onClick={() => { setFilterMode("month") }} className={'flex-1 text-center px-2 rounded-lg p-1 ' + (filterMode === "month" ? "bg-theme text-white" : "")}>Hàng tháng</button>
+                    <button type="button" onClick={() => { setFilterMode("year") }} className={'flex-1 text-center px-2 rounded-lg p-1 ' + (filterMode === "year" ? "bg-theme text-white" : "")}>Hàng năm</button>
+                </div>
+                {filterMode === "month" && (<MonthControl currentDate={currentDate} setMonth={setcurrentDate} />)}
+                {filterMode === "year" && (<YearControl currentDate={currentDate} setYear={setcurrentDate} />)}
 
                 <div className="w-full flex space-x-2 text-gray-500 bg-white rounded-lg">
                     <div className="flex flex-1  w-full border border-gray-200 rounded-lg md:px-8">
@@ -123,7 +136,7 @@ export default function ReportTransaction() {
 
             </div>
             <div className="w-full h-[400px] bg-white rounded-2xl shadow-md border my-2 p-4">
-                <div className="flex h-full">
+                <div className="flex h-full w-full">
                     <div className="hidden md:block"><ChartSwitcher chartType={currentChart} setChartType={setCurrentChart}></ChartSwitcher></div>
                     <div className="flex-1 md:ml-4 md:p-2">
                         <ResponsiveContainer width="100%" height="100%" >

@@ -11,17 +11,17 @@ export default function ChartSwitcher({ chartType, setChartType }: ChartSwitcher
     const charts = [
         {
             type: 'pie' as const,
-            label: 'Pie',
+            label: 'Tròn',
             icon: PieChart
         },
         {
             type: 'line' as const,
-            label: 'Line',
+            label: 'Đường',
             icon: ChartSpline
         },
         {
             type: 'bar' as const,
-            label: 'Bar',
+            label: 'Cột',
             icon: ChartColumn
         }
     ];

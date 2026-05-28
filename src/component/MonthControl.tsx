@@ -9,7 +9,13 @@ export default function MonthControl({ setMonth, currentDate }: MonthControlProp
         <div className="w-full mx-auto bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl p-3 shadow-sm">
             <div className="flex items-center justify-between gap-3 w-full">
                 <button
-                    onClick={() => setMonth(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))}
+                    onClick={() => {
+                        const newDate = new Date(currentDate);
+
+                        newDate.setMonth(newDate.getMonth() - 1);
+
+                        setMonth(newDate);
+                    }}
                     className="flex items-center justify-center w-10 h-10 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 active:scale-95 transition-all text-xl font-medium border border-gray-200 dark:border-zinc-700 shadow-sm"
                 >
                     ‹
@@ -26,7 +32,11 @@ export default function MonthControl({ setMonth, currentDate }: MonthControlProp
                     </div>
                 </div>
                 <button
-                    onClick={() => setMonth(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))}
+                    onClick={() => {
+                        const newDate = new Date(currentDate);
+                        newDate.setMonth(newDate.getMonth() + 1);
+                        setMonth(newDate);
+                    }}
                     className="flex items-center justify-center w-10 h-10 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 active:scale-95 transition-all text-xl font-medium border border-gray-200 dark:border-zinc-700 shadow-sm"
                 >
                     ›
