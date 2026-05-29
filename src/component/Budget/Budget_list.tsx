@@ -5,40 +5,73 @@ import { getProgressColor } from "../../utils/style";
 import { formatVND } from '../../utils/format'
 import { useState, useMemo } from 'react'
 
-import { useAuth } from '../../context/AuthContext'
-
 import { Plus } from 'lucide-react'
 
 import type { IBudget } from '../../types/IBudget'
 import BudgetForm from "./Budget_form";
 import type { TColor } from "../../types/ICategories";
 import { colors } from "../../constants/color";
+
+type selectModeShowBudget = 'all' | 'current_month' | 'overspent' | 'year'
 export default function BudgetPage() {
-    const { user } = useAuth();
+    const [modeShow, setModeShow] = useState<selectModeShowBudget>('current_month')
+    // const [currentMonth, setCurrentMonth] = useState(new Date())
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+
+    // console.log('Selected month:', selectedMonth, 'Selected year:', selectedYear);
     const { budgets } = useBudgetStore();
     const { transactions } = useTransactionStore();
-    const [currentMonth, setCurrentMonth] = useState(new Date())
     const [selectedBudget, setSelectedBudget] = useState<IBudget | null>(null);
     const [isOpenCreate, setIsOpenCreate] = useState(false);
     const [isOpenUpdate, setIsOpenUpdate] = useState(false);
-    const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
-    const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
+    // const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
+    // const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
     // console.log('Current month:', budgets);
 
     // console.log(monthStart, monthEnd);
     // hàm lọc ngân sách có thời gian bắt đầu hoặc kết thúc trong tháng hiện tại, nhằm hiển thị và tính toán cho tháng đó.
-    const filteredBudgets = budgets.filter(budget => {
+    
+    const getTimeRangeBudgets = () => {
+        if (modeShow === 'current_month') {
+            return {
+                start: new Date(selectedYear, selectedMonth, 1),
+                end: new Date(selectedYear, selectedMonth + 1, 0)
+            }
+        }
+        if (modeShow === 'year') {
+            return {
+                start: new Date(selectedYear, 0, 1),
+                end: new Date(selectedYear, 11, 31, 23, 59, 59)
+            }
+        }
+        return {
+            start: null,
+            end: null
+        }
+    }
+    const { start, end } = getTimeRangeBudgets()
+    console.log('Time range for budgets:', start, end);
+    const budgetInRange = budgets.filter(budget => {
+        if (!start || !end) {
+            return true; // Nếu không có khoảng thời gian cụ thể, giữ lại tất cả ngân sách/ truờng hợp này sẽ xảy ra khi modeShow là 'all' hoặc 'overspent'
+        }
         const budgetStart = new Date(budget.start_date);
         const budgetEnd = new Date(budget.end_date);
-        return (budgetStart <= monthEnd && budgetEnd >= monthStart);
+        return (budgetStart <= end && budgetEnd >= start);
     })
-
-    console.log('Filtered budgets:', filteredBudgets);
+    console.log('Mode show:', modeShow);
+    console.log('Start date:', start);
+    console.log('End date:', end);
+    console.log('Filtered budgets:', budgetInRange);
     console.log('All budgets:', budgets);
 
-    const transactionsInMonth = transactions.filter(transaction => {
+    const transactionInRange = transactions.filter(transaction => {
+        if (!start || !end) {
+            return true; // Nếu không có khoảng thời gian cụ thể, giữ lại tất cả ngân sách/ truờng hợp này sẽ xảy ra khi modeShow là 'all' hoặc 'overspent'
+        }
         const transactionDate = new Date(transaction.transaction_date);
-        return transactionDate >= monthStart && transactionDate <= monthEnd;
+        return transactionDate >= start && transactionDate <= end;
         // return true
     })
 
@@ -47,7 +80,7 @@ export default function BudgetPage() {
 
 
 
-    transactionsInMonth.forEach((transaction) => {
+    transactionInRange.forEach((transaction) => {
         const current = expenseByCategory.get(transaction.category_id) || 0;
         expenseByCategory.set(
             transaction.category_id,
@@ -57,8 +90,7 @@ export default function BudgetPage() {
     // console.log(expenseByCategory);
     // budget.budget_categories là 1 mảng, 
 
-    const budgetsWithSpent = filteredBudgets.map((budget) => {
-
+    const budgetsWithSpent = budgetInRange.map((budget) => {
         const budgetCategories = budget.budget_categories || []
         const spentAmount = budgetCategories.reduce(
             (sum, budgetCat) => {
@@ -97,7 +129,25 @@ export default function BudgetPage() {
             )}
 
             <div className="max-w-6xl mx-auto">
-                <div className="flex items-center justify-end w-full my-2">
+                <div className="flex items-center justify-between w-full my-2">
+                    <div>
+                        <select
+                            value={modeShow}
+                            onChange={(e) =>
+                                setModeShow(e.target.value as selectModeShowBudget)
+                            }
+                        >
+                            <option value="current_month">Tháng này</option>
+
+                            <option value="year">Theo năm</option>
+
+                            {/* <option value="custom">Tùy chỉnh</option> */}
+
+                            <option value="all">Tất cả</option>
+
+                            <option value="over">Vượt mức</option>
+                        </select>
+                    </div>
                     <div className="flex bg-theme /90 text-white px-2 py-1 rounded-2xl hover:opacity-90 transition text-nowrap">
                         <Plus>
                         </Plus>
@@ -106,6 +156,7 @@ export default function BudgetPage() {
                             Thêm mới
                         </button>
                     </div>
+
                 </div>
                 {(budgetsWithSpent.length === 0) ? (
                     <div className="text-center text-gray-500 py-20">
