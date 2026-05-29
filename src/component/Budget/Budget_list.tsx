@@ -24,36 +24,46 @@ export default function BudgetPage() {
     const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
     const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
     // console.log('Current month:', budgets);
+
+    // console.log(monthStart, monthEnd);
+    // hàm lọc ngân sách có thời gian bắt đầu hoặc kết thúc trong tháng hiện tại, nhằm hiển thị và tính toán cho tháng đó.
     const filteredBudgets = budgets.filter(budget => {
         const budgetStart = new Date(budget.start_date);
         const budgetEnd = new Date(budget.end_date);
         return (budgetStart <= monthEnd && budgetEnd >= monthStart);
     })
+
+    console.log('Filtered budgets:', filteredBudgets);
+    console.log('All budgets:', budgets);
+
     const transactionsInMonth = transactions.filter(transaction => {
         const transactionDate = new Date(transaction.transaction_date);
         return transactionDate >= monthStart && transactionDate <= monthEnd;
+        // return true
     })
+
+    // Tạo map rỗng để lưu tổng chi tiêu (number) theo từng category_id (string)
     const expenseByCategory = new Map<string, number>();
 
-    transactionsInMonth.forEach((transaction) => {
-        const current =
-            expenseByCategory.get(transaction.category_id) || 0;
 
+
+    transactionsInMonth.forEach((transaction) => {
+        const current = expenseByCategory.get(transaction.category_id) || 0;
         expenseByCategory.set(
             transaction.category_id,
             current + transaction.amount
         );
     });
+    // console.log(expenseByCategory);
+    // budget.budget_categories là 1 mảng, 
+
     const budgetsWithSpent = filteredBudgets.map((budget) => {
+
         const budgetCategories = budget.budget_categories || []
         const spentAmount = budgetCategories.reduce(
             (sum, budgetCat) => {
-
                 return (
-                    sum +
-                    (expenseByCategory.get(
-                        budgetCat.categories.id
-                    ) || 0)
+                    sum + (expenseByCategory.get(budgetCat.categories.id) || 0)
                 );
             },
             0
@@ -86,12 +96,11 @@ export default function BudgetPage() {
                 </div>
             )}
 
-            <div className="max-w-6xl mx-auto d">
-                <div className="flex items-center justify-end w-full">
+            <div className="max-w-6xl mx-auto">
+                <div className="flex items-center justify-end w-full my-2">
                     <div className="flex bg-theme /90 text-white px-2 py-1 rounded-2xl hover:opacity-90 transition text-nowrap">
                         <Plus>
                         </Plus>
-
                         <button
                             onClick={() => setIsOpenCreate(true)}>
                             Thêm mới
@@ -129,7 +138,7 @@ export default function BudgetPage() {
                                     </div>
 
                                     <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                                        <div
+                                        <div title={`${budget.percent.toFixed(2)}%`}
                                             className={`h-full rounded-full ${getProgressColor(budget.percent)}`}
                                             style={{ width: `${budget.percent}%` }}
                                         />
@@ -144,7 +153,7 @@ export default function BudgetPage() {
                                             >
                                                 {bc.categories.name}
                                             </div>
-                                        ))}_
+                                        ))}
                                     </div>
                                 </div>
                             </div>

@@ -30,7 +30,7 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
     // use use form, register....
     // console.log("Default value in form:", defaultValue);
     const { user } = useAuth();
-    const { addBudget, updateBudget, deleteBudget } = useBudgetStore();
+    const { addBudget, updateBudget, deleteBudget, fetchBudgets } = useBudgetStore();
     const { control, register, handleSubmit, setValue, formState: { errors }, watch } = useForm<BudgetFormValues>({
         resolver: zodResolver(budgetSchema),
         defaultValues: {
@@ -107,6 +107,7 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
             if (mode === 'create') {
                 await addBudget(data, user?.id);
                 toast.success("Ngân sách đã được tạo thành công!");
+                await fetchBudgets(user?.id);
                 onClose();
             }
             if (mode === 'update' && defaultValue) {
@@ -123,6 +124,7 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                 else {
                     await updateBudget(defaultValue.id, data, user!.id);
                     toast.success("Ngân sách đã được cập nhật thành công!");
+                    await fetchBudgets(user?.id);
                     onClose();
                 }
 
@@ -433,7 +435,9 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                         </button>
                         {mode === "update" && defaultValue && (
                             <button className="px-5 py-2 rounded-2xl bg-red-600 text-white hover:opacity-90 transition"
-                                onClick={() => {
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
                                     if (window.confirm("Bạn có chắc chắn muốn xóa ngân sách này?")) {
                                         handleDelete()
                                     }

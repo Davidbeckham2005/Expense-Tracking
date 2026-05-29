@@ -82,3 +82,15 @@ export async function deleteBudget(budgetId: string, user_id: string) {
         .eq('user_id', user_id)
     if (error) throw error;
 }
+
+export async function deactivateBudget(user_id?: string) {
+    const today = new Date().toISOString();
+
+    const { error } = await supabase
+        .from('budgets')
+        .update({ is_active: false })
+        .eq('is_active', true)
+        .eq('user_id', user_id)
+        .lt('end_date', today)
+    if (error) throw error;
+}

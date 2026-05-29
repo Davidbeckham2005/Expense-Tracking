@@ -17,15 +17,16 @@ import { useBudgetStore } from '../store/useBudgetStore';
 export default function DashBroad() {
     const { fetchCategories, isLoading } = useCategoryStore();
     const { fetchTransactions, isLoading: isTransactionsLoading } = useTransactionStore();
-    const { fetchBudgets, isLoading: isBudgetsLoading } = useBudgetStore();
+    const { fetchBudgets, isLoading: isBudgetsLoading, deactivateBudget, isLoading: isDeactivateLoading } = useBudgetStore();
     const { user } = useAuth();
     const [tab, setTab] = useState<TabType>('budget');
     useEffect(() => {
+        deactivateBudget(user?.id);
         fetchCategories(user?.id);
         fetchTransactions(user?.id);
         fetchBudgets(user?.id);
     }, []);
-    if (isLoading || isTransactionsLoading || isBudgetsLoading) {
+    if (isLoading || isTransactionsLoading || isBudgetsLoading || isDeactivateLoading) {
         return <Loading></Loading>;
     }
 

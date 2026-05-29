@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getBudgets, createBudget, updateBudget, deleteBudget } from '../services/budgets';
+import { getBudgets, createBudget, updateBudget, deleteBudget, deactivateBudget } from '../services/budgets';
 import type { IBudget, ICreateBudget, IUpdateBudget } from '../types/IBudget';
 interface BudgetState {
     budgets: IBudget[]
@@ -7,7 +7,8 @@ interface BudgetState {
     isLoading: boolean
     addBudget: (budget: ICreateBudget, userId?: string) => Promise<void>
     updateBudget: (budgetId: string, updates: IUpdateBudget, userId: string) => Promise<void>
-    deleteBudget: (budgetId: string, userId: string) => Promise<void>
+    deleteBudget: (budgetId: string, userId: string) => Promise<void>,
+    deactivateBudget: (userId?: string) => Promise<void>
 }
 
 export const useBudgetStore = create<BudgetState>((set) => ({
@@ -82,5 +83,24 @@ export const useBudgetStore = create<BudgetState>((set) => ({
         finally {
             set({ isLoading: false });
         }
+    },
+    deactivateBudget: async (userId?: string) => {
+        try {
+            set({ isLoading: true });
+            await deactivateBudget(userId);
+            set((state) => ({
+                budgets: state.budgets.map((budget) =>
+                    budget.user_id === userId
+                        ? { ...budget, is_active: false }
+                        : budget
+                ),
+            }));
+        } catch (error) {
+            console.error('Failed to deactivate budgets:', error);
+        }
+        finally {
+            set({ isLoading: false });
+        }
     }
+
 }));
