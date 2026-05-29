@@ -1,7 +1,7 @@
 import { supabase } from "../lib/supabase";
 import type { ICreateBudget, IUpdateBudget } from "../types/IBudget";
 
-export async function createBudget(payload: ICreateBudget, user_id: string) {
+export async function createBudget(payload: ICreateBudget, user_id?: string) {
     const { categories_ids, ...budgetData } = payload;
     const { data: budget, error } = await supabase
         .from('budgets')
@@ -15,7 +15,7 @@ export async function createBudget(payload: ICreateBudget, user_id: string) {
     if (categories_ids.length > 0) {
         const relations = categories_ids.map((category_id) => ({
             budget_id: budget.id,
-            category_id
+            categories_id: category_id
         }))
         const { error: relationError } = await supabase
             .from('budget_categories')
@@ -36,7 +36,7 @@ export async function getBudgets(user_id?: string) {
         )
 `)
         .eq('user_id', user_id)
-        .eq('is_active', true)
+        .eq('is_deleted', false)
         .order('created_at', { ascending: false });
     if (error) throw error;
     return data;
@@ -47,7 +47,7 @@ export async function updateBudget(budgetId: string, payload: IUpdateBudget, use
         .from('budgets')
         .update({ ...budgetData, updated_at: new Date().toISOString() })
         .eq('id', budgetId)
-        .eq('is_active', true)
+        .eq('is_deleted', false)
         .eq('user_id', user_id)
     if (error) throw error;
 
@@ -61,7 +61,7 @@ export async function updateBudget(budgetId: string, payload: IUpdateBudget, use
         const relations = categories_ids.map((category_id) => (
             {
                 budget_id: budgetId,
-                category_id
+                categories_id: category_id
             }
         ))
         const { error: insertRelationError } = await supabase
@@ -77,7 +77,7 @@ export async function updateBudget(budgetId: string, payload: IUpdateBudget, use
 export async function deleteBudget(budgetId: string, user_id: string) {
     const { error } = await supabase
         .from('budgets')
-        .update({ is_active: false })
+        .update({ is_deleted: true })
         .eq('id', budgetId)
         .eq('user_id', user_id)
     if (error) throw error;

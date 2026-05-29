@@ -5,7 +5,7 @@ interface BudgetState {
     budgets: IBudget[]
     fetchBudgets: (userId?: string) => Promise<void>
     isLoading: boolean
-    addBudget: (budget: ICreateBudget, userId: string) => Promise<void>
+    addBudget: (budget: ICreateBudget, userId?: string) => Promise<void>
     updateBudget: (budgetId: string, updates: IUpdateBudget, userId: string) => Promise<void>
     deleteBudget: (budgetId: string, userId: string) => Promise<void>
 }
@@ -26,7 +26,7 @@ export const useBudgetStore = create<BudgetState>((set) => ({
             set({ isLoading: false });
         }
     },
-    addBudget: async (budget: ICreateBudget, userId: string) => {
+    addBudget: async (budget: ICreateBudget, userId?: string) => {
         try {
             set({ isLoading: true });
             const newBudget = await createBudget(budget, userId);

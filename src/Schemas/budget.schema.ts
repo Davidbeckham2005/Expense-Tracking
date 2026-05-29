@@ -9,7 +9,7 @@ export const budgetSchema = z.object({
         .min(1, 'Số tiền phải lớn hơn 0')
         .positive(),
     period: z.enum(['weekly', 'monthly', 'yearly', 'daily']),
-    categories: z.array(z.string())
+    categories_ids: z.array(z.string())
         .min(1, 'Chọn ít nhất 1 category'),
     description: z
         .string()
