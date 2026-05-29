@@ -127,9 +127,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
         setValue('amount', newAmount, { shouldValidate: true, });
     };
     const onSubmit = async (data: ITransactionFormData) => {
-        const active = document.activeElement as HTMLElement;
-        active?.blur(); // QUAN TRỌNG
-        setShowKeyboard(false);
+ 
         try {
             setIsLoading(true);
             if (mode === 'create') {

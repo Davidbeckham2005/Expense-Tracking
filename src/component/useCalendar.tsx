@@ -2,20 +2,20 @@ import type { GroupedTransactions } from "../types/Transactions"
 import { format } from "date-fns";
 import { buildCalendarDays } from "../utils/calandar";
 import CalendarCell from "./CalendarCell";
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
 import { useTransactionStore } from '../store/useTransactionStore'
 import MonthControl from './MonthControl'
 
 interface CalandarProps {
     setMonth: (date: Date) => void,
     currentDay: string | null,
-    setCurrentDay: (date: string | null) => void
+    setCurrentDay: (date: string | null) => void,
+    currentDate: Date
 }
 
-export default function Calandar({ setMonth, currentDay, setCurrentDay }: CalandarProps) {
+export default function Calandar({ setMonth, currentDay, setCurrentDay, currentDate }: CalandarProps) {
     const { transactions } = useTransactionStore();
 
-    const [currentDate] = useState(new Date());
     const monthKey = format(currentDate, "yyyy-MM");
 
     const days = buildCalendarDays(currentDate);

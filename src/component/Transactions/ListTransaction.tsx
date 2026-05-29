@@ -24,8 +24,8 @@ export default function ListTransaction() {
 
     const [selectedDay, setSelectedDay] = useState<string | null>(null);
     const [currentType, setCurrentType] = useState<TTransactionType | null>(null);
-    const [currentMonth, setcurrentMonth] = useState(new Date());
-    const selectedMonth = format(currentMonth, "yyyy-MM");
+    const [currentDate, setcurrentDate] = useState(new Date());
+    const selectedMonth = format(currentDate, "yyyy-MM");
 
     const [selectedTransactionIds, setSelectedTransactionIds] = useState<string[]>([]);
     const [isSetting, setIsSetting] = useState(false);
@@ -118,7 +118,7 @@ export default function ListTransaction() {
     }
     return (
         <div className="min-h-screen">
-            <Calandar setMonth={setcurrentMonth} currentDay={selectedDay} setCurrentDay={setSelectedDay} />
+            <Calandar setMonth={setcurrentDate} currentDay={selectedDay} setCurrentDay={setSelectedDay} currentDate={currentDate} />
             {openUpdate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/40" onClick={() => setopenUpdate(false)} />
@@ -198,8 +198,8 @@ export default function ListTransaction() {
 
                         <input
                             type="month"
-                            value={format(currentMonth, "yyyy-MM")}
-                            onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentMonth(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
+                            value={format(currentDate, "yyyy-MM")}
+                            onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentDate(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
                             className="border rounded-lg px-3 py-1 text-sm outline-none"
                         />
                     </div>
@@ -277,9 +277,8 @@ export default function ListTransaction() {
                                     const category = categoryMap[transaction.category_id];
                                     const Icon = icons[category?.icon as IconName];
                                     return (
-                                        <div className="flex ">
+                                        <div className="flex" key={transaction.id}>
                                             {isSetting && (<input
-
                                                 type="checkbox"
                                                 className="mr-2"
                                                 checked={selectedTransactionIds.includes(transaction.id)}

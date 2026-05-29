@@ -25,7 +25,7 @@ export const useCategoryStore = create<CategoryState>((set) => ({
             set({ categories: categories || [] });
             set({ expense_categories: categories?.filter((cat) => cat.type === 'expense') || [] });
             set({ income_categories: categories?.filter((cat) => cat.type === 'income') || [] });
-            console.log('Fetched categories:', categories);
+            // console.log('Fetched categories:', categories);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
 

@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import type { ICreateBudget, IBudget, IUpdateBudget } from "../types/IBudget";
+import type { ICreateBudget, IUpdateBudget } from "../types/IBudget";
 
 export async function createBudget(payload: ICreateBudget, user_id: string) {
     const { categories_ids, ...budgetData } = payload;
@@ -25,13 +25,13 @@ export async function createBudget(payload: ICreateBudget, user_id: string) {
     return budget;
 }
 
-export async function getBudgets(user_id: string) {
+export async function getBudgets(user_id?: string) {
     const { data, error } = await supabase
         .from('budgets')
         .select(`
         *,
         budget_categories (
-            category_id,
+            categories_id,
             categories (*)
         )
 `)
@@ -43,7 +43,7 @@ export async function getBudgets(user_id: string) {
 }
 export async function updateBudget(budgetId: string, payload: IUpdateBudget, user_id: string) {
     const { categories_ids, ...budgetData } = payload;
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from('budgets')
         .update({ ...budgetData, updated_at: new Date().toISOString() })
         .eq('id', budgetId)
@@ -71,6 +71,7 @@ export async function updateBudget(budgetId: string, payload: IUpdateBudget, use
         if (insertRelationError) throw insertRelationError;
 
     }
+    return data;
 }
 
 export async function deleteBudget(budgetId: string, user_id: string) {

@@ -1,4 +1,4 @@
-import { PlusCircle, Calendar, BarChart3, MoreHorizontal, LogOut } from 'lucide-react';
+import { PlusCircle, Calendar, BarChart3, MoreHorizontal, LogOut, Wallet } from 'lucide-react';
 import type { TabType } from '../types/tab';
 import { useAuth } from "../context/AuthContext";
 import { toast } from 'react-hot-toast';
@@ -13,6 +13,7 @@ const tabs: ITabs[] = [
     { id: 'nhap-vao', name: 'Nhập vào', icon: PlusCircle },
     { id: 'lich', name: 'Lịch', icon: Calendar },
     { id: 'bao-cao', name: 'Báo cáo', icon: BarChart3 },
+    { id: 'budget', name: 'Ngân sách', icon: Wallet },
     { id: 'khac', name: 'Khác', icon: MoreHorizontal },
     { id: 'category', name: 'Danh mục', icon: MoreHorizontal },
 ];

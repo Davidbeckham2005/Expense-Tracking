@@ -10,16 +10,22 @@ import Loading from '../component/Loading';
 import { useTransactionStore } from '../store/useTransactionStore';
 import ListTransaction from '../component/Transactions/ListTransaction';
 import ReportTransaction from '../component/Report/Report_form';
+import BudgetPage from '../component/Budget/Budget_list';
+import { useBudgetStore } from '../store/useBudgetStore';
+
+
 export default function DashBroad() {
     const { fetchCategories, isLoading } = useCategoryStore();
     const { fetchTransactions, isLoading: isTransactionsLoading } = useTransactionStore();
+    const { fetchBudgets, isLoading: isBudgetsLoading } = useBudgetStore();
     const { user } = useAuth();
-    const [tab, setTab] = useState<TabType>('category');
+    const [tab, setTab] = useState<TabType>('budget');
     useEffect(() => {
         fetchCategories(user?.id);
         fetchTransactions(user?.id);
+        fetchBudgets(user?.id);
     }, []);
-    if (isLoading || isTransactionsLoading) {
+    if (isLoading || isTransactionsLoading || isBudgetsLoading) {
         return <Loading></Loading>;
     }
 
@@ -38,6 +44,7 @@ export default function DashBroad() {
                     {tab === 'khac' && <Setting></Setting>}
                     {tab === 'bao-cao' && <ReportTransaction></ReportTransaction>}
                     {tab === 'nhap-vao' && <ExpenseManager></ExpenseManager>}
+                    {tab === 'budget' && <BudgetPage></BudgetPage>}
                 </main>
             </div>
         </div>
