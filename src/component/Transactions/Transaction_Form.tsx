@@ -20,6 +20,7 @@ import { colors } from '../../constants/color';
 
 import Loading from '../../component/Loading';
 
+import VoiceTransaction from '../DetectTransaction/voice';
 interface TransactionFormProps {
     mode?: 'create' | 'update';
     transaction?: IDBTransaction | null;
@@ -194,9 +195,9 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                 </button>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} className="mx-auto space-y-2 border border-gray-200 rounded-xl p-4 shadow-sm">
                 {/* DATE */}
-                <div className="p-2 border border-zinc-800">
+                <div className="p-2 border border-zinc-800 rounded-lg">
                     <span className="text-[10px] uppercase font-bold">
                         Ngày
                     </span>
@@ -214,7 +215,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                 </div>
 
                 {/* AMOUNT */}
-                <div className="p-2 border border-zinc-800" onClick={(e) => { e.stopPropagation(); setIsOpenKeyboard(true) }}>
+                <div className="p-2 border border-zinc-800 rounded-lg" onClick={(e) => { e.stopPropagation(); setIsOpenKeyboard(true) }}>
                     <span className="text-[10px] uppercase font-bold">
                         Số tiền
                     </span>
@@ -242,7 +243,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                 {/* KEYBOARD */}
                 {isOpenKeyboard && (
                     <div onMouseLeave={(e) => { e.preventDefault(); }}
-                        className="p-2 space-y-2 border border-zinc-800 transition duration-300">
+                        className="p-2 space-y-2 border border-zinc-800 transition duration-300 rounded-lg">
                         <div className="grid grid-cols-3 gap-2">
                             <div className="col-span-3 grid grid-cols-3 gap-2">
                                 <button
@@ -292,7 +293,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                 }
 
                 {/* NOTE */}
-                <div className="p-2 border border-zinc-800">
+                <div className="p-2 border border-zinc-800 rounded-lg">
                     <span className="text-[10px] uppercase font-bold">Ghi chú</span>
                     <input
                         type="text"
@@ -301,7 +302,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                         className="w-full outline-none" />
                 </div>
                 {/* CATEGORY */}
-                <div className="p-2 border border-zinc-800 max-h-45 overflow-y-auto no-scrollbar">
+                <div className="p-2 border border-zinc-800 max-h-45 overflow-y-auto no-scrollbar rounded-lg">
                     {errors.category_id && (<p className="text-red-400 text-xs mt-2">
                         {errors.category_id.message}
                     </p>
@@ -362,7 +363,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                     </button>)}
                 </div>
             </form >
-
+            <VoiceTransaction></VoiceTransaction>
         </div >
     );
 }
