@@ -26,7 +26,6 @@ interface TransactionFormProps {
     onClose?: () => void;
     id?: string | null,
 }
-// l
 
 export default function TransactionForm({ mode = 'create', transaction, onClose, id }: TransactionFormProps) {
     const { user } = useAuth();
@@ -66,22 +65,23 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
             setIsLoading(false)
         }
     }
-    useEffect(() => {
-        function handleClickOutside(event: PointerEvent) {
-            if (
-                keyboardRef.current &&
-                !keyboardRef.current.contains(event.target as Node)
-            ) {
-                setShowKeyboard(false);
-            }
-        }
+    // useEffect(() => {
+    //     function handleClickOutside(event: PointerEvent) {
+    //         if (
+    //             keyboardRef.current &&
+    //             !keyboardRef.current.contains(event.target as Node)
+    //         ) {
+    //             setShowKeyboard(false);
+    //         }
+    //     }
 
-        document.addEventListener("pointerdown", handleClickOutside);
+    //     document.addEventListener("click", handleClickOutside);
 
-        return () => {
-            document.removeEventListener("pointerdown", handleClickOutside);
-        };
-    }, []);
+    //     return () => {
+    //         document.removeEventListener("click", handleClickOutside);
+    //     };
+    // }, []);
+    const [isOpenKeyboard, setIsOpenKeyboard] = useState(false);
 
     const formatDisplay = (value: number | null): string => {
         if (value === null || isNaN(value)) return '0';
@@ -127,7 +127,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
         setValue('amount', newAmount, { shouldValidate: true, });
     };
     const onSubmit = async (data: ITransactionFormData) => {
- 
+
         try {
             setIsLoading(true);
             if (mode === 'create') {
@@ -210,7 +210,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                 </div>
 
                 {/* AMOUNT */}
-                <div className="p-2 border border-zinc-800">
+                <div className="p-2 border border-zinc-800" onClick={(e) => { e.stopPropagation(); setIsOpenKeyboard(true) }}>
                     <span className="text-[10px] uppercase font-bold">
                         Số tiền
                     </span>
@@ -223,11 +223,6 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                                 type="text"
                                 inputMode="none"
                                 value={formatDisplay(value)}
-                                onFocus={() => {
-                                    requestAnimationFrame(() => {
-                                        setShowKeyboard(true);
-                                    });
-                                }}
                                 onChange={(e) => {
                                     const rawValue = e.target.value.replace(/\D/g, '');
                                     onChange(rawValue ? parseInt(rawValue) : 0
@@ -241,10 +236,9 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                     )}
                 </div>
                 {/* KEYBOARD */}
-                {showKeyboard && (
-                    <div ref={keyboardRef}
-                        className="p-2 space-y-2 border border-zinc-800"
-                        onPointerDown={(e) => e.stopPropagation()}>
+                {isOpenKeyboard && (
+                    <div onMouseLeave={(e) => { e.preventDefault(); }}
+                        className="p-2 space-y-2 border border-zinc-800 transition duration-300">
                         <div className="grid grid-cols-3 gap-2">
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9,
                             ].map((num) => (
@@ -273,7 +267,8 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                                 onClick={() => handleKeyPress('BACKSPACE')}>⌫
                             </button>
                         </div>
-                    </div>)}
+                    </div>)
+                }
 
                 {/* NOTE */}
                 <div className="p-2 border border-zinc-800">
