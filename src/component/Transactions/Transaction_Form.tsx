@@ -90,6 +90,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
 
     const handleKeyPress = (key: string) => {
         const currentAmount = getValues('amount') ?? 0;
+        if (currentAmount > 999999999999) return;
 
         if (key === 'CLEAR') {
             setValue('amount', 0, { shouldValidate: true });
@@ -97,14 +98,15 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
         }
 
         if (key === 'BACKSPACE') {
-            const strAmount = currentAmount.toString();
+            const baseValue = Math.floor(currentAmount / 1000);
+            const strAmount = baseValue.toString();
 
             if (strAmount.length <= 1) {
                 setValue('amount', 0, { shouldValidate: true });
             } else {
                 setValue(
                     'amount',
-                    Number(strAmount.slice(0, -1)),
+                    Number(strAmount.slice(0, -1)) * 1000,
                     {
                         shouldValidate: true,
                     });
@@ -123,7 +125,9 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
             setValue('amount', Number(`${currentAmount}000`), { shouldValidate: true, });
             return;
         }
-        const newAmount = Number(`${currentAmount}${key}`);
+        const baseValue = Math.floor(currentAmount / 1000);
+
+        const newAmount = Number(`${baseValue}${key}`) * 1000;
         setValue('amount', newAmount, { shouldValidate: true, });
     };
     const onSubmit = async (data: ITransactionFormData) => {
@@ -240,6 +244,23 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                     <div onMouseLeave={(e) => { e.preventDefault(); }}
                         className="p-2 space-y-2 border border-zinc-800 transition duration-300">
                         <div className="grid grid-cols-3 gap-2">
+                            <div className="col-span-3 grid grid-cols-3 gap-2">
+                                <button
+                                    className="border border-zinc-800 py-3 rounded-lg bg-theme/20"
+                                    type="button"
+                                    onClick={() => handleKeyPress('+100k')}>+100k
+                                </button>
+                                <button
+                                    className="border border-zinc-800 py-3 rounded-lg bg-theme/20"
+                                    type="button"
+                                    onClick={() => handleKeyPress('+500k')}>+500k
+                                </button>
+                                <button
+                                    className="border border-zinc-800 py-3 rounded-lg bg-theme/20"
+                                    type="button"
+                                    onClick={() => handleKeyPress('+1M')}>+1M
+                                </button>
+                            </div>
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9,
                             ].map((num) => (
                                 <button
