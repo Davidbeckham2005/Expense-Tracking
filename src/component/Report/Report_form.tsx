@@ -135,7 +135,7 @@ export default function ReportTransaction() {
                 </div>
 
             </div>
-            <div className="w-full h-[400px] bg-white rounded-2xl shadow-md border my-2 p-4">
+            <div className="w-full h-100 bg-white rounded-2xl shadow-md border my-2 p-4">
                 <div className="flex h-full w-full">
                     <div className="hidden md:block"><ChartSwitcher chartType={currentChart} setChartType={setCurrentChart}></ChartSwitcher></div>
                     <div className="flex-1 md:ml-4 md:p-2">

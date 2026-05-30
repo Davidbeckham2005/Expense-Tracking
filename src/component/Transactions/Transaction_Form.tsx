@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
@@ -20,7 +20,6 @@ import { colors } from '../../constants/color';
 
 import Loading from '../../component/Loading';
 
-import VoiceTransaction from '../DetectTransaction/voice';
 interface TransactionFormProps {
     mode?: 'create' | 'update';
     transaction?: IDBTransaction | null;
@@ -52,9 +51,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
     const filteredCategories = categories.filter(
         (cat) => cat.type === currentType
     );
-    const [showKeyboard, setShowKeyboard] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const keyboardRef = useRef<HTMLDivElement>(null);
     const HandleDelete = async () => {
         try {
             setIsLoading(true);
@@ -363,7 +360,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                     </button>)}
                 </div>
             </form >
-            <VoiceTransaction></VoiceTransaction>
+            {/* <VoiceTransaction></VoiceTransaction> */}
         </div >
     );
 }
