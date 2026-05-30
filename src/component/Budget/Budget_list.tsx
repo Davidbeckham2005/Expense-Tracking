@@ -1,9 +1,9 @@
 import { useBudgetStore } from "../../store/useBudgetStore";
 import { useTransactionStore } from "../../store/useTransactionStore";
 
-import { getProgressColor } from "../../utils/style";
+import { getProgressColor, getColor } from "../../utils/style";
 import { formatVND } from '../../utils/format'
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 
 import { Plus } from 'lucide-react'
 
@@ -12,9 +12,11 @@ import BudgetForm from "./Budget_form";
 import type { TColor } from "../../types/ICategories";
 import { colors } from "../../constants/color";
 
-type selectModeShowBudget = 'all' | 'current_month' | 'overspent' | 'year'
+type statusBudget = 'onLimited' | 'overLimit' | 'allLimited'
+type selectModeShowBudget = 'all' | 'current_month' | 'year'
 export default function BudgetPage() {
     const [modeShow, setModeShow] = useState<selectModeShowBudget>('current_month')
+    const [statusBudget, setStatusBudget] = useState<statusBudget>('onLimited')
     // const [currentMonth, setCurrentMonth] = useState(new Date())
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
@@ -25,12 +27,7 @@ export default function BudgetPage() {
     const [selectedBudget, setSelectedBudget] = useState<IBudget | null>(null);
     const [isOpenCreate, setIsOpenCreate] = useState(false);
     const [isOpenUpdate, setIsOpenUpdate] = useState(false);
-    // const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
-    // const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
-    // console.log('Current month:', budgets);
 
-    // console.log(monthStart, monthEnd);
-    // hàm lọc ngân sách có thời gian bắt đầu hoặc kết thúc trong tháng hiện tại, nhằm hiển thị và tính toán cho tháng đó.
     const monthName =
         new Date(
             selectedYear,
@@ -57,44 +54,6 @@ export default function BudgetPage() {
         }
     }
 
-    // const transactionInRange = transactions.filter(transaction => {
-    //     if (!start || !end) {
-    //         return true;
-    //     }
-    //     const transactionDate = new Date(transaction.transaction_date);
-    //     return transactionDate >= start && transactionDate <= end;
-    // return true
-    // })
-
-    // Tạo map rỗng để lưu tổng chi tiêu (number) theo từng category_id (string)
-    // const expenseByCategory = new Map<string, number>();
-    // transactionInRange.forEach((transaction) => {
-    //     const current = expenseByCategory.get(transaction.category_id) || 0;
-    //     expenseByCategory.set(
-    //         transaction.category_id,
-    //         current + transaction.amount
-    //     );
-    // });
-    // console.log(expenseByCategory);
-    // budget.budget_categories là 1 mảng, 
-
-    // const budgetsWithSpent = budgetInRange.map((budget) => {
-    //     const budgetCategories = budget.budget_categories || []
-    //     const spentAmount = budgetCategories.reduce(
-    //         (sum, budgetCat) => {
-    //             return (
-    //                 sum + (expenseByCategory.get(budgetCat.categories.id) || 0)
-    //             );
-    //         },
-    //         0
-    //     );
-    //     const percent = (spentAmount / budget.limit_amount) * 100;
-    //     return {
-    //         ...budget,
-    //         spentAmount,
-    //         percent
-    //     };
-    // });
     const budgetsMatchSpent = budgets.map((budget) => {
         const budget_start = new Date(budget.start_date);
         const budget_end = new Date(budget.end_date);
@@ -114,18 +73,49 @@ export default function BudgetPage() {
         return {
             ...budget,
             spentAmount,
-            percent: (spentAmount / budget.limit_amount) * 100
+            percent: (spentAmount / budget.limit_amount) * 100,
+            remainingAmount: budget.limit_amount - spentAmount
         }
     });
+
+    const statusFilterBudget = {
+        onLimited: (budget: typeof budgetsMatchSpent[0]) => budget.percent <= 100,
+        overLimit: (budget: typeof budgetsMatchSpent[0]) => budget.percent > 100,
+        allLimited: (budget: typeof budgetsMatchSpent[0]) => true
+    }
+    const DateFilterBudget = {
+        current_month_year: (budget: typeof budgetsMatchSpent[0]) => {
+            const { start, end } = getTimeRangeBudgets();
+            const budget_start = new Date(budget.start_date);
+            const budget_end = new Date(budget.end_date);
+            return budget_start <= end && budget_end >= start;
+        },
+        all: (budget: typeof budgetsMatchSpent[0]) => true
+    }
     const filteredBudgets = budgetsMatchSpent.filter(budget => {
-        const { start, end } = getTimeRangeBudgets();
-        const budget_start = new Date(budget.start_date);
-        const budget_end = new Date(budget.end_date);
-        const isInRange = budget_start <= end && budget_end >= start;
-        return isInRange;
-    })
-    console.log('Filtered budgets:', filteredBudgets);
-    console.log('Budgets match spent:', budgetsMatchSpent);
+        const matchDate = () => {
+            switch (modeShow) {
+                case 'current_month':
+                case 'year':
+                    return DateFilterBudget.current_month_year(budget);
+                case 'all':
+                    return DateFilterBudget.all(budget);
+            }
+        }
+        const matchStatus = () => {
+            switch (statusBudget) {
+                case 'onLimited':
+                    return statusFilterBudget.onLimited(budget);
+                case 'overLimit':
+                    return statusFilterBudget.overLimit(budget)
+                case 'allLimited':
+                    return statusFilterBudget.allLimited(budget)
+            }
+        }
+        return matchDate() && matchStatus();
+    });
+    // console.log('Filtered budgets:', filteredBudgets);
+    // console.log('Budgets match spent:', budgetsMatchSpent);
     // console.log('Budgets with spent amount:', budgetsWithSpent);
     return (
         <div className="min-h-screen bg-gray-50 p-6">
@@ -147,35 +137,35 @@ export default function BudgetPage() {
             )}
 
             <div className="max-w-6xl mx-auto">
-                <div className="flex items-center justify-between w-full my-2">
-                    <div>
-                        <select
-                            value={modeShow}
-                            onChange={(e) =>
-                                setModeShow(e.target.value as selectModeShowBudget)
-                            }
-                        >
-                            <option value="current_month">Tháng này</option>
-
-                            <option value="year">Theo năm</option>
-
-                            {/* <option value="custom">Tùy chỉnh</option> */}
-
-                            <option value="all">Tất cả</option>
-
-                            <option value="over">Vượt mức</option>
-                        </select>
-                        <h2>
-                            {modeShow === 'current_month' &&
-                                `${monthName} ${selectedYear}`}
-                        </h2>
+                <div className="flex items-center justify-between w-full mb-2">
+                    <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-5">
+                            <select
+                                value={statusBudget}
+                                onChange={(e) => setStatusBudget(e.target.value as typeof statusBudget)}>
+                                <option value="onLimited">Khả dụng</option>
+                                <option value="overLimit">Vượt giới hạn</option>
+                                <option value="allLimited">Tất cả</option>
+                            </select>
+                        </div>
+                        <div className="flex items-center gap-5">
+                            <select
+                                value={modeShow}
+                                onChange={(e) => setModeShow(e.target.value as selectModeShowBudget)}>
+                                <option value="current_month">Tháng này</option>
+                                <option value="year">Theo năm</option>
+                                {/* <option value="custom">Tùy chỉnh</option> */}
+                                <option value="all">Tất cả</option>
+                            </select>
+                            <h2> {modeShow === 'current_month' && `${monthName} ${selectedYear}`}
+                            </h2>
+                        </div>
                     </div>
+
                     <div className="flex bg-theme /90 text-white px-2 py-1 rounded-2xl hover:opacity-90 transition text-nowrap">
                         <Plus>
                         </Plus>
-                        <button
-                            onClick={() => setIsOpenCreate(true)}>
-                            Thêm mới
+                        <button onClick={() => setIsOpenCreate(true)}> Thêm mới
                         </button>
                     </div>
 
@@ -196,7 +186,7 @@ export default function BudgetPage() {
                                     <div className="w-full">
                                         <div className="w-full flex justify-between items-center gap-2">
                                             <h2 className="text-xl font-semibold">
-                                                {budget.name} - {budget.is_active ? 'Hoạt động' : 'Không hoạt động'}
+                                                {budget.name}
                                             </h2>
                                             {budget.is_active && (
                                                 <div
@@ -205,26 +195,38 @@ export default function BudgetPage() {
                                                 />
                                             )}
                                         </div>
-                                        <p className="text-gray-500 mt-1 text-sm">
-                                            {budget.description || 'Không có mô tả'}
-                                        </p>
+                                        <div className="w-full flex justify-between items-center gap-2">
+                                            <p className="text-gray-500 mt-1 text-sm line-clamp-2 truncate">
+                                                {budget.description || 'Không có mô tả'}
+                                            </p>
+                                            <div className="flex gap-1 text-sm font-medium text-gray-600/70">
+                                                <span>Còn lại: </span>
+                                                <span className={` ${getColor(budget.percent)}`}>
+                                                    {formatVND(budget.remainingAmount)}đ
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="mt-5 space-y-3">
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-gray-500">Đã tiêu</span>
-                                        <span className="font-medium">{formatVND(budget.spentAmount)} / {formatVND(budget.limit_amount)}đ</span>
+                                <div className="mt-2 space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-full h-3 max-w-[90%] bg-gray-200 rounded-full ">
+                                            <div className="w-full flex gap-2 items-center h-full">
+                                                <div title={`${budget.percent.toFixed(2)}%`}
+                                                    className={`h-full rounded-full ${getProgressColor(budget.percent)}`}
+                                                    style={{ width: `${budget.percent}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <span className={`text-sm font-medium ${getColor(budget.percent)}`}>{budget.percent.toFixed(2)}%</span>
                                     </div>
+                                    <div className="flex items-center justify-between text-sm text-gray-600/70">
+                                        <span className="font-medium">Ngân sách {formatVND(budget.limit_amount)}đ</span>
+                                        <span className="font-medium">Chi tiêu {formatVND(budget.spentAmount)}đ</span>
 
-                                    <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                                        <div title={`${budget.percent.toFixed(2)}%`}
-                                            className={`h-full rounded-full ${getProgressColor(budget.percent)}`}
-                                            style={{ width: `${budget.percent}%` }}
-                                        />
                                     </div>
-
-                                    <div className="flex flex-wrap  gap-2 pt-2">
+                                    <div className="flex flex-wrap gap-2">
 
                                         {(budget.budget_categories || []).map((bc) => (
                                             <div
