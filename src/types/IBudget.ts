@@ -13,7 +13,7 @@ export interface IBudget {
     updated_at: string;
     is_active: boolean;
     budget_categories: {
-        categories: ICategory;
+        categories: ICategory;  
     }[]
 }
 export interface ICreateBudget {

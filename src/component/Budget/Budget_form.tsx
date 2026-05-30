@@ -31,7 +31,7 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
     // console.log("Default value in form:", defaultValue);
     const { user } = useAuth();
     const { addBudget, updateBudget, deleteBudget, fetchBudgets } = useBudgetStore();
-    const { control, reset, register, handleSubmit, setValue, formState: { errors }, watch } = useForm<BudgetFormValues>({
+    const { control, register, handleSubmit, setValue, formState: { errors }, watch } = useForm<BudgetFormValues>({
         resolver: zodResolver(budgetSchema),
         defaultValues: {
             name: defaultValue?.name || '',
@@ -39,15 +39,15 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
             period: defaultValue?.period || 'daily',
             categories_ids: defaultValue?.budget_categories?.map(bc => bc.categories.id) || [],
             description: defaultValue?.description || '',
-            start_date: defaultValue?.start_date,
-            end_date: defaultValue?.end_date,
+            start_date: defaultValue?.start_date || new Date().toISOString().split('T')[0],
+            end_date: defaultValue?.end_date || new Date().toISOString().split('T')[0],
         }, mode: 'onSubmit'
     })
-    const end_date = watch('end_date');
+    // const end_date = watch('end_date');
     const start_date = watch('start_date');
     const period = watch('period');
-    const [selectedDate, setSelectedDate] = useState(new Date(start_date).toISOString().split('T')[0]);;
-    const [selectedMonth, setSelectedMonth] = useState(`${new Date(start_date).getFullYear()}-${String(new Date(start_date).getMonth() + 1).padStart(2, '0')}`
+    const [selectedDate, setSelectedDate] = useState(new Date(start_date).toISOString().split('T')[0]) || new Date().toISOString().split('T')[0];
+    const [selectedMonth, setSelectedMonth] = useState(`${new Date(start_date).getFullYear()}-${String(new Date(start_date).getMonth() + 1).padStart(2, '0')}` || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
     );
     const [selectedYear, setSelectedYear] = useState(
         String(new Date(start_date || new Date()).getFullYear())

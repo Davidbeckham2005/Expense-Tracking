@@ -19,6 +19,7 @@ export const useBudgetStore = create<BudgetState>((set) => ({
             set({ isLoading: true });
             const budgets = await getBudgets(userId);
             set({ budgets: budgets || [] });
+            console.log('Fetched budgets:', budgets);
         }
         catch (error) {
             console.error('Failed to fetch budgets:', error);

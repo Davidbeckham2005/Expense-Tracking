@@ -52,68 +52,80 @@ export default function BudgetPage() {
             }
         }
         return {
-            start: null,
-            end: null
+            start: new Date(),
+            end: new Date()
         }
     }
-    const { start, end } = getTimeRangeBudgets()
-    // console.log('Time range for budgets:', start, end);
-    const budgetInRange = budgets.filter(budget => {
-        if (!start || !end) {
-            return true; // Nếu không có khoảng thời gian cụ thể, giữ lại tất cả ngân sách/ truờng hợp này sẽ xảy ra khi modeShow là 'all' hoặc 'overspent'
-        }
-        const budgetStart = new Date(budget.start_date);
-        const budgetEnd = new Date(budget.end_date);
-        return (budgetStart <= end && budgetEnd >= start);
-    })
-    // console.log('Mode show:', modeShow);
-    // console.log('Start date:', start);
-    // console.log('End date:', end);
-    console.log('Filtered budgets:', budgetInRange);
-    // console.log('All budgets:', budgets);
 
-    const transactionInRange = transactions.filter(transaction => {
-        if (!start || !end) {
-            return true; // Nếu không có khoảng thời gian cụ thể, giữ lại tất cả ngân sách/ truờng hợp này sẽ xảy ra khi modeShow là 'all' hoặc 'overspent'
-        }
-        const transactionDate = new Date(transaction.transaction_date);
-        return transactionDate >= start && transactionDate <= end;
-        // return true
-    })
+    // const transactionInRange = transactions.filter(transaction => {
+    //     if (!start || !end) {
+    //         return true;
+    //     }
+    //     const transactionDate = new Date(transaction.transaction_date);
+    //     return transactionDate >= start && transactionDate <= end;
+    // return true
+    // })
 
     // Tạo map rỗng để lưu tổng chi tiêu (number) theo từng category_id (string)
-    const expenseByCategory = new Map<string, number>();
-
-
-
-    transactionInRange.forEach((transaction) => {
-        const current = expenseByCategory.get(transaction.category_id) || 0;
-        expenseByCategory.set(
-            transaction.category_id,
-            current + transaction.amount
-        );
-    });
+    // const expenseByCategory = new Map<string, number>();
+    // transactionInRange.forEach((transaction) => {
+    //     const current = expenseByCategory.get(transaction.category_id) || 0;
+    //     expenseByCategory.set(
+    //         transaction.category_id,
+    //         current + transaction.amount
+    //     );
+    // });
     // console.log(expenseByCategory);
     // budget.budget_categories là 1 mảng, 
 
-    const budgetsWithSpent = budgetInRange.map((budget) => {
-        const budgetCategories = budget.budget_categories || []
-        const spentAmount = budgetCategories.reduce(
-            (sum, budgetCat) => {
-                return (
-                    sum + (expenseByCategory.get(budgetCat.categories.id) || 0)
-                );
-            },
-            0
-        );
-        const percent = (spentAmount / budget.limit_amount) * 100;
+    // const budgetsWithSpent = budgetInRange.map((budget) => {
+    //     const budgetCategories = budget.budget_categories || []
+    //     const spentAmount = budgetCategories.reduce(
+    //         (sum, budgetCat) => {
+    //             return (
+    //                 sum + (expenseByCategory.get(budgetCat.categories.id) || 0)
+    //             );
+    //         },
+    //         0
+    //     );
+    //     const percent = (spentAmount / budget.limit_amount) * 100;
+    //     return {
+    //         ...budget,
+    //         spentAmount,
+    //         percent
+    //     };
+    // });
+    const budgetsMatchSpent = budgets.map((budget) => {
+        const budget_start = new Date(budget.start_date);
+        const budget_end = new Date(budget.end_date);
+
+
+        const spentAmount = transactions.filter((transaction) => {
+            const transactionDate = new Date(transaction.transaction_date)
+            const isInBudgetPeriod = transactionDate >= budget_start && transactionDate <= budget_end;
+
+            return isInBudgetPeriod;
+        })
+            .reduce((sum, transaction) => {
+                const CategoriInBudget = budget.budget_categories
+                    ?.some(bc => bc.categories.id === transaction.category_id);
+                return CategoriInBudget ? sum + transaction.amount : sum
+            }, 0)
         return {
             ...budget,
             spentAmount,
-            percent
-        };
+            percent: (spentAmount / budget.limit_amount) * 100
+        }
     });
-
+    const filteredBudgets = budgetsMatchSpent.filter(budget => {
+        const { start, end } = getTimeRangeBudgets();
+        const budget_start = new Date(budget.start_date);
+        const budget_end = new Date(budget.end_date);
+        const isInRange = budget_start <= end && budget_end >= start;
+        return isInRange;
+    })
+    console.log('Filtered budgets:', filteredBudgets);
+    console.log('Budgets match spent:', budgetsMatchSpent);
     // console.log('Budgets with spent amount:', budgetsWithSpent);
     return (
         <div className="min-h-screen bg-gray-50 p-6">
@@ -168,13 +180,13 @@ export default function BudgetPage() {
                     </div>
 
                 </div>
-                {(budgetsWithSpent.length === 0) ? (
+                {(filteredBudgets.length === 0) ? (
                     <div className="text-center text-gray-500 py-20">
                         Không có ngân sách nào trong tháng này.
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {budgetsWithSpent.map((budget) => (
+                        {filteredBudgets.map((budget) => (
                             <div
                                 key={budget.id}
                                 className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100"
