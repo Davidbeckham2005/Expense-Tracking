@@ -31,7 +31,13 @@ export default function BudgetPage() {
 
     // console.log(monthStart, monthEnd);
     // hàm lọc ngân sách có thời gian bắt đầu hoặc kết thúc trong tháng hiện tại, nhằm hiển thị và tính toán cho tháng đó.
-    
+    const monthName =
+        new Date(
+            selectedYear,
+            selectedMonth
+        ).toLocaleString('vi-VN', {
+            month: 'long'
+        });
     const getTimeRangeBudgets = () => {
         if (modeShow === 'current_month') {
             return {
@@ -51,7 +57,7 @@ export default function BudgetPage() {
         }
     }
     const { start, end } = getTimeRangeBudgets()
-    console.log('Time range for budgets:', start, end);
+    // console.log('Time range for budgets:', start, end);
     const budgetInRange = budgets.filter(budget => {
         if (!start || !end) {
             return true; // Nếu không có khoảng thời gian cụ thể, giữ lại tất cả ngân sách/ truờng hợp này sẽ xảy ra khi modeShow là 'all' hoặc 'overspent'
@@ -60,11 +66,11 @@ export default function BudgetPage() {
         const budgetEnd = new Date(budget.end_date);
         return (budgetStart <= end && budgetEnd >= start);
     })
-    console.log('Mode show:', modeShow);
-    console.log('Start date:', start);
-    console.log('End date:', end);
+    // console.log('Mode show:', modeShow);
+    // console.log('Start date:', start);
+    // console.log('End date:', end);
     console.log('Filtered budgets:', budgetInRange);
-    console.log('All budgets:', budgets);
+    // console.log('All budgets:', budgets);
 
     const transactionInRange = transactions.filter(transaction => {
         if (!start || !end) {
@@ -147,6 +153,10 @@ export default function BudgetPage() {
 
                             <option value="over">Vượt mức</option>
                         </select>
+                        <h2>
+                            {modeShow === 'current_month' &&
+                                `${monthName} ${selectedYear}`}
+                        </h2>
                     </div>
                     <div className="flex bg-theme /90 text-white px-2 py-1 rounded-2xl hover:opacity-90 transition text-nowrap">
                         <Plus>
@@ -170,12 +180,19 @@ export default function BudgetPage() {
                                 className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100"
                                 onClick={() => { setSelectedBudget(budget); setIsOpenUpdate(true) }}
                             >
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <h2 className="text-xl font-semibold">
-                                            {budget.name}
-                                        </h2>
-
+                                <div className="flex items-start justify-between w-full">
+                                    <div className="w-full">
+                                        <div className="w-full flex justify-between items-center gap-2">
+                                            <h2 className="text-xl font-semibold">
+                                                {budget.name} - {budget.is_active ? 'Hoạt động' : 'Không hoạt động'}
+                                            </h2>
+                                            {budget.is_active && (
+                                                <div
+                                                    className="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.8)]"
+                                                    title="Đang hoạt động"
+                                                />
+                                            )}
+                                        </div>
                                         <p className="text-gray-500 mt-1 text-sm">
                                             {budget.description || 'Không có mô tả'}
                                         </p>
@@ -195,7 +212,7 @@ export default function BudgetPage() {
                                         />
                                     </div>
 
-                                    <div className="flex flex-wrap gap-2 pt-2">
+                                    <div className="flex flex-wrap  gap-2 pt-2">
 
                                         {(budget.budget_categories || []).map((bc) => (
                                             <div
