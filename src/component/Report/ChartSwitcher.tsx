@@ -27,7 +27,7 @@ export default function ChartSwitcher({ chartType, setChartType }: ChartSwitcher
     ];
 
     return (
-        <div className="items-center space-y-3 w-[60px]">
+        <div className="space-y-3 md:w-15 gap-x-2 justify-center flex  md:flex-col">
             {charts.map((item) => {
                 const Icon = item.icon;
                 const active = chartType === item.type;
@@ -36,10 +36,11 @@ export default function ChartSwitcher({ chartType, setChartType }: ChartSwitcher
                     <button
                         key={item.type}
                         onClick={() => setChartType(item.type)}
-                        className={`flex items-center gap-2 px-2 py-1 rounded-xl transition-all duration-300 font-medium text-sm
-                            ${active ? 'bg-theme text-white shadow-lg scale-105' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'}`}>
-                        <Icon className="w-4 h-fit" />
-                        <span>{item.label}
+                        className={`min-w-24 h-8 md:min-w-16 items-center flex gap-2 px-2 border py-1 rounded-lg transition-all duration-300 font-medium text-sm
+                            ${active ? 'bg-theme text-white shadow-lg md:scale-105' : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'}`}>
+                        <Icon size={16} />
+                        <span className="">
+                            {item.label}
                         </span>
 
                     </button>

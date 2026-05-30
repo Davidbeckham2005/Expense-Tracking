@@ -152,7 +152,11 @@ export default function ReportTransaction() {
 
                         </ResponsiveContainer>
                     </div>
+
                 </div>
+            </div>
+            <div className="mx-auto md:hidden md:w-full">
+                <ChartSwitcher chartType={currentChart} setChartType={setCurrentChart}></ChartSwitcher>
             </div>
             {currentChart === 'pie' && (<div className="col-span-3 md:col-span-1 gap-2 flex items-center justify-between max-w-md w-full mx-auto rounded-xl text-gray-600/80 my-2">
                 <button
