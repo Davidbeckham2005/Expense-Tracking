@@ -19,7 +19,7 @@ export default function DashBroad() {
     const { fetchTransactions, isLoading: isTransactionsLoading } = useTransactionStore();
     const { fetchBudgets, isLoading: isBudgetsLoading, deactivateBudget, isLoading: isDeactivateLoading } = useBudgetStore();
     const { user } = useAuth();
-    const [tab, setTab] = useState<TabType>('budget');
+    const [tab, setTab] = useState<TabType>('nhap-vao');
     useEffect(() => {
         deactivateBudget(user?.id);
         fetchCategories(user?.id);
@@ -42,7 +42,7 @@ export default function DashBroad() {
                 <main className="lg:col-span-12 p-4 md:p-8 max-w-6xl w-full mx-auto">
                     {tab === 'category' && <ListCategory></ListCategory>}
                     {tab === 'lich' && <ListTransaction></ListTransaction>}
-                    {tab === 'khac' && <Setting></Setting>}
+                    {/* {tab === 'khac' && <Setting></Setting>} */}
                     {tab === 'bao-cao' && <ReportTransaction></ReportTransaction>}
                     {tab === 'nhap-vao' && <ExpenseManager></ExpenseManager>}
                     {tab === 'budget' && <BudgetPage></BudgetPage>}

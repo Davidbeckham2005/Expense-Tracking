@@ -14,8 +14,8 @@ const tabs: ITabs[] = [
     { id: 'lich', name: 'Lịch', icon: Calendar },
     { id: 'bao-cao', name: 'Báo cáo', icon: BarChart3 },
     { id: 'budget', name: 'Ngân sách', icon: Wallet },
-    { id: 'khac', name: 'Khác', icon: MoreHorizontal },
-    { id: 'category', name: 'Danh mục', icon: MoreHorizontal },
+    // { id: 'khac', name: 'Khác', icon: MoreHorizontal },
+    // { id: 'category', name: 'Danh mục', icon: MoreHorizontal },
 ];
 
 interface IHeaderProps {
