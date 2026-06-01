@@ -30,7 +30,7 @@ supabase functions serve
 4. Run the project
 npm run dev
 # Features
-📊 Track income and expenses easily
+📊 Track income and expenses easily 
 🤖 AI-powered transaction parsing (OpenAI API)
 🏷️ Automatic expense categorization
 📅 Filter transactions by date and month

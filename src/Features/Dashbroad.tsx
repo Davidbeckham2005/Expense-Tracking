@@ -30,8 +30,6 @@ export default function DashBroad() {
     if (isLoading || isTransactionsLoading || isBudgetsLoading || isDeactivateLoading) {
         return <Loading></Loading>;
     }
-
-
     return (
         <div className="min-h-screen max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl w-full mx-auto">
             <div>
@@ -59,6 +57,19 @@ export default function DashBroad() {
                         </AnimatePresence>
                     </main>
                 </div>
+        <div className="min-h-screen bg-white max-w-6xl w-full mx-auto *:bg-slate-50 rounded-3xl overflow-hidden shadow-xl border border-gray-100 ">
+            <div className="grid grid-cols-1 lg:grid-cols-12">
+                <div className="lg:col-span-12 text-white">
+                    <NavBar tab={tab} setTab={setTab}></NavBar>
+                </div>
+                <main className="lg:col-span-12 p-4 md:p-8 max-w-6xl w-full mx-auto">
+                    {tab === 'category' && <ListCategory></ListCategory>}
+                    {tab === 'lich' && <ListTransaction></ListTransaction>}
+                    {/* {tab === 'khac' && <Setting></Setting>} */}
+                    {tab === 'bao-cao' && <ReportTransaction></ReportTransaction>}
+                    {tab === 'nhap-vao' && <ExpenseManager></ExpenseManager>}
+                    {tab === 'budget' && <BudgetPage></BudgetPage>}
+                </main>
             </div>
         </div>
     );
