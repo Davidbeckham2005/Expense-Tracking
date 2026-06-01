@@ -1,4 +1,4 @@
-import { PlusCircle, Calendar, BarChart3, LogOut, Wallet, Settings } from 'lucide-react';
+import { PlusCircle, Calendar, BarChart3, LogOut, Wallet, Settings, MoreHorizontal } from 'lucide-react';
 import type { TabType } from '../types/tab';
 import { useAuth } from "../context/AuthContext";
 import { toast } from 'react-hot-toast';
