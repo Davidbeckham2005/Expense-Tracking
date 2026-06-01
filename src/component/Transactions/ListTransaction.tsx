@@ -14,6 +14,9 @@ import { toast } from "react-hot-toast";
 
 import type { IDBTransaction, GroupedTransactions, TTransactionType } from "../../types/Transactions";
 import { motion, AnimatePresence } from "motion/react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card } from "@/components/ui/card"
 
 export default function ListTransaction() {
     const { user } = useAuth()
@@ -26,7 +29,9 @@ export default function ListTransaction() {
     const [selectedDay, setSelectedDay] = useState<string | null>(null);
     const [currentType, setCurrentType] = useState<TTransactionType | null>(null);
     const [currentDate, setcurrentDate] = useState(new Date());
-    const selectedMonth = format(currentDate, "yyyy-MM");
+    const selectedMonth = (() => {
+        try { return format(currentDate, "yyyy-MM"); } catch { return format(new Date(), "yyyy-MM"); }
+    })();
 
     const [selectedTransactionIds, setSelectedTransactionIds] = useState<string[]>([]);
     const [isSetting, setIsSetting] = useState(false);
@@ -120,23 +125,22 @@ export default function ListTransaction() {
     }
     return (
         <div className="min-h-screen">
-            <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-white/40 bg-white/15 backdrop-blur-lg px-4 py-3 shadow-lg">
-                <button
-                    type="button"
+            <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border bg-card px-4 py-3 shadow-sm">
+                <Button
+                    variant="ghost"
                     onClick={() => setShowCalendar((prev) => !prev)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-theme/10 px-3 py-2 text-sm font-medium text-theme transition hover:bg-theme/15"
+                    className="inline-flex items-center gap-2"
                 >
                     <CalendarDays className="h-4 w-4" />
                     <span>{showCalendar ? "Ẩn lịch" : "Hiện lịch"}</span>
                     {showCalendar ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </button>
+                </Button>
                 <div className="col-span-1 flex items-center justify-start md:justify-end gap-2">
-
                     <input
                         type="month"
-                        value={format(currentDate, "yyyy-MM")}
+                        value={(function() { try { return format(currentDate, "yyyy-MM"); } catch { return format(new Date(), "yyyy-MM"); } })()}
                         onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentDate(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
-                        className="w-full md:w-auto border rounded-xl px-3 py-2 text-sm outline-none bg-white shadow-sm"
+                        className="w-full md:w-auto border rounded-xl px-3 py-2 text-sm outline-none bg-background"
                     />
                 </div>
             </div>
@@ -153,19 +157,19 @@ export default function ListTransaction() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
-                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setopenUpdate(false)} />
+                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm cursor-pointer" onClick={() => setopenUpdate(false)} />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.92 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.92 }}
                             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                            className="relative z-10 w-full max-w-xl bg-white/20 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar"
+                            className="relative z-10 w-full max-w-xl bg-popover text-popover-foreground border rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar"
                         >
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-lg font-semibold text-center w-full text-slate-800">
+                                <h2 className="text-lg font-semibold text-center w-full text-foreground">
                                     Cập nhật giao dịch
                                 </h2>
-                                <button onClick={() => setopenUpdate(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/30 text-slate-600">
+                                <button onClick={() => setopenUpdate(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground cursor-pointer">
                                     ✕
                                 </button>
                             </div>
@@ -182,19 +186,19 @@ export default function ListTransaction() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
-                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setopenCreate(false)} />
+                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm cursor-pointer" onClick={() => setopenCreate(false)} />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.92 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.92 }}
                             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                            className="relative z-10 w-full max-w-xl bg-white/20 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl p-4 mx-4 max-h-[86vh] overflow-y-auto no-scrollbar"
+                            className="relative z-10 w-full max-w-xl bg-popover text-popover-foreground border rounded-2xl shadow-xl p-4 mx-4 max-h-[86vh] overflow-y-auto no-scrollbar"
                         >
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-lg font-semibold text-center w-full text-slate-800">
+                                <h2 className="text-lg font-semibold text-center w-full text-foreground">
                                     Thêm giao dịch mới
                                 </h2>
-                                <button onClick={() => setopenCreate(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/30 text-slate-600">
+                                <button onClick={() => setopenCreate(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground cursor-pointer">
                                     ✕
                                 </button>
                             </div>
@@ -203,99 +207,90 @@ export default function ListTransaction() {
                     </motion.div>
                 )}
             </AnimatePresence>
-            <div onClick={() => setSelectedDay(null)} className="bg-white/15 backdrop-blur-lg rounded-2xl border border-white/40 p-4 space-y-4 shadow-lg">
+            <Card onClick={() => setSelectedDay(null)} className="p-4 space-y-4 cursor-pointer">
                 <div className="relative w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <div className="flex items-center justify-start">
-
-                        <input
+                        <Input
                             type="text"
                             placeholder="Tìm kiếm"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full max-w-none md:max-w-md pl-10 pr-4 py-3 rounded-2xl border border-white/40 bg-white/20 backdrop-blur-sm shadow-sm outline-none text-sm md:text-base"
+                            className="pl-10 rounded-2xl"
                         />
                     </div>
-
-
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center justify-between">
-                    <h2 className="text-sm md:text-xl font-bold">
+                    <h2 className="text-sm md:text-xl font-bold text-foreground">
                         Tổng quan tháng
                     </h2>
-
-                    <div className="col-span-1 md:col-span-2 gap-2 flex items-center justify-between w-full rounded-xl text-gray-600 font-bold">
-                        <button
-                            type="button"
+                    <div className="col-span-1 md:col-span-2 gap-2 flex items-center justify-between w-full rounded-xl font-bold">
+                        <Button
+                            variant={currentType === null ? "default" : "outline"}
                             onClick={() => { setCurrentType(null); }}
-                            className={`flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === null ? 'bg-blue-600 text-white border-blue-600' : 'hover:border-blue-200 hover:text-blue-600'}`}>Tất cả
-                        </button>
-                        <button
-                            type="button"
+                            className="flex-1"
+                        >Tất cả
+                        </Button>
+                        <Button
+                            variant={currentType === 'expense' ? "destructive" : "outline"}
                             onClick={() => { setCurrentType("expense"); }}
-                            className={`flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === 'expense' ? 'bg-red-600 text-white border-red-600' : 'hover:border-red-200 hover:text-red-600'}`}>Tiền chi
-                        </button>
-                        <button
-                            type="button"
+                            className="flex-1"
+                        >Tiền chi
+                        </Button>
+                        <Button
+                            variant={currentType === 'income' ? "default" : "outline"}
                             onClick={() => { setCurrentType("income"); }}
-                            className={`flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === 'income' ? 'bg-green-600 text-white  border-green-600' : 'hover:border-green-200 hover:text-green-600'}`}>Tiền thu
-                        </button>
+                            className="flex-1"
+                        >Tiền thu
+                        </Button>
                     </div>
                     <div className="flex items-center justify-start md:justify-end gap-2">
-                        <button
-                            type="button"
+                        <Button
                             onClick={() => setopenCreate(true)}
-                            className="inline-flex items-center gap-2 rounded-xl bg-theme px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
                         >
                             <CirclePlus className="h-4 w-4" />
                             <span>Thêm</span>
-                        </button>
-                        <button
-                            type="button"
+                        </Button>
+                        <Button
+                            variant={isSetting ? "secondary" : "outline"}
                             onClick={() => { setIsSetting(!isSetting); setSelectedTransactionIds([]); }}
-                            className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition ${isSetting ? 'border-theme bg-theme/10 text-theme' : 'border-gray-200 bg-white text-gray-600 hover:border-theme/30 hover:text-theme'}`}
                         >
                             <Settings className="h-4 w-4" />
                             <span className="hidden sm:inline">Chọn</span>
-                        </button>
+                        </Button>
                     </div>
-
-
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
-                        <p className="text-sm text-gray-500">Thu</p>
+                    <Card className="p-3 gap-0">
+                        <p className="text-sm text-muted-foreground">Thu</p>
                         <p className="font-bold text-green-600">
                             {totalIncome.toLocaleString()}đ
                         </p>
-                    </div>
-
-                    <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
-                        <p className="text-sm text-gray-500">Chi</p>
+                    </Card>
+                    <Card className="p-3 gap-0">
+                        <p className="text-sm text-muted-foreground">Chi</p>
                         <p className="font-bold text-red-600">
                             {totalExpense.toLocaleString()}đ
                         </p>
-                    </div>
-
-                    <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
-                        <p className="text-sm text-gray-500">Tổng</p>
-                        <p className="font-bold text-blue-600">
+                    </Card>
+                    <Card className="p-3 gap-0">
+                        <p className="text-sm text-muted-foreground">Tổng</p>
+                        <p className="font-bold text-primary">
                             {balance.toLocaleString()}đ
                         </p>
-                    </div>
+                    </Card>
                 </div>
-            </div>
+            </Card>
 
             {/* Danh sách giao dịch */}
             {isSetting && (<div className="w-full my-2">
-                <div className="flex justify-end w-full"
+                <div className="flex justify-end w-full cursor-pointer"
                     onClick={() => {
                         if (window.confirm("Bạn có chắc muốn xóa những giao dịch này?")) {
                             handleDelete();
                         }
                     }}>
-                    <span></span> <Trash2 className={'cursor-pointer hover:scale-110 transition-transform' + `${selectedTransactionIds.length > 0 ? ' text-red-500' : ''}`} /> </div>
+                    <span></span> <Trash2 className={'hover:scale-110 transition-transform' + `${selectedTransactionIds.length > 0 ? ' text-destructive' : ''}`} /> </div>
             </div>)}
             <motion.div
                 className="space-y-5"
@@ -307,7 +302,7 @@ export default function ListTransaction() {
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        onClick={() => setSelectedDay(null)} className="text-center text-gray-400 py-10"
+                        onClick={() => setSelectedDay(null)} className="text-center text-muted-foreground py-10 cursor-pointer"
                     >
                         Không có giao dịch trong tháng này
                     </motion.div>
@@ -326,8 +321,8 @@ export default function ListTransaction() {
                             }}
                             className="space-y-3"
                         >
-                            <div className="flex items-center justify-between rounded-lg px-3 py-1.5 bg-white/30 backdrop-blur-sm border border-white/30">
-                                <h3 className="font-semibold text-sm text-slate-800">
+                            <div className="flex items-center justify-between rounded-lg px-3 py-1.5 bg-muted/50 border">
+                                <h3 className="font-semibold text-sm text-foreground">
                                     {new Date(date).toLocaleDateString("vi-VN", {
                                         weekday: "long",
                                         day: "2-digit",
@@ -338,7 +333,7 @@ export default function ListTransaction() {
                                     className={`font-bold ${totalDay >= 0
                                         ? "text-green-600"
                                         : "text-red-600"
-                                        }`}
+                                    }`}
                                 >
                                     {totalDay >= 0 ? "+" : ""}
                                     {totalDay.toLocaleString()}đ
@@ -360,18 +355,18 @@ export default function ListTransaction() {
                                         >
                                             {isSetting && (<input
                                                 type="checkbox"
-                                                className="mr-2 accent-theme"
+                                                className="mr-2 accent-primary"
                                                 checked={selectedTransactionIds.includes(transaction.id)}
                                                 onChange={(e) => { handleSelectTransaction(transaction.id, e.target.checked) }}
                                             />)}
                                             <div
-                                                className="flex-1 py-2.5 text-sm hover:bg-white/30 flex items-center justify-between border-b border-white/20 px-3 rounded-lg transition-colors"
+                                                className="flex-1 py-2.5 text-sm hover:bg-muted/50 flex items-center justify-between border-b px-3 rounded-lg transition-colors cursor-pointer"
                                                 onClick={() => { setSelectedTransaction(transaction); setopenUpdate(true) }}
                                             >
                                                 <div className="flex px-2 space-x-3">
                                                     {Icon && <Icon className="w-4 h-4" style={{ color: colors[category.color as keyof typeof colors] || "#E5E7EB" }} />}
-                                                    <p className="text-slate-800">{category?.name || "Không xác định"} </p>
-                                                    <p className="text-slate-500/80">{transaction.note ? `(${transaction.note})` : ""}</p>
+                                                    <p className="text-foreground">{category?.name || "Không xác định"} </p>
+                                                    <p className="text-muted-foreground/80">{transaction.note ? `(${transaction.note})` : ""}</p>
                                                 </div>
                                                 <p
                                                     className={`font-bold ${transaction.type === "income" ? "text-green-600" : "text-rose-600"}`}>
