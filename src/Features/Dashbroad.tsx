@@ -11,6 +11,7 @@ import ListTransaction from '../component/Transactions/ListTransaction';
 import ReportTransaction from '../component/Report/Report_form';
 import BudgetPage from '../component/Budget/Budget_list';
 import { useBudgetStore } from '../store/useBudgetStore';
+import ThemeSettings from './Setting';
 import { AnimatePresence, motion } from "motion/react"
 
 
@@ -32,14 +33,14 @@ export default function DashBroad() {
 
 
     return (
-        <div className="min-h-screen max-w-6xl w-full mx-auto">
-            <div className="bg-white/70 backdrop-blur-xl border border-white/40 rounded-3xl shadow-xl overflow-hidden">
+        <div className="min-h-screen max-w-6xl xl:max-w-7xl 2xl:max-w-screen-2xl w-full mx-auto">
+            <div>
                 <div className="grid grid-cols-1 lg:grid-cols-12">
-                    <div className="lg:col-span-12 text-white">
+                    <div className="lg:col-span-12">
                         <NavBar tab={tab} setTab={setTab}></NavBar>
                     </div>
 
-                    <main className="lg:col-span-12 p-4 md:p-8 max-w-6xl w-full mx-auto">
+                    <main className="lg:col-span-12 p-4 md:p-8 w-full">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={tab}
@@ -53,6 +54,7 @@ export default function DashBroad() {
                                 {tab === 'bao-cao' && <ReportTransaction />}
                                 {tab === 'nhap-vao' && <ExpenseManager />}
                                 {tab === 'budget' && <BudgetPage />}
+                                {tab === 'setting' && <ThemeSettings />}
                             </motion.div>
                         </AnimatePresence>
                     </main>
