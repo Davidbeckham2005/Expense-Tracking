@@ -25,7 +25,7 @@ export async function getTransactions(userId?: string) {
         .eq('user_id', userId)
         .eq('is_deleted', false)
         .order('transaction_date', { ascending: false });
-        console.log("getTransactions", data);
+        // console.log("getTransactions", data);
     if (error) throw error;
     return data;
 }

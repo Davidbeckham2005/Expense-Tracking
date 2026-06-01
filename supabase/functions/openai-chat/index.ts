@@ -16,7 +16,7 @@ serve(async (req) => {
   try {
     const { message , categories} = await req.json();
 
-    const apiKey = Deno.env.get("GEMINI_API_KEY");
+    const apiKey = Deno.env.get("GEMINI_API_KEY_02");
  const prompt = `
 Bạn là hệ thống AI phân tích giao dịch tài chính cá nhân.
 

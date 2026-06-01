@@ -16,7 +16,7 @@ export default function Login() {
         try {
             setIsLoading(true);
             const res = await signIn(email, password);
-            console.log(res);
+            // console.log(res);
             Navigate('/', { replace: true });
             toast.success("Đăng nhập thành công!");
         } catch (err) {
