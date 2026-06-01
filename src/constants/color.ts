@@ -12,7 +12,8 @@ export const colors = {
     teal: '#14B8A6',
     emerald: '#10B981',
     lime: '#84CC16',
-
+    black: '#000000',
+    white: '#FFFFFF',
     amber: '#F59E0B',
     rose: '#F43F5E',
     fuchsia: '#D946EF',

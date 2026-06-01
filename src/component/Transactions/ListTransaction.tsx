@@ -29,7 +29,7 @@ export default function ListTransaction() {
 
     const [selectedTransactionIds, setSelectedTransactionIds] = useState<string[]>([]);
     const [isSetting, setIsSetting] = useState(false);
-    const [showCalendar, setShowCalendar] = useState(true);
+    const [showCalendar, setShowCalendar] = useState(false);
 
     const categoryMap = useMemo(() => {
         return Object.fromEntries(
@@ -129,7 +129,15 @@ export default function ListTransaction() {
                     <span>{showCalendar ? "Ẩn lịch" : "Hiện lịch"}</span>
                     {showCalendar ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </button>
-                <span className="text-xs text-gray-400">Lịch theo tháng hiện tại</span>
+                <div className="col-span-1 flex items-center justify-start md:justify-end gap-2">
+
+                    <input
+                        type="month"
+                        value={format(currentDate, "yyyy-MM")}
+                        onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentDate(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
+                        className="w-full md:w-auto border rounded-xl px-3 py-2 text-sm outline-none bg-white shadow-sm"
+                    />
+                </div>
             </div>
             {showCalendar && (
                 <div className="mb-4">
@@ -190,21 +198,21 @@ export default function ListTransaction() {
                         Tổng quan tháng
                     </h2>
 
-                    <div className="col-span-1 md:col-span-2 gap-2 flex items-center justify-between w-full rounded-xl text-gray-600/80">
+                    <div className="col-span-1 md:col-span-2 gap-2 flex items-center justify-between w-full rounded-xl text-gray-600 font-bold">
                         <button
                             type="button"
                             onClick={() => { setCurrentType(null); }}
-                            className={`flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === null ? 'bg-blue-600 text-white border-blue-600' : 'hover:border-blue-200 hover:text-blue-600'}`}>Tất cả
+                            className={`flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === null ? 'bg-blue-600 text-white border-blue-600' : 'hover:border-blue-200 hover:text-blue-600'}`}>Tất cả
                         </button>
                         <button
                             type="button"
                             onClick={() => { setCurrentType("expense"); }}
-                            className={`flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === 'expense' ? 'bg-red-600 text-white border-red-600' : 'hover:border-red-200 hover:text-red-600'}`}>Tiền chi
+                            className={`flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === 'expense' ? 'bg-red-600 text-white border-red-600' : 'hover:border-red-200 hover:text-red-600'}`}>Tiền chi
                         </button>
                         <button
                             type="button"
                             onClick={() => { setCurrentType("income"); }}
-                            className={`flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === 'income' ? 'bg-green-600 text-white border-green-600' : 'hover:border-green-200 hover:text-green-600'}`}>Tiền thu
+                            className={`flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === 'income' ? 'bg-green-600 text-white  border-green-600' : 'hover:border-green-200 hover:text-green-600'}`}>Tiền thu
                         </button>
                     </div>
                     <div className="flex items-center justify-start md:justify-end gap-2">
@@ -225,15 +233,7 @@ export default function ListTransaction() {
                             <span className="hidden sm:inline">Chọn</span>
                         </button>
                     </div>
-                    <div className="col-span-1 flex items-center justify-start md:justify-end gap-2">
 
-                        <input
-                            type="month"
-                            value={format(currentDate, "yyyy-MM")}
-                            onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentDate(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
-                            className="w-full md:w-auto border rounded-xl px-3 py-2 text-sm outline-none bg-white shadow-sm"
-                        />
-                    </div>
 
                 </div>
                 <div className="grid grid-cols-3 gap-3">

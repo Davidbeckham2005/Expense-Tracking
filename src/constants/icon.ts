@@ -31,6 +31,11 @@ import {
     TrendingDown,
     Receipt,
     BadgeDollarSign,
+    PlusCircle,
+    Calendar,
+    BarChart3,
+    LogOut,
+    HatGlasses 
 } from 'lucide-react';
 
 export const icons = {
@@ -66,4 +71,9 @@ export const icons = {
     trendingDown: TrendingDown,
     receipt: Receipt,
     badgeDollarSign: BadgeDollarSign,
+    plusCircle: PlusCircle,
+    calendar: Calendar,
+    barChart3: BarChart3,
+    logOut: LogOut,
+    hatGlasses: HatGlasses
 };

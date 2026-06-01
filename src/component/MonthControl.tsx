@@ -6,7 +6,7 @@ interface MonthControlProps {
 // currentDate la ngay hien tai
 export default function MonthControl({ setMonth, currentDate }: MonthControlProps) {
     return (
-        <div className="w-full mx-auto bg-white/95 backdrop-blur border border-gray-100 rounded-2xl p-3 shadow-sm">
+        <div className="w-full mx-auto bg-white/95 backdrop-blur border border-gray-100 rounded-2xl p-1 shadow-sm">
             <div className="flex items-center justify-between gap-2 w-full">
                 <button
                     onClick={() => {
@@ -16,11 +16,11 @@ export default function MonthControl({ setMonth, currentDate }: MonthControlProp
 
                         setMonth(newDate);
                     }}
-                    className="flex items-center justify-center w-11 h-11 rounded-xl bg-theme/10 text-theme hover:bg-theme/15 active:scale-95 transition-all text-xl font-medium border border-theme/20 shadow-sm touch-manipulation"
+                    className="flex items-center justify-center h-8 w-8 md:w-11 md:h-11 rounded-xl bg-theme/10 text-theme hover:bg-theme/15 active:scale-95 transition-all text-xl font-medium border border-theme/20 shadow-sm touch-manipulation"
                 >
                     ‹
                 </button>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 flex-1 bg-gradient-to-r from-theme/5 to-theme/10 border border-theme/20 rounded-xl px-3 py-2 select-none text-center">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 flex-1 bg-gradient-to-r from-theme/5 to-theme/10 border border-theme/20 rounded-xl  select-none text-center">
                     <h2 className="text-base sm:text-lg font-semibold text-gray-800 tracking-wide">
                         {format(currentDate, "MM/yyyy")}
                     </h2>
@@ -37,7 +37,7 @@ export default function MonthControl({ setMonth, currentDate }: MonthControlProp
                         newDate.setMonth(newDate.getMonth() + 1);
                         setMonth(newDate);
                     }}
-                    className="flex items-center justify-center w-11 h-11 rounded-xl bg-theme/10 text-theme hover:bg-theme/15 active:scale-95 transition-all text-xl font-medium border border-theme/20 shadow-sm touch-manipulation"
+                    className="flex items-center justify-center h-8 w-8 md:w-11 md:h-11 rounded-xl bg-theme/10 text-theme hover:bg-theme/15 active:scale-95 transition-all text-xl font-medium border border-theme/20 shadow-sm touch-manipulation"
                 >
                     ›
                 </button>
