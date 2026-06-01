@@ -55,19 +55,6 @@ export default function CategoryForm({ open, onClose, mode, initialData, onSubmi
                         exit={{ opacity: 0, scale: 0.92 }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         className="w-[26rem] max-w-[90vw] rounded-2xl bg-popover text-popover-foreground border p-6 shadow-xl"
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-        }}>
-            <div className="w-105 rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-                <div className="mb-5 flex items-center justify-between">
-                    <h2 className="text-xl font-semibold">
-                        {mode === 'add' ? 'Tạo mới' : 'Chỉnh sửa'}
-                    </h2>
-
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500"
                     >
                         <div className="mb-5 flex items-center justify-between">
                             <h2 className="text-xl font-semibold text-foreground">
@@ -135,7 +122,7 @@ export default function CategoryForm({ open, onClose, mode, initialData, onSubmi
                                         onClick={() =>
                                             setSelectedColor(key as TColor)
                                         }
-                                        className={`h-10 w-[1/7] border-2 transition rounded-xl
+                                        className={`h-10 border-2 transition rounded-xl
                 ${selectedColor === key
                                                 ? 'border-foreground'
                                                 : 'border-transparent'
