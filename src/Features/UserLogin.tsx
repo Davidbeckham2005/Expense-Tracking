@@ -49,18 +49,18 @@ export default function Login() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-white to-sky-50 p-4 relative overflow-hidden">
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-white to-sky-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-4 relative overflow-hidden">
 
             <motion.div
-                className="absolute -top-32 -left-32 w-96 h-96 bg-blue-300/20 rounded-full blur-[120px]"
+                className="absolute -top-32 -left-32 w-96 h-96 bg-blue-300/20 dark:bg-blue-600/15 rounded-full blur-[120px]"
                 animate={orbAnimation(12, 40, 30)}
             />
             <motion.div
-                className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-emerald-300/15 rounded-full blur-[110px]"
+                className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-emerald-300/15 dark:bg-emerald-600/10 rounded-full blur-[110px]"
                 animate={orbAnimation(10, -30, 20)}
             />
             <motion.div
-                className="absolute top-1/2 right-1/3 w-48 h-48 bg-purple-300/10 rounded-full blur-[90px]"
+                className="absolute top-1/2 right-1/3 w-48 h-48 bg-purple-300/10 dark:bg-purple-600/10 rounded-full blur-[90px]"
                 animate={orbAnimation(14, 20, -40)}
             />
 

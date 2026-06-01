@@ -52,18 +52,18 @@ export default function Register(): React.JSX.Element {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-white to-amber-50 p-4 relative overflow-hidden">
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-white to-amber-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-4 relative overflow-hidden">
 
             <motion.div
-                className="absolute -top-32 -right-32 w-96 h-96 bg-amber-300/20 rounded-full blur-[120px]"
+                className="absolute -top-32 -right-32 w-96 h-96 bg-amber-300/20 dark:bg-amber-600/15 rounded-full blur-[120px]"
                 animate={orbAnimation(12, -40, 30)}
             />
             <motion.div
-                className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-orange-300/15 rounded-full blur-[110px]"
+                className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-orange-300/15 dark:bg-orange-600/10 rounded-full blur-[110px]"
                 animate={orbAnimation(10, 30, 20)}
             />
             <motion.div
-                className="absolute top-1/2 left-1/3 w-48 h-48 bg-rose-300/10 rounded-full blur-[90px]"
+                className="absolute top-1/2 left-1/3 w-48 h-48 bg-rose-300/10 dark:bg-rose-600/10 rounded-full blur-[90px]"
                 animate={orbAnimation(14, -20, -40)}
             />
 
