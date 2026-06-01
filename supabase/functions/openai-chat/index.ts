@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std/http/server.ts";
+import "jsr:@std/dotenv/load";
 const today = new Date().toISOString().split("T")[0];
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
