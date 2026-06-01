@@ -1,4 +1,3 @@
-// zoresolver
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { BudgetFormValues } from "../../Schemas/budget.schema";
@@ -25,10 +24,11 @@ interface BudgetFormProps {
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 import { useEffect } from 'react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card } from "@/components/ui/card"
 
 export default function BudgetForm({ defaultValue, mode = 'create', onClose }: BudgetFormProps) {
-    // use use form, register....
-    // console.log("Default value in form:", defaultValue);
     const { user } = useAuth();
     const { addBudget, updateBudget, deleteBudget, fetchBudgets } = useBudgetStore();
     const { control, register, handleSubmit, setValue, formState: { errors }, watch } = useForm<BudgetFormValues>({
@@ -43,7 +43,6 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
             end_date: defaultValue?.end_date || new Date().toISOString().split('T')[0],
         }, mode: 'onSubmit'
     })
-    // const end_date = watch('end_date');
     const start_date = watch('start_date');
     const period = watch('period');
     const [selectedDate, setSelectedDate] = useState(new Date(start_date).toISOString().split('T')[0]) || new Date().toISOString().split('T')[0];
@@ -63,7 +62,6 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                 break;
             }
             case 'weekly': {
-                // const day = today.getDay();
                 const currentDate = new Date(selectedDate);
                 const day = currentDate.getDay();
                 const diffToMonday = day === 0 ? 6 : day - 1;
@@ -128,16 +126,12 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                 }
 
             }
-            // else {
-            //     await updateBudget(defaultValue!.id, data);
-            // }
         }
         catch (error) {
             console.error("Error creating/updating budget:", error);
             toast.error("Có lỗi xảy ra khi tạo/cập nhật ngân sách.");
         }
         finally {
-            // setIsSubmitting(false);
         }
     }
     const handleDelete = async () => {
@@ -153,56 +147,42 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
 
     }
     return (
-        < div className="bg-white rounded-3xl p-6 shadow-sm border-gray-100 w-full max-w-4xl mx-auto" >
+        <Card className="p-6 w-full max-w-4xl mx-auto">
             <div className="flex items-center justify-between">
                 <div className="md:flex md:gap-2 md:items-center ">
-                    <h2 className="flex-1 text-2xl font-bold md:mb-5">
+                    <h2 className="flex-1 text-2xl font-bold md:mb-5 text-card-foreground">
                         {mode === 'create' ? "Tạo mới ngân sách" : "Cập nhật ngân sách"}
                     </h2>
-                    <p className="text-gray-500 text-sm md:mb-3">
+                    <p className="text-muted-foreground text-sm md:mb-3">
                         ({watch('start_date')} → {watch('end_date')})
                     </p>
                 </div>
-                <button onClick={() => onClose()} className="h-8 w-8 mb-3 text-right hover:text-red-600 cursor-pointer hover:scale-95 rounded-full">
+                <Button variant="ghost" size="icon" onClick={() => onClose()}>
                     ✕
-                </button>
+                </Button>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label className="block text-sm font-medium mb-2 text-foreground">
                         Tên
                     </label>
 
-                    <input
+                    <Input
                         {...register('name')}
                         placeholder="Ví dụ: Ăn uống tháng 5"
-                        className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
                     />
-                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+                    {errors.name && <p className="text-destructive text-sm mt-1">{errors.name.message}</p>}
                 </div>
 
-                {/* <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Số tiền (VND)
-                    </label>
-
-                    <input
-                        {...register('limit_amount', { valueAsNumber: true })}
-                        type="number"
-                        placeholder="3000000"
-                        className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
-                    />
-                    {errors.limit_amount && <p className="text-red-500 text-sm mt-1">{errors.limit_amount.message}</p>}
-                </div> */}
                 <Controller
                     control={control}
                     name="limit_amount"
                     render={({ field }) => (
                         <div>
-                            <label className="block text-sm font-medium mb-2">
+                            <label className="block text-sm font-medium mb-2 text-foreground">
                                 Số tiền (VND)
                             </label>
-                            <input
+                            <Input
                                 value={formatVND(field.value)}
                                 type="text"
                                 placeholder="3.000.000"
@@ -212,15 +192,14 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                                         rawValue ? Number(rawValue) : 0
                                     );
                                 }}
-                                className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
                             />
-                            {errors.limit_amount && <p className="text-red-500 text-sm mt-1">{errors.limit_amount.message}</p>}
+                            {errors.limit_amount && <p className="text-destructive text-sm mt-1">{errors.limit_amount.message}</p>}
                         </div>
                     )}
                 />
 
                 <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label className="block text-sm font-medium mb-2 text-foreground">
                         Giai đoạn
                     </label>
 
@@ -233,86 +212,76 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                         ].map((item) => {
                             const isActive = period === item.value;
                             return (
-                                <button
+                                <Button
                                     key={item.value}
                                     type="button"
+                                    variant={isActive ? "default" : "outline"}
                                     onClick={() => setValue('period', item.value as any)}
-                                    className={`rounded-2xl border py-1 transition-all text-center text-sm border-gray-200 hover:border-gray-400 
-                                        ${isActive ? 'bg-theme text-white border-black' : 'border-gray-200 hover:border-black'}`}>
+                                >
                                     {item.label}
-                                </button>
+                                </Button>
                             );
                         })}
                     </div>
 
                     {errors.period && (
-                        <p className="text-red-500 text-sm mt-1">
+                        <p className="text-destructive text-sm mt-1">
                             {errors.period.message}
                         </p>
                     )}
                 </div>
 
-
-
                 <div>
                     {period === 'daily' && (
                         <div>
-                            <label className="block text-sm font-medium mb-2">
+                            <label className="block text-sm font-medium mb-2 text-foreground">
                                 Chọn ngày
                             </label>
-
-                            <input
+                            <Input
                                 type="date"
                                 value={selectedDate}
                                 onChange={(e) => setSelectedDate(e.target.value)}
-                                className="w-full border rounded-2xl px-4 py-3 outline-none"
                             />
                         </div>
                     )}
 
                     {period === 'weekly' && (
                         <div>
-                            <label className="block text-sm font-medium mb-2">
+                            <label className="block text-sm font-medium mb-2 text-foreground">
                                 Chọn ngày trong tuần
                             </label>
-
-                            <input
+                            <Input
                                 type="date"
                                 value={selectedDate}
                                 onChange={(e) => setSelectedDate(e.target.value)}
-                                className="w-full border rounded-2xl px-4 py-3 outline-none"
                             />
                         </div>
                     )}
 
                     {period === 'monthly' && (
                         <div>
-                            <label className="block text-sm font-medium mb-2">
+                            <label className="block text-sm font-medium mb-2 text-foreground">
                                 Chọn tháng
                             </label>
-
-                            <input
+                            <Input
                                 type="month"
                                 value={selectedMonth}
                                 onChange={(e) => setSelectedMonth(e.target.value)}
-                                className="w-full border rounded-2xl px-4 py-3 outline-none"
                             />
                         </div>
                     )}
 
                     {period === 'yearly' && (
                         <div>
-                            <label className="block text-sm font-medium mb-2">
+                            <label className="block text-sm font-medium mb-2 text-foreground">
                                 Chọn năm
                             </label>
-
-                            <input
+                            <Input
                                 type="number"
                                 min="2000"
                                 max="2100"
                                 value={selectedYear}
                                 onChange={(e) => setSelectedYear(e.target.value)}
-                                className="w-full border rounded-2xl px-4 py-3 outline-none"
                             />
                         </div>)}
                 </div>
@@ -325,27 +294,28 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                             const selectedCategories = categories.filter(category => field.value.includes((category.id)));
                             return (
                                 <div className="relative">
-                                    <label className="block text-sm font-medium mb-2">Danh mục</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Danh mục</label>
                                     {openCategory && (
-                                        <div className="rounded-2xl text-2xl text-red-500 hover:scale-95 cursor-pointer hover:opacity-90 transition  absolute top-10 right-4"
+                                        <div className="rounded-2xl text-2xl text-destructive hover:scale-95 cursor-pointer hover:opacity-90 transition absolute top-10 right-4"
                                             onClick={() => setOpenCategory(false)}
                                         >
                                             <X></X>
                                         </div>
                                     )}
-                                    <button type="button"
+                                    <Button type="button"
+                                        variant="outline"
                                         onClick={() => setOpenCategory(prev => !prev)}
-                                        className="w-full border rounded-2xl px-4 py-3 flex flex-wrap gap-2 items-center min-h-12.5">
+                                        className="w-full flex flex-wrap gap-2 items-center min-h-12.5 h-auto">
 
                                         {selectedCategories.length > 0 ? (selectedCategories.map(category => {
                                             const Icon = icons[category.icon as IconName];
                                             return (
                                                 <div key={category.id}
-                                                    className="flex items-center gap-2 px-2 py-1 rounded-full bg-theme/40 text-sm group relative">
+                                                    className="flex items-center gap-2 px-2 py-1 rounded-full bg-primary/40 text-sm group relative text-foreground">
                                                     {Icon && (<Icon className="w-4 h-4" style={{ color: colors[category.color as TColor], }} />)}
-                                                    <span >{category.name}</span>
+                                                    <span>{category.name}</span>
                                                     <div
-                                                        className=" absolute -top-1 -right-1 hidden group-hover:flex items-center justify-center w-4 h-4 rounded-full bg-black text-white text-xs"
+                                                        className="absolute -top-1 -right-1 hidden group-hover:flex items-center justify-center w-4 h-4 rounded-full bg-foreground text-background text-xs cursor-pointer"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             field.onChange(field.value.filter((id: string) => id !== category.id));
@@ -354,7 +324,7 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
 
                                         })) :
                                             (
-                                                <div className="flex w-full justify-between gap-2 text-gray-500">
+                                                <div className="flex w-full justify-between gap-2 text-muted-foreground">
                                                     <span className="">Chọn...</span>
                                                     <span>
                                                         {openCategory ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -363,10 +333,10 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                                             )}
 
 
-                                    </button>
+                                    </Button>
                                     {/* DROPDOWN */}
                                     {
-                                        openCategory && (<div className="right-0 absolute z-50 w-full bg-white border border-gray-400 shadow-lg p-3 max-h-72 overflow-y-auto no-scrollbar">
+                                        openCategory && (<div className="right-0 absolute z-50 w-full bg-popover text-popover-foreground border shadow-lg p-3 max-h-72 overflow-y-auto no-scrollbar rounded-xl">
                                             <div>{categories.map(category => {
                                                 const Icon = icons[category.icon as IconName];
                                                 const isSelected = field.value.includes(category.id);
@@ -381,7 +351,7 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                                                                 field.onChange([...field.value, category.id,]);
                                                             }
                                                         }}
-                                                        className={`hover:bg-gray-500 w-full grid grid-cols-2 gap-3 p-3 rounded-xl border transition-all ${isSelected ? 'border-theme/50 bg-theme/40 text-black' : 'border-gray-200'}`}>
+                                                        className={`hover:bg-accent w-full grid grid-cols-2 gap-3 p-3 rounded-xl border transition-all cursor-pointer ${isSelected ? 'border-primary/50 bg-primary/20 text-foreground' : 'border-border'}`}>
                                                         <div className="col-span-1 flex items-center gap-2 text-left">
                                                             <div className="w-8 h-8 rounded-full flex items-center justify-center"
                                                                 style={{ backgroundColor: colors[category.color as TColor], }}>
@@ -398,7 +368,7 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
 
                                     {
                                         fieldState.error && (
-                                            <p className="text-red-500 text-sm mt-2">
+                                            <p className="text-destructive text-sm mt-2">
                                                 {fieldState.error.message}
                                             </p>
                                         )
@@ -407,8 +377,8 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                             );
                         }}
                     />
-                    <div className="">
-                        <label className="block text-sm font-medium mb-2">
+                    <div className="mt-4">
+                        <label className="block text-sm font-medium mb-2 text-foreground">
                             Mô tả
                         </label>
 
@@ -416,24 +386,25 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                             rows={4}
                             placeholder="Ghi chú..."
                             {...register('description')}
-                            className="w-full border rounded-2xl pt-2 px-4 outline-none focus:ring-2 focus:ring-black resize-none"
+                            className="w-full border rounded-2xl pt-2 px-4 outline-none focus:ring-2 focus:ring-ring bg-background resize-none"
                         />
                         {errors.description && (
-                            <p className="text-red-500 text-sm">
+                            <p className="text-destructive text-sm">
                                 {errors.description.message}
                             </p>
                         )}
 
                     </div>
                     <div className="flex items-center justify-end gap-3 mt-6">
-                        <button className="px-5 py-2 rounded-2xl border hover:bg-gray-100 transition" onClick={onClose}>
+                        <Button variant="outline" onClick={onClose}>
                             Hủy
-                        </button>
-                        <button className="px-5 py-2 rounded-2xl bg-theme text-white hover:opacity-90 transition">
+                        </Button>
+                        <Button type="submit">
                             Lưu
-                        </button>
+                        </Button>
                         {mode === "update" && defaultValue && (
-                            <button className="px-5 py-2 rounded-2xl bg-red-600 text-white hover:opacity-90 transition"
+                            <Button
+                                variant="destructive"
                                 type="button"
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -442,13 +413,13 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                                     }
                                 }}>
                                 Xóa
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </div>
 
             </form >
 
-        </div >
+        </Card >
     )
 }

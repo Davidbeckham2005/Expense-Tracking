@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { icons } from '../../constants/icon';
 import { colors } from '../../constants/color';
 import type { TCategoryType, IconName, ICategoryFormData, ICategory, TColor } from "../../types/ICategories";
+import { motion, AnimatePresence } from "motion/react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 type Props = {
     open: boolean;
@@ -32,14 +35,26 @@ export default function CategoryForm({ open, onClose, mode, initialData, onSubmi
             color: selectedColor || undefined,
             type: type || 'expense',
         };
-        // console.log(payload);
         onSubmit(payload);
 
         onClose();
     };
-    if (!open) return null;
-
     return (
+        <AnimatePresence>
+            {open && (
+                <motion.div
+                    className="fixed inset-0 z-50 flex items-center justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                >
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm cursor-pointer" onClick={onClose} />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.92 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.92 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className="w-[26rem] max-w-[90vw] rounded-2xl bg-popover text-popover-foreground border p-6 shadow-xl"
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={(e) => {
             e.stopPropagation();
             onClose();
@@ -54,87 +69,94 @@ export default function CategoryForm({ open, onClose, mode, initialData, onSubmi
                         onClick={onClose}
                         className="text-gray-500"
                     >
-                        ✕
-                    </button>
-                </div>
+                        <div className="mb-5 flex items-center justify-between">
+                            <h2 className="text-xl font-semibold text-foreground">
+                                {mode === 'add' ? 'Tạo mới' : 'Chỉnh sửa'}
+                            </h2>
 
-                {/* Name */}
-                <div className="mb-5">
-                    <label className="mb-2 block text-sm font-medium">
-                        Tên
-                    </label>
-
-                    <input
-                        type="text"
-                        placeholder="Category name"
-                        value={name}
-                        onChange={(e) =>
-                            setName(e.target.value)
-                        }
-                        className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
-                    />
-                </div>
-
-                {/* Icons */}
-                <div className="mb-5">
-                    <label className="mb-2 block text-sm font-medium">
-                        Biểu tượng
-                    </label>
-
-                    <div className="grid grid-cols-6 gap-3 max-h-40 overflow-y-scroll  pr-1">
-                        {Object.entries(icons).map(([key, Icon]) => (
-                            <button
-                                key={key}
-                                onClick={() =>
-                                    setSelectedIcon(key as IconName)
-                                }
-                                className={`flex h-12 w-12 items-center justify-center rounded-xl border transition
-                  ${selectedIcon === key
-                                        ? 'border-theme bg-blue-50'
-                                        : 'border-gray-200'
-                                    }`}
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                onClick={onClose}
+                                className="text-muted-foreground hover:text-foreground"
                             >
-                                <Icon size={20} />
-                            </button>
-                        ))
-                        }
-                    </div>
-                </div>
+                                ✕
+                            </motion.button>
+                        </div>
 
-                {/* Colors */}
-                <div className="mb-6">
-                    <label className="mb-2 block text-sm font-medium">
-                        Màu sắc
-                    </label>
+                        <div className="mb-5">
+                            <label className="mb-2 block text-sm font-medium text-foreground">
+                                Tên
+                            </label>
 
-                    <div className="grid grid-cols-6 gap-3 max-h-40 overflow-y-scroll pr-1">
-                        {Object.entries(colors).map(([key, color]) => (
-                            <button
-                                key={key}
-                                onClick={() =>
-                                    setSelectedColor(key as TColor)
+                            <Input
+                                type="text"
+                                placeholder="Category name"
+                                value={name}
+                                onChange={(e) =>
+                                    setName(e.target.value)
                                 }
-                                className={`h-10 w-[1/7] border-2 transition rounded-xl
-                ${selectedColor === key
-                                        ? 'border-black'
-                                        : 'border-transparent'
-                                    }`}
-                                style={{
-                                    backgroundColor: color,
-                                }}>
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                            />
+                        </div>
 
-                {/* Submit */}
-                <button
-                    onClick={handleSubmit}
-                    className="w-full rounded-xl bg-theme py-3 font-medium text-white transition hover:bg-blue-600"
-                >
-                    Lưu
-                </button>
-            </div>
-        </div >
+                        <div className="mb-5">
+                            <label className="mb-2 block text-sm font-medium text-foreground">
+                                Biểu tượng
+                            </label>
+
+                            <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 max-h-40 overflow-y-scroll pr-1">
+                                {Object.entries(icons).map(([key, Icon]) => (
+                                    <button
+                                        key={key}
+                                        onClick={() =>
+                                            setSelectedIcon(key as IconName)
+                                        }
+                                        className={`flex h-12 w-12 items-center justify-center rounded-xl border transition
+                  ${selectedIcon === key
+                                                ? 'border-primary bg-primary/20 text-primary'
+                                                : 'border-border bg-muted/30 text-foreground'
+                                            }`}
+                                    >
+                                        <Icon size={20} />
+                                    </button>
+                                ))
+                                }
+                            </div>
+                        </div>
+
+                        <div className="mb-6">
+                            <label className="mb-2 block text-sm font-medium text-foreground">
+                                Màu sắc
+                            </label>
+
+                            <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 max-h-40 overflow-y-scroll pr-1">
+                                {Object.entries(colors).map(([key, color]) => (
+                                    <button
+                                        key={key}
+                                        onClick={() =>
+                                            setSelectedColor(key as TColor)
+                                        }
+                                        className={`h-10 w-[1/7] border-2 transition rounded-xl
+                ${selectedColor === key
+                                                ? 'border-foreground'
+                                                : 'border-transparent'
+                                            }`}
+                                        style={{
+                                            backgroundColor: color,
+                                        }}>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <Button
+                            className="w-full"
+                            onClick={handleSubmit}
+                        >
+                            Lưu
+                        </Button>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 }

@@ -63,24 +63,24 @@ export default function VoiceTransaction({ onParsed }: VoiceTransactionProps) {
         }
     };
     return (
-        <div className="flex flex-col gap-2 p-3 border border-zinc-800 rounded-xl w-full max-w-4xl mx-auto my-2">
+        <div className="flex flex-col gap-2 p-3 border rounded-xl w-full max-w-4xl mx-auto my-2">
             {/* Top row: mic + status */}
             <div className="flex items-center justify-between ">
                 <button
                     disabled={isAnalyzing}
                     type="button"
                     onClick={handleVoiceInput}
-                    className={` w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 
+                    className={`cursor-pointer w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 
                         ${listening ? "bg-red-500 text-white shadow-lg shadow-red-500/30 animate-pulse" : "border border-zinc-700 hover:border-zinc-500"}`}>
                     {listening ? <MicOff size={18} /> : <Mic size={18} />}
                 </button>
 
 
-                <input disabled={isAnalyzing} type="text" className="ml-2 w-full bg-transparent outline-none text-sm text-state-900" value={text} onChange={(e) => setText(e.target.value)} placeholder={listening ? "Đang lắng nghe..." : "Nhập hoặc nói..."} />
+                <input disabled={isAnalyzing} type="text" className="ml-2 w-full bg-transparent outline-none text-sm text-foreground" value={text} onChange={(e) => setText(e.target.value)} placeholder={listening ? "Đang lắng nghe..." : "Nhập hoặc nói..."} />
                 {isAnalyzing ? (
                     <Loader2 size={18} className="animate-spin" />
                 ) : (
-                    <Send onClick={() => { handleSend() }} size={18} className={text.trim() ? "translate-x-[1px]" : ""} />
+                    <Send onClick={() => { handleSend() }} size={18} className={`cursor-pointer hover:opacity-80 transition-opacity ${text.trim() ? "translate-x-[1px]" : ""}`} />
                 )}
             </div>
             {isAnalyzing && (

@@ -9,6 +9,8 @@ import UpdateCategory from './UpdateCategory'
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import type { TCategoryType, IconName, TColor } from "../../types/ICategories";
+import { motion } from "motion/react"
+import { Button } from "@/components/ui/button"
 export default function ListCategory() {
     const [activeType, setActiveType] = useState<TCategoryType>('expense');
     const { deleteCategory } = useCategoryStore();
@@ -34,7 +36,8 @@ export default function ListCategory() {
 
         <div className="min-h-screen space-y-6 rounded-2xl bg-white p-4 shadow-sm">
             <div className="flex gap-2">
-                <button
+                <Button
+                    variant={activeType === "expense" ? "default" : "outline"}
                     onClick={() => setActiveType("expense")}
                     className={`rounded-full border px-4 py-2 text-sm font-medium transition ${activeType === "expense"
                         ? "border-red-500 bg-red-50 text-red-600"
@@ -42,9 +45,9 @@ export default function ListCategory() {
                         }`}
                 >
                     Chi tiêu
-                </button>
-
-                <button
+                </Button>
+                <Button
+                    variant={activeType === "income" ? "default" : "outline"}
                     onClick={() => setActiveType("income")}
                     className={`rounded-full border px-4 py-2 text-sm font-medium transition ${activeType === "income"
                         ? "border-emerald-500 bg-emerald-50 text-emerald-600"
@@ -52,7 +55,7 @@ export default function ListCategory() {
                         }`}
                 >
                     Thu nhập
-                </button>
+                </Button>
                 {showCreateCategory && (
                     <AddCategory
                         type={activeType}
@@ -70,6 +73,25 @@ export default function ListCategory() {
                 )}
             </div>
 
+            <div className="flex flex-wrap gap-2">
+                <Button onClick={() => setShowCreateCategory(true)} variant="outline">+ Thêm danh mục</Button>
+                <Button onClick={() => setIsShowDeleteConfirm(!isShowDeleteConfirm)} variant="outline">Chỉnh sửa danh mục</Button>
+
+                {filteredCategories.length === 0 ? (
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center text-muted-foreground"
+                    >
+                        Không có category
+                    </motion.p>
+                ) : (
+                    <motion.div
+                        className="space-y-2"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
+                    >
             <div className="space-y-3">
                 <div className="flex flex-wrap gap-2">
                     <button
@@ -98,21 +120,45 @@ export default function ListCategory() {
                         {filteredCategories.map((category) => {
                             const Icon = icons[category.icon as IconName];
                             return (
-                                <div onClick={() => { if (category.is_default) return; setshowUpdateForm(true), setSelectedCategory(category) }}
+                                <motion.div
+                                    variants={{
+                                        hidden: { opacity: 0, x: -8 },
+                                        visible: { opacity: 1, x: 0 }
+                                    }}
+                                    onClick={() => { if (category.is_default) return; setshowUpdateForm(true), setSelectedCategory(category) }}
                                     key={category.id}
+                                    className={`flex items-center justify-between rounded-xl border bg-muted/30 px-3 py-2.5 transition pr-2
+        ${category.is_default ? "opacity-50 cursor-not-allowed" : "hover:bg-muted/50 cursor-pointer"}`}
                                     className={`group flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm transition
         ${category.is_default ? "opacity-60" : "cursor-pointer hover:border-gray-300 hover:bg-gray-50"}`}
                                 >
                                     <div className="flex items-center gap-3">
                                         {!category.is_default && isShowDeleteConfirm && (
-                                            <button onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (window.confirm("Bạn có chắc muốn xóa danh mục này?")) {
-                                                    handleDeleteCategory(category.id);
-                                                }
-                                            }}
-                                                className="text-gray-400 hover:text-red-500 transition"
+                                            <motion.button
+                                                whileTap={{ scale: 0.9 }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (window.confirm("Bạn có chắc muốn xóa danh mục này?")) {
+                                                        handleDeleteCategory(category.id);
+                                                    }
+                                                }}
+                                                className="text-muted-foreground hover:text-destructive transition cursor-pointer"
                                             >
+                                                {isShowDeleteConfirm && (
+                                                    <Trash2 className="w-4 h-4" />
+                                                )}
+                                            </motion.button>
+                                        )}
+                                        <div
+                                            className="w-10 h-10 flex items-center justify-center rounded-full"
+                                        >
+                                            {Icon && <Icon className="w-5 h-5" style={{ color: colors[category.color as TColor] || "#E5E7EB" }} />}
+                                        </div>
+
+                                        <h3 className="font-medium text-foreground">{category.name}</h3>
+                                    </div>
+
+                                </motion.div>
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
                                         )}
@@ -134,7 +180,7 @@ export default function ListCategory() {
                                 </div>
                             );
                         })}
-                    </div>
+                    </motion.div>
 
                 )}
             </div>

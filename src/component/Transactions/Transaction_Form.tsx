@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
@@ -21,6 +21,7 @@ import { colors } from '../../constants/color';
 import Loading from '../../component/Loading';
 
 import VoiceTransaction from '../DetectTransaction/voice';
+import { Button } from "@/components/ui/button"
 interface TransactionFormProps {
     mode?: 'create' | 'update';
     transaction?: IDBTransaction | null;
@@ -126,40 +127,42 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
 
                 />
             )}
-            <form onSubmit={handleSubmit(onSubmit)} className="mx-auto space-y-2 border border-gray-200 rounded-xl p-4 shadow-sm">
-                <div className="flex gap-2 max-w-xs mx-auto">
+            <form onSubmit={handleSubmit(onSubmit)} className="mx-auto space-y-4 border rounded-xl p-4 shadow-sm bg-card">
+                <div className="flex gap-2 max-w-sm mx-auto">
                     {/* switch type transactions */}
-                    <button
+                    <Button
                         type="button"
+                        variant={currentType === 'expense' ? "destructive" : "outline"}
                         onClick={() => {
                             setValue('type', 'expense');
                             setValue('category_id', '');
                         }}
-                        className={`flex-1 py-2 text-sm font-medium transition-colors rounded-lg border border-zinc-800
-          ${currentType === 'expense' ? 'bg-red-600 text-white' : 'text-zinc-400'}`}>Tiền chi
-                    </button>
-                    <button
+                        className="flex-1"
+                    >Tiền chi
+                    </Button>
+                    <Button
                         type="button"
+                        variant={currentType === 'income' ? "default" : "outline"}
                         onClick={() => { setValue('type', 'income'); setValue('category_id', ''); }}
-                        className={`flex-1 py-2 text-sm font-medium transition-colors rounded-lg border border-zinc-800
-          ${currentType === 'income' ? 'bg-green-600 text-white' : 'text-zinc-400'}`}>Tiền thu
-                    </button>
+                        className="flex-1"
+                    >Tiền thu
+                    </Button>
                 </div>
                 {/* DATE */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <span className="text-[10px] uppercase font-bold">
+                        <span className="text-[10px] uppercase font-bold text-foreground">
                             Ngày giao dịch
                         </span>
-                        <div className="p-2 border border-zinc-800 rounded-lg">
+                        <div className="p-2 border rounded-lg bg-background">
                             <input
                                 type="date"
                                 {...register('transaction_date')}
-                                className="w-full outline-none"
+                                className="w-full outline-none bg-transparent text-foreground"
                             />
 
                             {errors.transaction_date && (
-                                <p className="text-red-400 text-xs">
+                                <p className="text-destructive text-xs">
                                     {errors.transaction_date.message}
                                 </p>
                             )}
@@ -167,11 +170,10 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                     </div>
                     {/* AMOUNT */}
                     <div>
-                        <span className="text-[10px] uppercase font-bold">
+                        <span className="text-[10px] uppercase font-bold text-foreground">
                             Số tiền
                         </span>
-                        <div className="p-2 border border-zinc-800 rounded-lg">
-                            {/* tai sao o dau co control ? boi vi  */}
+                        <div className="p-2 border rounded-lg bg-background">
                             <Controller
                                 name="amount"
                                 control={control}
@@ -184,11 +186,11 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                                             onChange(rawValue ? parseInt(rawValue) : 0
                                             );
                                         }}
-                                        className="w-full outline-none"
+                                        className="w-full outline-none bg-transparent text-foreground"
                                     />
                                 )}
                             />
-                            {errors.amount && (<p className="text-red-400 text-xs">{errors.amount.message}</p>
+                            {errors.amount && (<p className="text-destructive text-xs">{errors.amount.message}</p>
                             )}
                         </div>
                     </div>
@@ -196,30 +198,29 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="w-full relative">
-                        <span className="text-[10px] uppercase font-bold">Ghi chú</span>
-                        <div className="p-2 border border-zinc-800 rounded-lg">
+                        <span className="text-[10px] uppercase font-bold text-foreground">Ghi chú</span>
+                        <div className="p-2 border rounded-lg bg-background">
                             <input
                                 type="text"
                                 {...register('note')}
                                 placeholder="ví dụ: mua đồ ăn"
-                                className="w-full outline-none" />
+                                className="w-full outline-none bg-transparent text-foreground" />
                         </div>
                     </div>
                     {/* CATEGORY */}
                     <div className="w-full relative">
                         {errors.category_id && (
-                            <p className="text-red-400 text-xs mb-2">
+                            <p className="text-destructive text-xs mb-2">
                                 {errors.category_id.message}
                             </p>
                         )}
-                        <span className="text-[10px] uppercase font-bold">
+                        <span className="text-[10px] uppercase font-bold text-foreground">
                             Danh mục
                         </span>
-                        {/* <div className="p-2 border border-zinc-800 rounded-lg"> */}
                         <button
                             type="button"
                             onClick={() => setIsOpen(!isOpen)}
-                            className="w-full p-2.5 flex items-center justify-between rounded-lg border border-zinc-800 text-left transition-all text-sm" >
+                            className="w-full p-2.5 flex items-center justify-between rounded-lg border bg-background text-left transition-all text-sm cursor-pointer" >
 
                             <div className="flex items-center gap-3">
                                 {selectedCategory ? (
@@ -233,21 +234,21 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                                         <span>{selectedCategory.name}</span>
                                     </>
                                 ) : (
-                                    <span className="text-gray-400">Chọn danh mục...</span>
+                                    <span className="text-muted-foreground">Chọn danh mục...</span>
                                 )}
                             </div>
-                            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                         </button>
 
                         {/* Menu Dropdown đổ xuống khi isOpen = true */}
                         {isOpen && (
                             <>
                                 {/* Lớp overlay trong suốt để bấm ra ngoài thì đóng menu */}
-                                <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+                                <div className="fixed inset-0 z-10 cursor-pointer" onClick={() => setIsOpen(false)} />
 
-                                <div className="absolute left-0 right-0 mt-2 z-20 border border-zinc-800 bg-white rounded-lg shadow-xl overflow-hidden">
+                                <div className="absolute left-0 right-0 mt-2 z-20 border bg-popover text-popover-foreground rounded-lg shadow-xl overflow-hidden">
 
-                                    <div className="max-h-60 overflow-y-auto no-scrollbar p-1 flex flex-col gap-1">
+                                    <div className="max-h-60 overflow-y-auto no-scrollbar p-2 flex flex-col gap-2">
                                         {filteredCategories.map((cat) => {
                                             const Icon = icons[cat.icon as IconName];
                                             const isSelected = currentCategoryId === cat.id;
@@ -260,10 +261,10 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                                                         setValue('category_id', cat.id, { shouldValidate: true });
                                                         setIsOpen(false);
                                                     }}
-                                                    className={`w-full p-2.5 flex items-center gap-3 rounded-md text-left text-sm transition-colors hover:bg-zinc-300 ${isSelected
-                                                        ? 'bg-theme/30 text-white border border-theme/50'
+                                                    className={`w-full p-2.5 flex items-center gap-3 rounded-md text-left text-sm transition-colors hover:bg-accent cursor-pointer ${isSelected
+                                                        ? 'bg-primary/20 text-foreground border border-primary/50'
                                                         : ''
-                                                        }`}
+                                                    }`}
                                                 >
                                                     {Icon && (<Icon
                                                         className="w-5 h-5 shrink-0"
@@ -276,14 +277,14 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                                     </div>
 
                                     {/* Nút "Thêm mới danh mục" cố định ở đáy Dropdown */}
-                                    <div className="border-t border-zinc-800 p-1 hover:bg-zinc-300">
+                                    <div className="border-t p-2 hover:bg-accent">
                                         <button
                                             type="button"
                                             onClick={() => {
                                                 setShowCreateCategory(true);
                                                 setIsOpen(false);
                                             }}
-                                            className="w-full flex items-center justify-center gap-2 rounded-md text-sm  transition-colors">
+                                            className="w-full flex items-center justify-center gap-2 rounded-md text-sm transition-colors cursor-pointer">
                                             <Plus className="w-4 h-4" />
                                             <span>Thêm mới danh mục</span>
                                         </button>
@@ -291,17 +292,16 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                                 </div>
                             </>
                         )}
-                        {/* </div> */}
                     </div>
                 </div>
 
                 {/* SUBMIT */}
                 <div className="p-2 max-w-sm mx-auto">
-                    <button
+                    <Button
                         type="submit"
-                        title={mode === 'create' ? 'Thêm giao dịch' : 'Cập nhật giao dịch'}
                         disabled={isLoading}
-                        className="w-full bg-theme py-2 text-white rounded-lg flex items-center justify-center hover:scale-95 transition-transform disabled:bg-gray-400">
+                        className="w-full"
+                    >
                         {isLoading ? (
                             <Loading />
                         ) : mode === 'create' ? (
@@ -309,16 +309,22 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                         ) : (
                             'Cập nhật giao dịch'
                         )}
-                    </button>
-                    {mode === "update" && (<button className="w-full bg-red-500 text-white py-2 rounded-lg mt-2" type="button" onClick={() => {
-                        if (window.confirm("Bạn có chắc muốn xóa danh mục này?")) {
-                            HandleDelete();
-                        }
-                    }}>Xóa
-                    </button>)}
+                    </Button>
+                    {mode === "update" && (
+                        <Button
+                            variant="destructive"
+                            className="w-full mt-2"
+                            type="button"
+                            onClick={() => {
+                                if (window.confirm("Bạn có chắc muốn xóa danh mục này?")) {
+                                    HandleDelete();
+                                }
+                            }}
+                        >Xóa
+                        </Button>
+                    )}
                 </div>
             </form >
-            {/* <BoxAI onParsed={(data) => HandlefillFormAI(data)} /> */}
             <VoiceTransaction onParsed={(data) => HandlefillFormAI(data)} />
         </div >
     );
