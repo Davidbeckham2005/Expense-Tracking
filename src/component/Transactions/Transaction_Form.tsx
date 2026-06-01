@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import AddCategory from '../Category/AddCategory';
 
-import { Plus } from 'lucide-react';
+import { Plus, ChevronDown } from 'lucide-react';
 
 import { useAuth } from '../../context/AuthContext';
 import { useTransactionStore } from '../../store/useTransactionStore';
@@ -87,48 +87,48 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
         return new Intl.NumberFormat('vi-VN').format(value);
     };
 
-    const handleKeyPress = (key: string) => {
-        const currentAmount = getValues('amount') ?? 0;
-        if (currentAmount > 999999999999) return;
+    // const handleKeyPress = (key: string) => {
+    //     const currentAmount = getValues('amount') ?? 0;
+    //     if (currentAmount > 999999999999) return;
 
-        if (key === 'CLEAR') {
-            setValue('amount', 0, { shouldValidate: true });
-            return;
-        }
+    //     if (key === 'CLEAR') {
+    //         setValue('amount', 0, { shouldValidate: true });
+    //         return;
+    //     }
 
-        if (key === 'BACKSPACE') {
-            const baseValue = Math.floor(currentAmount / 1000);
-            const strAmount = baseValue.toString();
+    //     if (key === 'BACKSPACE') {
+    //         const baseValue = Math.floor(currentAmount / 1000);
+    //         const strAmount = baseValue.toString();
 
-            if (strAmount.length <= 1) {
-                setValue('amount', 0, { shouldValidate: true });
-            } else {
-                setValue(
-                    'amount',
-                    Number(strAmount.slice(0, -1)) * 1000,
-                    {
-                        shouldValidate: true,
-                    });
-            }
-            return;
-        }
-        if (key.startsWith('+')) {
-            let shortcutValue = 0;
-            if (key === '+100k') shortcutValue = 100000;
-            else if (key === '+500k') shortcutValue = 500000;
-            else if (key === '+1M') shortcutValue = 1000000;
-            setValue('amount', currentAmount + shortcutValue, { shouldValidate: true, });
-            return;
-        }
-        if (key === '000') {
-            setValue('amount', Number(`${currentAmount}000`), { shouldValidate: true, });
-            return;
-        }
-        const baseValue = Math.floor(currentAmount / 1000);
+    //         if (strAmount.length <= 1) {
+    //             setValue('amount', 0, { shouldValidate: true });
+    //         } else {
+    //             setValue(
+    //                 'amount',
+    //                 Number(strAmount.slice(0, -1)) * 1000,
+    //                 {
+    //                     shouldValidate: true,
+    //                 });
+    //         }
+    //         return;
+    //     }
+    //     if (key.startsWith('+')) {
+    //         let shortcutValue = 0;
+    //         if (key === '+100k') shortcutValue = 100000;
+    //         else if (key === '+500k') shortcutValue = 500000;
+    //         else if (key === '+1M') shortcutValue = 1000000;
+    //         setValue('amount', currentAmount + shortcutValue, { shouldValidate: true, });
+    //         return;
+    //     }
+    //     if (key === '000') {
+    //         setValue('amount', Number(`${currentAmount}000`), { shouldValidate: true, });
+    //         return;
+    //     }
+    //     const baseValue = Math.floor(currentAmount / 1000);
 
-        const newAmount = Number(`${baseValue}${key}`) * 1000;
-        setValue('amount', newAmount, { shouldValidate: true, });
-    };
+    //     const newAmount = Number(`${baseValue}${key}`) * 1000;
+    //     setValue('amount', newAmount, { shouldValidate: true, });
+    // };
     const onSubmit = async (data: ITransactionFormData) => {
 
         try {
@@ -173,7 +173,9 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
             transaction_date: data.transaction_date.split('T')[0],
         });
     };
-
+    const [isOpen, setIsOpen] = useState(false);
+    const selectedCategory = filteredCategories.find(cat => cat.id === currentCategoryId);
+    const SelectedIcon = selectedCategory ? icons[selectedCategory.icon as IconName] : null;
     return (
         <div className="min-h-screen" >
             {showCreateCategory && (
@@ -184,190 +186,195 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
 
                 />
             )}
-            <div className="flex gap-2 max-w-xs mx-auto mb-4">
-                {/* switch type transactions */}
-                <button
-                    type="button"
-                    onClick={() => {
-                        setValue('type', 'expense');
-                        setValue('category_id', '');
-                    }}
-                    className={`flex-1 py-2 text-sm font-medium transition-colors
-          ${currentType === 'expense' ? 'bg-red-600 text-white' : 'text-zinc-400'}`}>Tiền chi
-                </button>
-                <button
-                    type="button"
-                    onClick={() => { setValue('type', 'income'); setValue('category_id', ''); }}
-                    className={`flex-1 py-2 text-sm font-medium transition-colors
-          ${currentType === 'income' ? 'bg-green-600 text-white' : 'text-zinc-400'}`}>Tiền thu
-                </button>
-            </div>
-
             <form onSubmit={handleSubmit(onSubmit)} className="mx-auto space-y-2 border border-gray-200 rounded-xl p-4 shadow-sm">
-                {/* DATE */}
-                <div className="p-2 border border-zinc-800 rounded-lg">
-                    <span className="text-[10px] uppercase font-bold">
-                        Ngày
-                    </span>
-                    <input
-                        type="date"
-                        {...register('transaction_date')}
-                        className="w-full outline-none"
-                    />
-
-                    {errors.transaction_date && (
-                        <p className="text-red-400 text-xs">
-                            {errors.transaction_date.message}
-                        </p>
-                    )}
+                <div className="flex gap-2 max-w-xs mx-auto">
+                    {/* switch type transactions */}
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setValue('type', 'expense');
+                            setValue('category_id', '');
+                        }}
+                        className={`flex-1 py-2 text-sm font-medium transition-colors rounded-lg border border-zinc-800
+          ${currentType === 'expense' ? 'bg-red-600 text-white' : 'text-zinc-400'}`}>Tiền chi
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => { setValue('type', 'income'); setValue('category_id', ''); }}
+                        className={`flex-1 py-2 text-sm font-medium transition-colors rounded-lg border border-zinc-800
+          ${currentType === 'income' ? 'bg-green-600 text-white' : 'text-zinc-400'}`}>Tiền thu
+                    </button>
                 </div>
-
-                {/* AMOUNT */}
-                <div className="p-2 border border-zinc-800 rounded-lg" onClick={(e) => { e.stopPropagation(); setIsOpenKeyboard(true) }}>
-                    <span className="text-[10px] uppercase font-bold">
-                        Số tiền
-                    </span>
-                    {/* tai sao o dau co control ? boi vi  */}
-                    <Controller
-                        name="amount"
-                        control={control}
-                        render={({ field: { onChange, value } }) => (
+                {/* DATE */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <span className="text-[10px] uppercase font-bold">
+                            Ngày
+                        </span>
+                        <div className="p-2 border border-zinc-800 rounded-lg">
                             <input
-                                type="text"
-                                inputMode="none"
-                                value={formatDisplay(value)}
-                                onChange={(e) => {
-                                    const rawValue = e.target.value.replace(/\D/g, '');
-                                    onChange(rawValue ? parseInt(rawValue) : 0
-                                    );
-                                }}
+                                type="date"
+                                {...register('transaction_date')}
                                 className="w-full outline-none"
                             />
-                        )}
-                    />
-                    {errors.amount && (<p className="text-red-400 text-xs">{errors.amount.message}</p>
-                    )}
-                </div>
-                {/* KEYBOARD */}
-                {/* {isOpenKeyboard && (
-                    <div onMouseLeave={(e) => { e.preventDefault(); }}
-                        className="p-2 space-y-2 border border-zinc-800 transition duration-300 rounded-lg">
-                        <div className="grid grid-cols-3 gap-2">
-                            <div className="col-span-3 grid grid-cols-3 gap-2">
-                                <button
-                                    className="border border-zinc-800 py-3 rounded-lg bg-theme/20"
-                                    type="button"
-                                    onClick={() => handleKeyPress('+100k')}>+100k
-                                </button>
-                                <button
-                                    className="border border-zinc-800 py-3 rounded-lg bg-theme/20"
-                                    type="button"
-                                    onClick={() => handleKeyPress('+500k')}>+500k
-                                </button>
-                                <button
-                                    className="border border-zinc-800 py-3 rounded-lg bg-theme/20"
-                                    type="button"
-                                    onClick={() => handleKeyPress('+1M')}>+1M
-                                </button>
-                            </div>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9,
-                            ].map((num) => (
-                                <button
-                                    key={num}
-                                    type="button"
-                                    onClick={() => handleKeyPress(num.toString())}
-                                    className="border border-zinc-800 py-3  rounded-lg">{num}
-                                </button>
-                            ))}
 
-                            <button
-                                className="border border-zinc-800 py-3 rounded-lg"
-                                type="button"
-                                onClick={() => handleKeyPress('000')}>.000
-                            </button>
-                            <button
-                                className="border border-zinc-800 rounded-lg"
-                                type="button"
-                                onClick={() => handleKeyPress('0')}>0
-                            </button>
-
-                            <button
-                                className="border border-zinc-800 py-3 bg-red-500 text-white rounded-lg"
-                                type="button"
-                                onClick={() => handleKeyPress('BACKSPACE')}>⌫
-                            </button>
+                            {errors.transaction_date && (
+                                <p className="text-red-400 text-xs">
+                                    {errors.transaction_date.message}
+                                </p>
+                            )}
                         </div>
-                    </div>)
-                }   */}
-
-                {/* NOTE */}
-                <div className="p-2 border border-zinc-800 rounded-lg">
-                    <span className="text-[10px] uppercase font-bold">Ghi chú</span>
-                    <input
-                        type="text"
-                        {...register('note')}
-                        placeholder="Nhập ghi chú..."
-                        className="w-full outline-none" />
-                </div>
-                {/* CATEGORY */}
-                <div className="p-2 border border-zinc-800 max-h-20 overflow-y-auto no-scrollbar rounded-lg">
-                    {errors.category_id && (<p className="text-red-400 text-xs mt-2">
-                        {errors.category_id.message}
-                    </p>
-                    )}
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                        {filteredCategories.map((cat) => {
-                            const Icon = icons[cat.icon as IconName];
-                            const isSelected = currentCategoryId === cat.id;
-
-                            return (
-                                <button
-                                    title={cat.name}
-                                    key={cat.id}
-                                    type="button"
-                                    onClick={() => setValue('category_id', cat.id, { shouldValidate: true, })}
-                                    className={`p-3 rounded-lg border ${isSelected ? 'bg-theme/30' : 'border-zinc-800'}`} >
-                                    {Icon && (<Icon className="w-5 h-5 mx-auto" style={{ color: colors[cat.color as TColor], }} />)}
-                                    <p className="text-xs mt-2">{cat.name}</p>
-                                </button>
-
-                            );
-                        })}
-                        <button
-                            title="Thêm mới danh mục"
-                            className="p-3 rounded-lg border border-zinc-800 flex items-center justify-center text-sm text-gray-500"
-                            type="button"
-                            onClick={() => setShowCreateCategory(true)}>
-                            <Plus></Plus>
-                        </button>
                     </div>
+                    {/* AMOUNT */}
+                    <div>
+                        <span className="text-[10px] uppercase font-bold">
+                            Số tiền
+                        </span>
+                        <div className="p-2 border border-zinc-800 rounded-lg">
+                            {/* tai sao o dau co control ? boi vi  */}
+                            <Controller
+                                name="amount"
+                                control={control}
+                                render={({ field: { onChange, value } }) => (
+                                    <input
+                                        type="text"
+                                        value={formatDisplay(value)}
+                                        onChange={(e) => {
+                                            const rawValue = e.target.value.replace(/\D/g, '');
+                                            onChange(rawValue ? parseInt(rawValue) : 0
+                                            );
+                                        }}
+                                        className="w-full outline-none"
+                                    />
+                                )}
+                            />
+                            {errors.amount && (<p className="text-red-400 text-xs">{errors.amount.message}</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="w-full relative">
+                        <span className="text-[10px] uppercase font-bold">Ghi chú</span>
+                        <div className="p-2 border border-zinc-800 rounded-lg">
+                            <input
+                                type="text"
+                                {...register('note')}
+                                placeholder="ví dụ: mua đồ ăn"
+                                className="w-full outline-none" />
+                        </div>
+                    </div>
+                    {/* CATEGORY */}
+                    <div className="w-full relative">
+                        {errors.category_id && (
+                            <p className="text-red-400 text-xs mb-2">
+                                {errors.category_id.message}
+                            </p>
+                        )}
+                        <span className="text-[10px] uppercase font-bold">
+                            Danh mục
+                        </span>
+                        {/* <div className="p-2 border border-zinc-800 rounded-lg"> */}
+                        <button
+                            type="button"
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="w-full p-2.5 flex items-center justify-between rounded-lg border border-zinc-800 text-left transition-all text-sm" >
+
+                            <div className="flex items-center gap-3">
+                                {selectedCategory ? (
+                                    <>
+                                        {SelectedIcon && (
+                                            <SelectedIcon
+                                                className="w-5 h-5"
+                                                style={{ color: colors[selectedCategory.color as TColor] }}
+                                            />
+                                        )}
+                                        <span>{selectedCategory.name}</span>
+                                    </>
+                                ) : (
+                                    <span className="text-gray-400">Chọn danh mục...</span>
+                                )}
+                            </div>
+                            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {/* Menu Dropdown đổ xuống khi isOpen = true */}
+                        {isOpen && (
+                            <>
+                                {/* Lớp overlay trong suốt để bấm ra ngoài thì đóng menu */}
+                                <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+
+                                <div className="absolute left-0 right-0 mt-2 z-20 border border-zinc-800 bg-white rounded-lg shadow-xl overflow-hidden">
+
+                                    <div className="max-h-60 overflow-y-auto no-scrollbar p-1 flex flex-col gap-1">
+                                        {filteredCategories.map((cat) => {
+                                            const Icon = icons[cat.icon as IconName];
+                                            const isSelected = currentCategoryId === cat.id;
+
+                                            return (
+                                                <button
+                                                    key={cat.id}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setValue('category_id', cat.id, { shouldValidate: true });
+                                                        setIsOpen(false);
+                                                    }}
+                                                    className={`w-full p-2.5 flex items-center gap-3 rounded-md text-left text-sm transition-colors hover:bg-zinc-300 ${isSelected
+                                                        ? 'bg-theme/30 text-white border border-theme/50'
+                                                        : ''
+                                                        }`}
+                                                >
+                                                    {Icon && (<Icon
+                                                        className="w-5 h-5 shrink-0"
+                                                        style={{ color: colors[cat.color as TColor] }} />
+                                                    )}
+                                                    <span className="truncate">{cat.name}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* Nút "Thêm mới danh mục" cố định ở đáy Dropdown */}
+                                    <div className="border-t border-zinc-800 p-1 hover:bg-zinc-300">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setShowCreateCategory(true);
+                                                setIsOpen(false);
+                                            }}
+                                            className="w-full flex items-center justify-center gap-2 rounded-md text-sm  transition-colors">
+                                            <Plus className="w-4 h-4" />
+                                            <span>Thêm mới danh mục</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                        {/* </div> */}
+                    </div>
                 </div>
 
                 {/* SUBMIT */}
-                <div className="p-4 max-w-md mx-auto">
+                <div className="p-2 max-w-sm mx-auto">
                     <button
                         type="submit"
                         title={mode === 'create' ? 'Thêm giao dịch' : 'Cập nhật giao dịch'}
                         disabled={isLoading}
-                        className="w-full bg-theme py-3 text-white rounded-lg flex items-center justify-center hover:scale-95 transition-transform disabled:bg-gray-400"
-                    >
+                        className="w-full bg-theme py-2 text-white rounded-lg flex items-center justify-center hover:scale-95 transition-transform disabled:bg-gray-400">
                         {isLoading ? (
                             <Loading />
                         ) : mode === 'create' ? (
-                            currentType === 'expense'
-                                ? 'Nhập Khoản Chi'
-                                : 'Nhập Khoản Thu'
+                            currentType === 'expense' ? 'Nhập Khoản Chi' : 'Nhập Khoản Thu'
                         ) : (
                             'Cập nhật giao dịch'
                         )}
                     </button>
-                    {mode === "update" && (<button className="w-full bg-red-500 text-white py-3 rounded-lg mt-2" type="button" onClick={() => {
+                    {mode === "update" && (<button className="w-full bg-red-500 text-white py-2 rounded-lg mt-2" type="button" onClick={() => {
                         if (window.confirm("Bạn có chắc muốn xóa danh mục này?")) {
                             HandleDelete();
                         }
-                    }}>
-                        Xóa
+                    }}>Xóa
                     </button>)}
                 </div>
             </form >
