@@ -5,11 +5,11 @@ export default function Loading() {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center justify-center h-screen text-gray-500 overflow-hidden bg-white/10 backdrop-blur-sm"
+            className="flex items-center justify-center h-screen text-muted-foreground overflow-hidden bg-background"
         >
             <div className="flex flex-col items-center gap-3">
-                <div className="w-8 h-8 border-2 border-theme/30 border-t-theme rounded-full animate-spin" />
-                <p className="text-sm text-slate-500">Đang tải...</p>
+                <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                <p className="text-sm text-muted-foreground">Đang tải...</p>
             </div>
         </motion.div>
     )

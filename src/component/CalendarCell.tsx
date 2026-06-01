@@ -15,14 +15,14 @@ export default memo(function CalendarDay({ day, monthStart, data, currentDay, on
     const key = format(day, "yyyy-MM-dd");
 
     return (
-        <div onClick={() => onSelect(key)} className={`min-h-16 h-16 md:h-20 text-xs cursor-pointer bg-white/20 backdrop-blur-sm border border-white/20 p-1 overflow-hidden hover:bg-white/30 transition-colors
-                ${currentDay === key ? "ring-1 ring-theme" : ""}
+        <div onClick={() => onSelect(key)} className={`min-h-16 h-16 md:h-20 text-xs cursor-pointer bg-muted/30 border border-border p-1 overflow-hidden hover:bg-muted/50 transition-colors
+                ${currentDay === key ? "ring-1 ring-primary" : ""}
                 ${isSameMonth(day, monthStart) ? "" : "opacity-30"}
                 ${isToday(day) ? "ring-2 ring-green-500" : ""}
                 `}>
             <div className="flex items-center justify-between gap-1 px-1 font-semibold text-[11px] md:text-xs">
-                <span>{format(day, "d")}</span>
-                {data && <span className="text-[10px] text-gray-400 md:hidden">{formatVND(data.balance)}</span>}
+                <span className="text-foreground">{format(day, "d")}</span>
+                {data && <span className="text-[10px] text-muted-foreground md:hidden">{formatVND(data.balance)}</span>}
             </div>
             {data && (
                 <div className="mt-1 font-medium text-[10px] sm:text-xs md:text-sm flex flex-col px-1 leading-tight">
@@ -32,7 +32,7 @@ export default memo(function CalendarDay({ day, monthStart, data, currentDay, on
                     <div className="text-red-500 hidden md:inline">
                         -{formatVND(data.expense)}
                     </div>
-                    <div className="text-blue-500 truncate">
+                    <div className="text-primary truncate">
                         {formatVND(data.balance)}
                     </div>
                 </div>

@@ -7,6 +7,8 @@ import type { RegisterInput } from '../Schemas/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from "react-hook-form";
 import { motion } from "motion/react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -70,7 +72,7 @@ export default function Register(): React.JSX.Element {
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="w-full max-w-md bg-white/80 backdrop-blur-2xl border border-white/40 p-8 rounded-3xl shadow-2xl relative z-10"
+                className="w-full max-w-md bg-card text-card-foreground border p-8 rounded-3xl shadow-xl relative z-10"
             >
                 <motion.div
                     variants={containerVariants}
@@ -79,96 +81,92 @@ export default function Register(): React.JSX.Element {
                     className="space-y-5"
                 >
                     <motion.div variants={itemVariants} className="text-center mb-6">
-                        <h2 className="text-3xl font-black tracking-tight text-slate-900 mb-2">Đăng ký</h2>
-                        <p className="text-slate-500 text-sm">Bắt đầu hành trình tích lũy thông minh</p>
+                        <h2 className="text-3xl font-black tracking-tight text-foreground mb-2">Đăng ký</h2>
+                        <p className="text-muted-foreground text-sm">Bắt đầu hành trình tích lũy thông minh</p>
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="space-y-1.5">
-                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Họ và tên</label>
+                        <Label>Họ và tên</Label>
                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                                 <User className="w-5 h-5" />
                             </span>
-                            <input
+                            <Input
                                 type="text"
                                 placeholder="Nguyễn Văn A"
                                 {...register("name")}
-                                className={`w-full bg-white/60 backdrop-blur-sm border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-slate-900 placeholder-slate-400 outline-none focus:border-theme focus:ring-2 focus:ring-theme/10 transition-all font-medium 
-                                    ${errors.name ? "border-red-500 focus:border-red-500 focus:ring-red-500/10" : ""}`}
+                                className={`pl-12 h-12 rounded-xl ${errors.name ? "border-destructive focus-visible:border-destructive" : ""}`}
                                 required
                             />
                         </div>
-                        {errors.name && <p className="text-red-500 text-xs pl-1">{errors.name.message}</p>}
+                        {errors.name && <p className="text-destructive text-xs pl-1">{errors.name.message}</p>}
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="space-y-1.5">
-                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</label>
+                        <Label>Email</Label>
                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                                 <Mail className="w-5 h-5" />
                             </span>
-                            <input
+                            <Input
                                 type="email"
                                 placeholder="name@domain.com"
                                 {...register("email")}
-                                className={`w-full bg-white/60 backdrop-blur-sm border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-slate-900 placeholder-slate-400 outline-none focus:border-theme focus:ring-2 focus:ring-theme/10 transition-all font-medium 
-                                    ${errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500/10" : ""}`}
+                                className={`pl-12 h-12 rounded-xl ${errors.email ? "border-destructive focus-visible:border-destructive" : ""}`}
                                 required
                             />
                         </div>
-                        {errors.email && <p className="text-red-500 text-xs pl-1">{errors.email.message}</p>}
+                        {errors.email && <p className="text-destructive text-xs pl-1">{errors.email.message}</p>}
 
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="space-y-1.5">
-                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mật khẩu</label>
+                        <Label>Mật khẩu</Label>
                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                                 <Lock className="w-5 h-5" />
                             </span>
-                            <input
+                            <Input
                                 type={showPassword ? "text" : "password"}
                                 placeholder="••••••••"
                                 {...register("password")}
-                                className={`w-full bg-white/60 backdrop-blur-sm border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-slate-900 placeholder-slate-400 outline-none focus:border-theme focus:ring-2 focus:ring-theme/10 transition-all font-medium 
-                                    ${errors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500/10" : ""}`}
+                                className={`pl-12 pr-12 h-12 rounded-xl ${errors.password ? "border-destructive focus-visible:border-destructive" : ""}`}
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition"
-                            >
-                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                            </button>
+className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition cursor-pointer"
+                                >
+                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
                         </div>
-                        {errors.password && <p className="text-red-500 text-xs pl-1">{errors.password.message}</p>}
+                        {errors.password && <p className="text-destructive text-xs pl-1">{errors.password.message}</p>}
 
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="space-y-1.5">
-                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Xác nhận mật khẩu</label>
+                        <Label>Xác nhận mật khẩu</Label>
                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                                 <Lock className="w-5 h-5" />
                             </span>
-                            <input
+                            <Input
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="••••••••"
                                 {...register("confirmPassword")}
-                                className={`w-full bg-white/60 backdrop-blur-sm border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-slate-900 placeholder-slate-400 outline-none focus:border-theme focus:ring-2 focus:ring-theme/10 transition-all font-medium 
-                                    ${errors.confirmPassword ? "border-red-500 focus:border-red-500 focus:ring-red-500/10" : ""}`}
+                                className={`pl-12 pr-12 h-12 rounded-xl ${errors.confirmPassword ? "border-destructive focus-visible:border-destructive" : ""}`}
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition"
-                            >
-                                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                            </button>
+className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition cursor-pointer"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
                         </div>
-                        {errors.confirmPassword && <p className="text-red-500 text-xs pl-1">{errors.confirmPassword.message}</p>}
+                        {errors.confirmPassword && <p className="text-destructive text-xs pl-1">{errors.confirmPassword.message}</p>}
 
                     </motion.div>
 
@@ -177,7 +175,7 @@ export default function Register(): React.JSX.Element {
                         type="submit"
                         disabled={isLoading}
                         whileTap={{ scale: 0.97 }}
-                        className="w-full mt-8 bg-theme hover:opacity-95 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-theme/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full mt-8 bg-primary text-primary-foreground hover:bg-primary/80 font-bold py-3.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? (
                             <Loader2 className="w-5 h-5 animate-spin" />
@@ -189,9 +187,9 @@ export default function Register(): React.JSX.Element {
                         )}
                     </motion.button>
 
-                    <motion.p variants={itemVariants} className="text-center mt-6 text-sm text-slate-500">
+                    <motion.p variants={itemVariants} className="text-center mt-6 text-sm text-muted-foreground">
                         Đã có tài khoản?{" "}
-                        <Link to="/Login" className="text-theme hover:opacity-80 font-semibold transition-colors">
+                        <Link to="/Login" className="text-primary hover:opacity-80 font-semibold transition-colors">
                             Đăng nhập
                         </Link>
                     </motion.p>
