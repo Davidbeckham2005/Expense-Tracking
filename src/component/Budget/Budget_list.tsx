@@ -118,7 +118,7 @@ export default function BudgetPage() {
     // console.log('Budgets match spent:', budgetsMatchSpent);
     // console.log('Budgets with spent amount:', budgetsWithSpent);
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="min-h-screen bg-gray-50 p-4 md:p-6">
             {isOpenCreate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/40" onClick={() => setIsOpenCreate(false)} />
@@ -137,9 +137,9 @@ export default function BudgetPage() {
             )}
 
             <div className="max-w-6xl mx-auto">
-                <div className="flex items-center justify-between w-full mb-2">
-                    <div className="flex items-center gap-5">
-                        <div className="flex items-center gap-5">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between w-full mb-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+                        <div className="flex items-center gap-3">
                             <select
                                 value={statusBudget}
                                 onChange={(e) => setStatusBudget(e.target.value as typeof statusBudget)}>
@@ -148,7 +148,7 @@ export default function BudgetPage() {
                                 <option value="allLimited">Tất cả</option>
                             </select>
                         </div>
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-3">
                             <select
                                 value={modeShow}
                                 onChange={(e) => setModeShow(e.target.value as selectModeShowBudget)}>
@@ -162,10 +162,9 @@ export default function BudgetPage() {
                         </div>
                     </div>
 
-                    <div className="flex bg-theme /90 text-white px-2 py-1 rounded-2xl hover:opacity-90 transition text-nowrap">
-                        <Plus>
-                        </Plus>
-                        <button onClick={() => setIsOpenCreate(true)}> Thêm mới
+                    <div className="inline-flex items-center gap-2 self-start md:self-auto bg-theme/90 text-white px-3 py-2 rounded-xl hover:opacity-90 transition text-nowrap shadow-sm">
+                        <Plus className="h-4 w-4" />
+                        <button type="button" onClick={() => setIsOpenCreate(true)}> Thêm mới
                         </button>
                     </div>
 

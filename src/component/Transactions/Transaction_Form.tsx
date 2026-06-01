@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
@@ -33,7 +33,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
     const [showCreateCategory, setShowCreateCategory] = useState(false);
 
 
-    const { addTransaction, updateTransaction, deleteTransaction } = useTransactionStore();
+    const { addTransaction, updateTransaction, deleteTransaction, transactions } = useTransactionStore();
     const { categories } = useCategoryStore();
 
     const { control, register, handleSubmit, getValues, setValue, watch, reset, formState: { errors }, } = useForm<ICreateTransaction>({
@@ -64,71 +64,11 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
             setIsLoading(false)
         }
     }
-    // useEffect(() => {
-    //     function handleClickOutside(event: PointerEvent) {
-    //         if (
-    //             keyboardRef.current &&
-    //             !keyboardRef.current.contains(event.target as Node)
-    //         ) {
-    //             setShowKeyboard(false);
-    //         }
-    //     }
-
-    //     document.addEventListener("click", handleClickOutside);
-
-    //     return () => {
-    //         document.removeEventListener("click", handleClickOutside);
-    //     };
-    // }, []);
-    const [isOpenKeyboard, setIsOpenKeyboard] = useState(false);
 
     const formatDisplay = (value: number | null): string => {
         if (value === null || isNaN(value)) return '0';
         return new Intl.NumberFormat('vi-VN').format(value);
     };
-
-    // const handleKeyPress = (key: string) => {
-    //     const currentAmount = getValues('amount') ?? 0;
-    //     if (currentAmount > 999999999999) return;
-
-    //     if (key === 'CLEAR') {
-    //         setValue('amount', 0, { shouldValidate: true });
-    //         return;
-    //     }
-
-    //     if (key === 'BACKSPACE') {
-    //         const baseValue = Math.floor(currentAmount / 1000);
-    //         const strAmount = baseValue.toString();
-
-    //         if (strAmount.length <= 1) {
-    //             setValue('amount', 0, { shouldValidate: true });
-    //         } else {
-    //             setValue(
-    //                 'amount',
-    //                 Number(strAmount.slice(0, -1)) * 1000,
-    //                 {
-    //                     shouldValidate: true,
-    //                 });
-    //         }
-    //         return;
-    //     }
-    //     if (key.startsWith('+')) {
-    //         let shortcutValue = 0;
-    //         if (key === '+100k') shortcutValue = 100000;
-    //         else if (key === '+500k') shortcutValue = 500000;
-    //         else if (key === '+1M') shortcutValue = 1000000;
-    //         setValue('amount', currentAmount + shortcutValue, { shouldValidate: true, });
-    //         return;
-    //     }
-    //     if (key === '000') {
-    //         setValue('amount', Number(`${currentAmount}000`), { shouldValidate: true, });
-    //         return;
-    //     }
-    //     const baseValue = Math.floor(currentAmount / 1000);
-
-    //     const newAmount = Number(`${baseValue}${key}`) * 1000;
-    //     setValue('amount', newAmount, { shouldValidate: true, });
-    // };
     const onSubmit = async (data: ITransactionFormData) => {
 
         try {
@@ -177,7 +117,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
     const selectedCategory = filteredCategories.find(cat => cat.id === currentCategoryId);
     const SelectedIcon = selectedCategory ? icons[selectedCategory.icon as IconName] : null;
     return (
-        <div className="min-h-screen" >
+        <div className="" >
             {showCreateCategory && (
                 <AddCategory
                     type={currentType}
@@ -209,7 +149,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <span className="text-[10px] uppercase font-bold">
-                            Ngày
+                            Ngày giao dịch
                         </span>
                         <div className="p-2 border border-zinc-800 rounded-lg">
                             <input

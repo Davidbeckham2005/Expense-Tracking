@@ -18,7 +18,7 @@ type chartDate = 'pie' | 'line' | 'bar';
 type FilterMode = "month" | "year";
 export default function ReportTransaction() {
     const { transactions } = useTransactionStore();
-    const [currentChart, setCurrentChart] = useState<chartDate>("line");
+    const [currentChart, setCurrentChart] = useState<chartDate>("pie");
     const { categories } = useCategoryStore();
     const [currentType, setCurrentType] = useState<TTransactionType>("expense");
     const [currentDate, setcurrentDate] = useState(new Date());

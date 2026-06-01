@@ -6,7 +6,7 @@ import { icons } from '../../constants/icon'
 import Calandar from "../useCalendar";
 import TransactionForm from './Transaction_Form';
 import type { IconName } from "../../types/ICategories";
-import { Search, CirclePlus, Settings, Trash2 } from "lucide-react";
+import { Search, CirclePlus, Settings, Trash2, CalendarDays, ChevronUp, ChevronDown } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { format } from "date-fns";
 
@@ -29,6 +29,7 @@ export default function ListTransaction() {
 
     const [selectedTransactionIds, setSelectedTransactionIds] = useState<string[]>([]);
     const [isSetting, setIsSetting] = useState(false);
+    const [showCalendar, setShowCalendar] = useState(true);
 
     const categoryMap = useMemo(() => {
         return Object.fromEntries(
@@ -118,7 +119,23 @@ export default function ListTransaction() {
     }
     return (
         <div className="min-h-screen">
-            <Calandar setMonth={setcurrentDate} currentDay={selectedDay} setCurrentDay={setSelectedDay} currentDate={currentDate} />
+            <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
+                <button
+                    type="button"
+                    onClick={() => setShowCalendar((prev) => !prev)}
+                    className="inline-flex items-center gap-2 rounded-xl bg-theme/10 px-3 py-2 text-sm font-medium text-theme transition hover:bg-theme/15"
+                >
+                    <CalendarDays className="h-4 w-4" />
+                    <span>{showCalendar ? "Ẩn lịch" : "Hiện lịch"}</span>
+                    {showCalendar ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </button>
+                <span className="text-xs text-gray-400">Lịch theo tháng hiện tại</span>
+            </div>
+            {showCalendar && (
+                <div className="mb-4">
+                    <Calandar setMonth={setcurrentDate} currentDay={selectedDay} setCurrentDay={setSelectedDay} currentDate={currentDate} />
+                </div>
+            )}
             {openUpdate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/40" onClick={() => setopenUpdate(false)} />
@@ -151,7 +168,7 @@ export default function ListTransaction() {
                     </div>
                 </div>
             )}
-            <div onClick={() => setSelectedDay(null)} className="bg-white rounded-2xl border-b border-gray-300 p-4 space-y-4">
+            <div onClick={() => setSelectedDay(null)} className="bg-white rounded-2xl border border-gray-200 p-4 space-y-4 shadow-sm">
                 <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
 
@@ -162,45 +179,59 @@ export default function ListTransaction() {
                             placeholder="Tìm kiếm"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="max-w-md pl-8 pr-10 rounded-xl border border-gray-200 bg-white shadow-sm outline-none"
+                            className="w-full max-w-none md:max-w-md pl-10 pr-4 py-3 rounded-2xl border border-gray-200 bg-white shadow-sm outline-none text-sm md:text-base"
                         />
                     </div>
 
 
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 items-center justify-between">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center justify-between">
                     <h2 className="text-sm md:text-xl font-bold">
                         Tổng quan tháng
                     </h2>
 
-                    <div className="col-span-3 md:col-span-1 gap-2 flex items-center justify-between max-w-90 w-full mx-auto rounded-xl text-gray-600/80">
+                    <div className="col-span-1 md:col-span-2 gap-2 flex items-center justify-between w-full rounded-xl text-gray-600/80">
                         <button
                             type="button"
                             onClick={() => { setCurrentType(null); }}
-                            className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === null ? 'bg-blue-600/80 text-white' : ''}`}>Tất cả
+                            className={`flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === null ? 'bg-blue-600 text-white border-blue-600' : 'hover:border-blue-200 hover:text-blue-600'}`}>Tất cả
                         </button>
                         <button
                             type="button"
                             onClick={() => { setCurrentType("expense"); }}
-                            className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'expense' ? 'bg-red-600/80 text-white' : ''}`}>Tiền chi
+                            className={`flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === 'expense' ? 'bg-red-600 text-white border-red-600' : 'hover:border-red-200 hover:text-red-600'}`}>Tiền chi
                         </button>
                         <button
                             type="button"
                             onClick={() => { setCurrentType("income"); }}
-                            className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'income' ? 'bg-green-600/80 text-white' : ''}`}>Tiền thu
+                            className={`flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition ${currentType === 'income' ? 'bg-green-600 text-white border-green-600' : 'hover:border-green-200 hover:text-green-600'}`}>Tiền thu
                         </button>
                     </div>
-                    <div className="flex space-x-2 ">
-                        <CirclePlus className="cursor-pointer hover:scale-110 transition-transform" onClick={() => setopenCreate(true)}> </CirclePlus>
-                        <Settings onClick={() => { { setIsSetting(!isSetting) }; { setSelectedTransactionIds([]) } }}> </Settings>
+                    <div className="flex items-center justify-start md:justify-end gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setopenCreate(true)}
+                            className="inline-flex items-center gap-2 rounded-xl bg-theme px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
+                        >
+                            <CirclePlus className="h-4 w-4" />
+                            <span>Thêm</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setIsSetting(!isSetting); setSelectedTransactionIds([]); }}
+                            className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition ${isSetting ? 'border-theme bg-theme/10 text-theme' : 'border-gray-200 bg-white text-gray-600 hover:border-theme/30 hover:text-theme'}`}
+                        >
+                            <Settings className="h-4 w-4" />
+                            <span className="hidden sm:inline">Chọn</span>
+                        </button>
                     </div>
-                    <div className="col-span-2 md:col-span-1 flex items-center justify-end gap-2">
+                    <div className="col-span-1 flex items-center justify-start md:justify-end gap-2">
 
                         <input
                             type="month"
                             value={format(currentDate, "yyyy-MM")}
                             onChange={(e) => { const [year, month] = e.target.value.split("-"); setcurrentDate(new Date(parseInt(year), parseInt(month) - 1, 1)); }}
-                            className="border rounded-lg px-3 py-1 text-sm outline-none"
+                            className="w-full md:w-auto border rounded-xl px-3 py-2 text-sm outline-none bg-white shadow-sm"
                         />
                     </div>
 
