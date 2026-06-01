@@ -12,17 +12,18 @@ import BudgetForm from "./Budget_form";
 import type { TColor } from "../../types/ICategories";
 import { colors } from "../../constants/color";
 import { motion, AnimatePresence } from "motion/react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 
 type statusBudget = 'onLimited' | 'overLimit' | 'allLimited'
 type selectModeShowBudget = 'all' | 'current_month' | 'year'
 export default function BudgetPage() {
     const [modeShow, setModeShow] = useState<selectModeShowBudget>('current_month')
     const [statusBudget, setStatusBudget] = useState<statusBudget>('onLimited')
-    // const [currentMonth, setCurrentMonth] = useState(new Date())
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
-    // console.log('Selected month:', selectedMonth, 'Selected year:', selectedYear);
     const { budgets } = useBudgetStore();
     const { transactions } = useTransactionStore();
     const [selectedBudget, setSelectedBudget] = useState<IBudget | null>(null);
@@ -115,9 +116,6 @@ export default function BudgetPage() {
         }
         return matchDate() && matchStatus();
     });
-    // console.log('Filtered budgets:', filteredBudgets);
-    // console.log('Budgets match spent:', budgetsMatchSpent);
-    // console.log('Budgets with spent amount:', budgetsWithSpent);
     return (
         <div className="min-h-screen p-4 md:p-6">
             <AnimatePresence>
@@ -128,13 +126,13 @@ export default function BudgetPage() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
-                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsOpenCreate(false)} />
+                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm cursor-pointer" onClick={() => setIsOpenCreate(false)} />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.92 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.92 }}
                             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                            className="relative z-10 w-full max-w-xl bg-white/20 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar"
+                            className="relative z-10 w-full max-w-xl bg-popover text-popover-foreground border rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar"
                         >
                             <BudgetForm mode="create" onClose={() => setIsOpenCreate(false)} />
                         </motion.div>
@@ -149,13 +147,13 @@ export default function BudgetPage() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
-                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsOpenUpdate(false)} />
+                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm cursor-pointer" onClick={() => setIsOpenUpdate(false)} />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.92 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.92 }}
                             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                            className="relative z-10 w-full max-w-4xl bg-white/20 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar"
+                            className="relative z-10 w-full max-w-4xl bg-popover text-popover-foreground border rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar"
                         >
                             <BudgetForm mode="update" onClose={() => setIsOpenUpdate(false)} defaultValue={selectedBudget} />
                         </motion.div>
@@ -167,43 +165,50 @@ export default function BudgetPage() {
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between w-full mb-3">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
                         <div className="flex items-center gap-3">
-                            <select
+                            <Select
                                 value={statusBudget}
-                                onChange={(e) => setStatusBudget(e.target.value as typeof statusBudget)}>
-                                <option value="onLimited">Khả dụng</option>
-                                <option value="overLimit">Vượt giới hạn</option>
-                                <option value="allLimited">Tất cả</option>
-                            </select>
+                                onValueChange={(val) => setStatusBudget(val as typeof statusBudget)}
+                            >
+                                <SelectTrigger className="w-40">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="onLimited">Khả dụng</SelectItem>
+                                    <SelectItem value="overLimit">Vượt giới hạn</SelectItem>
+                                    <SelectItem value="allLimited">Tất cả</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="flex items-center gap-3">
-                            <select
+                            <Select
                                 value={modeShow}
-                                onChange={(e) => setModeShow(e.target.value as selectModeShowBudget)}>
-                                <option value="current_month">Tháng này</option>
-                                <option value="year">Theo năm</option>
-                                {/* <option value="custom">Tùy chỉnh</option> */}
-                                <option value="all">Tất cả</option>
-                            </select>
-                            <h2> {modeShow === 'current_month' && `${monthName} ${selectedYear}`}
+                                onValueChange={(val) => setModeShow(val as typeof modeShow)}
+                            >
+                                <SelectTrigger className="w-40">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="current_month">Tháng này</SelectItem>
+                                    <SelectItem value="year">Theo năm</SelectItem>
+                                    <SelectItem value="all">Tất cả</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <h2 className="text-foreground text-sm font-medium"> {modeShow === 'current_month' && `${monthName} ${selectedYear}`}
                             </h2>
                         </div>
                     </div>
 
-                    <motion.div
-                        whileTap={{ scale: 0.95 }}
-                        className="inline-flex items-center gap-2 self-start md:self-auto bg-theme/90 text-white px-3 py-2 rounded-xl hover:opacity-90 transition text-nowrap shadow-sm cursor-pointer"
-                    >
+                    <Button onClick={() => setIsOpenCreate(true)}>
                         <Plus className="h-4 w-4" />
-                        <button type="button" onClick={() => setIsOpenCreate(true)}> Thêm mới
-                        </button>
-                    </motion.div>
+                        Thêm mới
+                    </Button>
 
                 </div>
                 {(filteredBudgets.length === 0) ? (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="text-center text-gray-500 py-20"
+                        className="text-center text-muted-foreground py-20"
                     >
                         Không có ngân sách nào trong tháng này.
                     </motion.div>
@@ -223,65 +228,66 @@ export default function BudgetPage() {
                                 }}
                                 whileHover={{ scale: 1.01 }}
                                 whileTap={{ scale: 0.99 }}
-                                className="bg-white/15 backdrop-blur-lg rounded-3xl p-5 shadow-lg border border-white/40"
                                 onClick={() => { setSelectedBudget(budget); setIsOpenUpdate(true) }}
                             >
-                                <div className="flex items-start justify-between w-full">
-                                    <div className="w-full">
-                                        <div className="w-full flex justify-between items-center gap-2">
-                                            <h2 className="text-xl font-semibold">
-                                                {budget.name}
-                                            </h2>
-                                            {budget.is_active && (
+                                <Card className="p-5 cursor-pointer">
+                                    <div className="flex items-start justify-between w-full">
+                                        <div className="w-full">
+                                            <div className="w-full flex justify-between items-center gap-2">
+                                                <h2 className="text-xl font-semibold text-card-foreground">
+                                                    {budget.name}
+                                                </h2>
+                                                {budget.is_active && (
+                                                    <div
+                                                        className="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.8)]"
+                                                        title="Đang hoạt động"
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="w-full flex justify-between items-center gap-2">
+                                                <p className="text-muted-foreground mt-1 text-sm line-clamp-2 truncate">
+                                                    {budget.description || 'Không có mô tả'}
+                                                </p>
+                                                <div className="flex gap-1 text-sm font-medium text-muted-foreground/70">
+                                                    <span>Còn lại: </span>
+                                                    <span className={` ${getColor(budget.percent)}`}>
+                                                        {formatVND(budget.remainingAmount)}đ
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-2 space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-full h-3 max-w-[90%] bg-muted rounded-full ">
+                                                <div className="w-full flex gap-2 items-center h-full">
+                                                    <div title={`${budget.percent.toFixed(2)}%`}
+                                                        className={`h-full rounded-full ${getProgressColor(budget.percent)}`}
+                                                        style={{ width: `${budget.percent}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <span className={`text-sm font-medium ${getColor(budget.percent)}`}>{budget.percent.toFixed(2)}%</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm text-muted-foreground/70">
+                                            <span className="font-medium">Ngân sách {formatVND(budget.limit_amount)}đ</span>
+                                            <span className="font-medium">Chi tiêu {formatVND(budget.spentAmount)}đ</span>
+
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+
+                                            {(budget.budget_categories || []).map((bc) => (
                                                 <div
-                                                    className="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.8)]"
-                                                    title="Đang hoạt động"
-                                                />
-                                            )}
-                                        </div>
-                                        <div className="w-full flex justify-between items-center gap-2">
-                                            <p className="text-gray-500 mt-1 text-sm line-clamp-2 truncate">
-                                                {budget.description || 'Không có mô tả'}
-                                            </p>
-                                            <div className="flex gap-1 text-sm font-medium text-gray-600/70">
-                                                <span>Còn lại: </span>
-                                                <span className={` ${getColor(budget.percent)}`}>
-                                                    {formatVND(budget.remainingAmount)}đ
-                                                </span>
-                                            </div>
+                                                    key={bc.categories.id}
+                                                    className="px-3 py-1 rounded-full text-xs text-white hover:scale-105 transition-all" style={{ backgroundColor: colors[bc.categories.color as TColor] }}
+                                                >
+                                                    {bc.categories.name}
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
-                                </div>
-
-                                <div className="mt-2 space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-full h-3 max-w-[90%] bg-gray-200 rounded-full ">
-                                            <div className="w-full flex gap-2 items-center h-full">
-                                                <div title={`${budget.percent.toFixed(2)}%`}
-                                                    className={`h-full rounded-full ${getProgressColor(budget.percent)}`}
-                                                    style={{ width: `${budget.percent}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                        <span className={`text-sm font-medium ${getColor(budget.percent)}`}>{budget.percent.toFixed(2)}%</span>
-                                    </div>
-                                    <div className="flex items-center justify-between text-sm text-gray-600/70">
-                                        <span className="font-medium">Ngân sách {formatVND(budget.limit_amount)}đ</span>
-                                        <span className="font-medium">Chi tiêu {formatVND(budget.spentAmount)}đ</span>
-
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-
-                                        {(budget.budget_categories || []).map((bc) => (
-                                            <div
-                                                key={bc.categories.id}
-                                                className="px-3 py-1 rounded-full text-xs hover:scale-105 transition-all" style={{ backgroundColor: colors[bc.categories.color as TColor] }}
-                                            >
-                                                {bc.categories.name}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                </Card>
                             </motion.div>
                         ))}
                     </motion.div>

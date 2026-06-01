@@ -8,8 +8,9 @@ import AddCategory from "./AddCategory";
 import UpdateCategory from './UpdateCategory'
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
-import type { TCategoryType, IconName , TColor} from "../../types/ICategories";
+import type { TCategoryType, IconName, TColor } from "../../types/ICategories";
 import { motion } from "motion/react"
+import { Button } from "@/components/ui/button"
 export default function ListCategory() {
     const [activeType, setActiveType] = useState<TCategoryType>('expense');
     const { deleteCategory } = useCategoryStore();
@@ -35,21 +36,18 @@ export default function ListCategory() {
 
         <div className="min-h-screen space-y-6">
             <div className="flex gap-2">
-                <button
+                <Button
+                    variant={activeType === "expense" ? "default" : "outline"}
                     onClick={() => setActiveType("expense")}
-                    className={`border rounded-lg px-3 py-1 ${activeType === "expense" ? "bg-gray-200" : ""
-                        }`}
                 >
                     Chi tiêu
-                </button>
-
-                <button
+                </Button>
+                <Button
+                    variant={activeType === "income" ? "default" : "outline"}
                     onClick={() => setActiveType("income")}
-                    className={`border rounded-lg px-3 py-1 ${activeType === "income" ? "bg-gray-200" : ""
-                        }`}
                 >
                     Thu nhập
-                </button>
+                </Button>
                 {showCreateCategory && (
                     <AddCategory
                         type={activeType}
@@ -67,15 +65,15 @@ export default function ListCategory() {
                 )}
             </div>
 
-            <div className="space-y-2 space-x-2">
-                <button onClick={() => setShowCreateCategory(true)} className="border rounded-lg">+ Thêm danh mục</button >
-                <button onClick={() => setIsShowDeleteConfirm(!isShowDeleteConfirm)} className="border rounded-lg">Chỉnh sửa danh mục</button >
+            <div className="flex flex-wrap gap-2">
+                <Button onClick={() => setShowCreateCategory(true)} variant="outline">+ Thêm danh mục</Button>
+                <Button onClick={() => setIsShowDeleteConfirm(!isShowDeleteConfirm)} variant="outline">Chỉnh sửa danh mục</Button>
 
                 {filteredCategories.length === 0 ? (
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="text-center text-gray-500"
+                        className="text-center text-muted-foreground"
                     >
                         Không có category
                     </motion.p>
@@ -96,8 +94,8 @@ export default function ListCategory() {
                                     }}
                                     onClick={() => { if (category.is_default) return; setshowUpdateForm(true), setSelectedCategory(category) }}
                                     key={category.id}
-                                    className={`flex items-center justify-between rounded-xl border border-white/30 bg-white/15 backdrop-blur-sm px-3 py-2.5 transition pr-2
-        ${category.is_default ? "opacity-50 cursor-not-allowed" : "hover:bg-white/30 cursor-pointer"}`}
+                                    className={`flex items-center justify-between rounded-xl border bg-muted/30 px-3 py-2.5 transition pr-2
+        ${category.is_default ? "opacity-50 cursor-not-allowed" : "hover:bg-muted/50 cursor-pointer"}`}
                                 >
                                     <div className="flex items-center gap-3">
                                         {!category.is_default && isShowDeleteConfirm && (
@@ -109,7 +107,7 @@ export default function ListCategory() {
                                                         handleDeleteCategory(category.id);
                                                     }
                                                 }}
-                                                className="text-gray-400 hover:text-red-500 transition"
+                                                className="text-muted-foreground hover:text-destructive transition cursor-pointer"
                                             >
                                                 {isShowDeleteConfirm && (
                                                     <Trash2 className="w-4 h-4" />
@@ -122,14 +120,9 @@ export default function ListCategory() {
                                             {Icon && <Icon className="w-5 h-5" style={{ color: colors[category.color as TColor] || "#E5E7EB" }} />}
                                         </div>
 
-                                        <h3 className="font-medium text-slate-800">{category.name}</h3>
+                                        <h3 className="font-medium text-foreground">{category.name}</h3>
                                     </div>
 
-                                    <button
-                                        className="text-gray-400 hover:text-gray-700"
-                                    >
-                                        &gt;
-                                    </button>
                                 </motion.div>
                             );
                         })}
