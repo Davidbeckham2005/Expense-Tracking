@@ -34,17 +34,25 @@ export default function ListCategory() {
 
     return (
 
-        <div className="min-h-screen space-y-6">
+        <div className="min-h-screen space-y-6 rounded-2xl bg-white p-4 shadow-sm">
             <div className="flex gap-2">
                 <Button
                     variant={activeType === "expense" ? "default" : "outline"}
                     onClick={() => setActiveType("expense")}
+                    className={`rounded-full border px-4 py-2 text-sm font-medium transition ${activeType === "expense"
+                        ? "border-red-500 bg-red-50 text-red-600"
+                        : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                        }`}
                 >
                     Chi tiêu
                 </Button>
                 <Button
                     variant={activeType === "income" ? "default" : "outline"}
                     onClick={() => setActiveType("income")}
+                    className={`rounded-full border px-4 py-2 text-sm font-medium transition ${activeType === "income"
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-600"
+                        : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                        }`}
                 >
                     Thu nhập
                 </Button>
@@ -84,6 +92,31 @@ export default function ListCategory() {
                         animate="visible"
                         variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
                     >
+            <div className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                    <button
+                        onClick={() => setShowCreateCategory(true)}
+                        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                    >
+                        + Thêm danh mục
+                    </button>
+                    <button
+                        onClick={() => setIsShowDeleteConfirm(!isShowDeleteConfirm)}
+                        className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${isShowDeleteConfirm
+                            ? "border-red-500 bg-red-50 text-red-600"
+                            : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                            }`}
+                    >
+                        Chỉnh sửa danh mục
+                    </button>
+                </div>
+
+                {filteredCategories.length === 0 ? (
+                    <p className="rounded-xl border border-dashed border-gray-200 py-10 text-center text-gray-500">
+                        Không có category
+                    </p>
+                ) : (
+                    <div className="space-y-3">
                         {filteredCategories.map((category) => {
                             const Icon = icons[category.icon as IconName];
                             return (
@@ -96,6 +129,8 @@ export default function ListCategory() {
                                     key={category.id}
                                     className={`flex items-center justify-between rounded-xl border bg-muted/30 px-3 py-2.5 transition pr-2
         ${category.is_default ? "opacity-50 cursor-not-allowed" : "hover:bg-muted/50 cursor-pointer"}`}
+                                    className={`group flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm transition
+        ${category.is_default ? "opacity-60" : "cursor-pointer hover:border-gray-300 hover:bg-gray-50"}`}
                                 >
                                     <div className="flex items-center gap-3">
                                         {!category.is_default && isShowDeleteConfirm && (
@@ -124,6 +159,25 @@ export default function ListCategory() {
                                     </div>
 
                                 </motion.div>
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        <div
+                                            className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100"
+
+                                        >
+                                            {Icon && <Icon className="h-5 w-5" style={{ color: colors[category.color as TColor] || "#9CA3AF" }} />}
+                                        </div>
+
+                                        <div>
+                                            <h3 className="font-semibold text-gray-800">{category.name}</h3>
+                                            <p className="text-xs text-gray-500">{category.is_default ? "Mặc định" : category.type}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Right: button go to edit */}
+                                    <span className="text-gray-300 transition group-hover:text-gray-500">&gt;</span>
+                                </div>
                             );
                         })}
                     </motion.div>

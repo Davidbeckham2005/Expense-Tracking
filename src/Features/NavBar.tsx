@@ -16,6 +16,8 @@ const tabs: ITabs[] = [
     { id: 'bao-cao', name: 'Báo cáo', icon: BarChart3 },
     { id: 'budget', name: 'Ngân sách', icon: Wallet },
     { id: 'setting', name: 'Cài đặt', icon: Settings },
+    // { id: 'khac', name: 'Khác', icon: MoreHorizontal },
+    { id: 'category', name: 'Danh mục', icon: MoreHorizontal },
 ];
 
 interface IHeaderProps {
