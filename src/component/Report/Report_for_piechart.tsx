@@ -5,6 +5,7 @@ import { formatVND, percentFormat } from "../../utils/format";
 import { icons } from "../../constants/icon";
 import { colors } from "../../constants/color";
 import { motion } from "motion/react"
+import { Card } from "@/components/ui/card"
 
 
 interface ReportForPieChartProps {
@@ -20,7 +21,7 @@ export default function ReportForPieChart({ map_with_category, currentType, tota
 
     return (
         map_with_category.length === 0 ? (
-            <p className="text-center text-gray-500">Không có dữ liệu</p>
+            <p className="text-center text-muted-foreground">Không có dữ liệu</p>
         ) : (
             <motion.div
                 className="space-y-2"
@@ -35,24 +36,25 @@ export default function ReportForPieChart({ map_with_category, currentType, tota
                         <motion.div
                             key={item.category.id}
                             variants={{ hidden: { opacity: 0, x: -8 }, visible: { opacity: 1, x: 0 } }}
-                            className="flex items-center rounded-xl border border-white/30 bg-white/15 backdrop-blur-sm px-3 py-2.5 transition"
                         >
-                            <div className="flex items-center justify-between gap-3 flex-1">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20">
-                                        {Icon && <Icon className="w-5 h-5" style={{ color: colors[item.category.color as TColor] || "#E5E7EB" }} />}
+                            <Card className="flex items-center px-3 py-2.5">
+                                <div className="flex items-center justify-between gap-3 flex-1">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted">
+                                            {Icon && <Icon className="w-5 h-5" style={{ color: colors[item.category.color as TColor] || "#E5E7EB" }} />}
+                                        </div>
+                                        <h3 className="font-medium text-card-foreground">{item.category.name}</h3>
                                     </div>
-                                    <h3 className="font-medium text-slate-800">{item.category.name}</h3>
-                                </div>
 
-                                <div className="flex ml-auto max-w-44 w-full">
-                                    <div className="flex-1 text-right text-slate-900 text-nowrap"> {formatVND(item.value)}đ
-                                    </div>
-                                    <div className="flex-1 text-right text-slate-500 text-nowrap">
-                                        {percent}
+                                    <div className="flex ml-auto max-w-44 w-full">
+                                        <div className="flex-1 text-right text-card-foreground text-nowrap"> {formatVND(item.value)}đ
+                                        </div>
+                                        <div className="flex-1 text-right text-muted-foreground text-nowrap">
+                                            {percent}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Card>
                         </motion.div>
                     );
                 })}

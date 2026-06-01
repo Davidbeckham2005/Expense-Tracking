@@ -14,6 +14,8 @@ import LineChartComponent from "../Chart/LineChart";
 import ReportForPieChart from "./Report_for_piechart";
 import ReportForLineChart from "./Report_for_linechart";
 import BarChartComponent from "../Chart/BarChart";
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
 type chartDate = 'pie' | 'line' | 'bar';
 type FilterMode = "month" | "year";
@@ -45,7 +47,6 @@ export default function ReportTransaction() {
             }
         })
     }, [transactions, selectedMonth, selectedYear, categoryMap, filterMode]);
-    // console.log("filteredTransactions", filteredTransactions, selectedMonth, selectedYear);
     const totalIncome = filteredTransactions
         .filter((t) => t.type === "income")
         .reduce((sum, t) => sum + t.amount, 0);
@@ -76,7 +77,6 @@ export default function ReportTransaction() {
         });
         return Array.from(map.values());
     }, [filteredTransactions]);
-    // console.log("map_with_date", map_with_date);
     const map_with_category = useMemo(() => {
         const map = new Map<string, { category: typeof categories[number], value: number }>();
         filteredTransactions.filter((t) => t.type === currentType)
@@ -94,7 +94,6 @@ export default function ReportTransaction() {
             });
         return Array.from(map.values());
     }, [filteredTransactions, categoryMap, currentType]);
-    // console.log("map_with_category", map_with_category);
     const categoryChartData = useMemo(() => {
         if (map_with_category.length === 0) {
             return [{ name: "Không có dữ liệu", value: 1 }];
@@ -107,78 +106,93 @@ export default function ReportTransaction() {
         })
         return chartData;
     }, [map_with_category]);
-    // console.log("chartData", categoryChartData);
     return (
         <div className="min-h-screen">
-            <h2 className="text-lg md:text-2xl font-bold mb-2">Báo cáo giao dịch</h2>
+            <h2 className="text-lg md:text-2xl font-bold mb-2 text-foreground">Báo cáo giao dịch</h2>
 
-            <div className="w-full max-w-4xl mx-auto space-y-2 border border-white/40 bg-white/15 backdrop-blur-lg rounded-xl p-3 shadow-lg">
-                <div className="flex flex-1 w-full border border-white/30 bg-white/20 backdrop-blur-sm rounded-lg">
-                    <button type="button" onClick={() => { setFilterMode("month") }} className={'flex-1 text-center px-2 rounded-lg p-1 transition ' + (filterMode === "month" ? "bg-theme text-white" : "text-slate-600")}>Hàng tháng</button>
-                    <button type="button" onClick={() => { setFilterMode("year") }} className={'flex-1 text-center px-2 rounded-lg p-1 transition ' + (filterMode === "year" ? "bg-theme text-white" : "text-slate-600")}>Hàng năm</button>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-start">
+                <div className="space-y-3">
+                    <Card className="w-full max-w-4xl mx-auto p-4 space-y-3 lg:max-w-none lg:mx-0">
+                        <div className="flex flex-1 w-full border bg-muted/30 rounded-lg">
+                            <Button
+                                variant={filterMode === "month" ? "default" : "ghost"}
+                                onClick={() => { setFilterMode("month") }}
+                                className="flex-1"
+                            >Hàng tháng</Button>
+                            <Button
+                                variant={filterMode === "year" ? "default" : "ghost"}
+                                onClick={() => { setFilterMode("year") }}
+                                className="flex-1"
+                            >Hàng năm</Button>
+                        </div>
+                        {filterMode === "month" && (<MonthControl currentDate={currentDate} setMonth={setcurrentDate} />)}
+                        {filterMode === "year" && (<YearControl currentDate={currentDate} setYear={setcurrentDate} />)}
+
+                        <div className="w-full flex gap-2 text-muted-foreground">
+                            <div className="flex flex-1 w-full border rounded-lg md:px-8">
+                                <span className="flex-1 text-left px-2">Chi Tiêu</span>
+                                <span className="flex-1 text-right px-2 text-red-500 text-nowrap">- {formatVND(totalExpense)}đ</span>
+                            </div>
+                            <div className="flex flex-1 w-full border rounded-lg md:px-8">
+                                <span className="flex-1 text-left px-2">Thu Nhập</span>
+                                <span className="flex-1 text-right px-2 text-green-500 text-nowrap">+ {formatVND(totalIncome)}đ</span>
+                            </div>
+                        </div>
+                        <div className="flex flex-1 w-full border bg-muted/30 rounded-lg md:px-8 text-foreground">
+                            <span className="flex-1 text-left px-2">Thu Chi</span>
+                            <span className="flex-1 text-right px-2 text-foreground text-nowrap">{formatVND(balance)}đ</span>
+                        </div>
+                    </Card>
+
+                    {currentChart === 'pie' && (<div className="gap-2 flex items-center justify-between max-w-md w-full mx-auto rounded-xl my-2 lg:max-w-none lg:mx-0">
+                        <Button
+                            variant={currentType === 'expense' ? "destructive" : "outline"}
+                            onClick={() => { setCurrentType("expense"); }}
+                            className="flex-1"
+                        >Chi Tiêu
+                        </Button>
+                        <Button
+                            variant={currentType === 'income' ? "default" : "outline"}
+                            onClick={() => { setCurrentType("income"); }}
+                            className="flex-1"
+                        >Thu Nhập
+                        </Button>
+                    </div>)}
+                    {currentChart === "pie" && (
+                        <ReportForPieChart map_with_category={map_with_category} currentType={currentType} totalExpense={totalExpense} totalIncome={totalIncome} />
+                    )}
+
+                    {(currentChart === "line" || currentChart === "bar") && (
+                        <ReportForLineChart map_with_date={map_with_date} />
+                    )}
                 </div>
-                {filterMode === "month" && (<MonthControl currentDate={currentDate} setMonth={setcurrentDate} />)}
-                {filterMode === "year" && (<YearControl currentDate={currentDate} setYear={setcurrentDate} />)}
 
-                <div className="w-full flex space-x-2 text-slate-600 bg-white/10 backdrop-blur-sm rounded-lg">
-                    <div className="flex flex-1 w-full border border-white/30 rounded-lg md:px-8">
-                        <span className="flex-1 text-left px-2">Chi Tiêu</span>
-                        <span className="flex-1 text-right px-2 text-red-500 text-nowrap">- {formatVND(totalExpense)}đ</span>
+                <div className="min-w-0">
+                    <Card className="w-full h-[25rem] my-2 p-4">
+                        <div className="flex h-full w-full">
+                            <div className="hidden md:block"><ChartSwitcher chartType={currentChart} setChartType={setCurrentChart}></ChartSwitcher></div>
+                            <div className="flex-1 min-w-0 md:ml-4 md:p-2">
+                                <ResponsiveContainer width="100%" height="100%" >
+                                    {currentChart === "pie" && (
+                                        <PieChartComponent categoryChartData={categoryChartData} totalIncome={totalIncome} totalExpense={totalExpense} currentType={currentType} />
+                                    )}
+                                    {currentChart === "line" && (
+                                        <LineChartComponent dailyData={map_with_date} />
+                                    )}
+                                    {currentChart === "bar" && (
+                                        <BarChartComponent dailyData={map_with_date} />
+                                    )}
+
+                                </ResponsiveContainer>
+                            </div>
+
+                        </div>
+                    </Card>
+                    <div className="mx-auto md:hidden">
+                        <ChartSwitcher chartType={currentChart} setChartType={setCurrentChart}></ChartSwitcher>
                     </div>
-                    <div className="flex flex-1 w-full border border-white/30 rounded-lg md:px-8">
-                        <span className="flex-1 text-left px-2">Thu Nhập</span>
-                        <span className="flex-1 text-right px-2 text-green-500 text-nowrap">+ {formatVND(totalIncome)}đ</span>
-                    </div>
-                </div>
-                <div className="flex flex-1 w-full border border-white/30 bg-white/10 backdrop-blur-sm rounded-lg md:px-8 text-slate-600">
-                    <span className="flex-1 text-left px-2">Thu Chi</span>
-                    <span className="flex-1 text-right px-2 text-slate-900 text-nowrap">{formatVND(balance)}đ</span>
-                </div>
-
-            </div>
-            <div className="w-full h-100 bg-white/15 backdrop-blur-lg rounded-2xl shadow-lg border border-white/40 my-2 p-4">
-                <div className="flex h-full w-full">
-                    <div className="hidden md:block"><ChartSwitcher chartType={currentChart} setChartType={setCurrentChart}></ChartSwitcher></div>
-                    <div className="flex-1 md:ml-4 md:p-2">
-                        <ResponsiveContainer width="100%" height="100%" >
-                            {currentChart === "pie" && (
-                                <PieChartComponent categoryChartData={categoryChartData} totalIncome={totalIncome} totalExpense={totalExpense} currentType={currentType} />
-                            )}
-                            {currentChart === "line" && (
-                                <LineChartComponent dailyData={map_with_date} />
-                            )}
-                            {currentChart === "bar" && (
-                                <BarChartComponent dailyData={map_with_date} />
-                            )}
-
-                        </ResponsiveContainer>
-                    </div>
-
                 </div>
             </div>
-            <div className="mx-auto md:hidden md:w-full">
-                <ChartSwitcher chartType={currentChart} setChartType={setCurrentChart}></ChartSwitcher>
-            </div>
-            {currentChart === 'pie' && (<div className="col-span-3 md:col-span-1 gap-2 flex items-center justify-between max-w-md w-full mx-auto rounded-xl text-gray-600/80 my-2">
-                <button
-                    type="button"
-                    onClick={() => { setCurrentType("expense"); }}
-                    className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'expense' ? 'bg-red-600/80 text-white' : ''}`}>Chi Tiêu
-                </button>
-                <button
-                    type="button"
-                    onClick={() => { setCurrentType("income"); }}
-                    className={`flex-1 rounded-lg border border-gray-200 shadow-sm outline-none ${currentType === 'income' ? 'bg-green-600/80 text-white' : ''}`}>Thu Nhập
-                </button>
-            </div>)}
-            {currentChart === "pie" && (
-                <ReportForPieChart map_with_category={map_with_category} currentType={currentType} totalExpense={totalExpense} totalIncome={totalIncome} />
-            )}
-
-            {(currentChart === "line" || currentChart === "bar") && (
-                <ReportForLineChart map_with_date={map_with_date} />
-            )}
-
         </div>
     )
 }
