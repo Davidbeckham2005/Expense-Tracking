@@ -1,4 +1,5 @@
 import { formatVND } from "../../utils/format";
+import { motion } from "motion/react"
 
 interface ReportForLineChartProps {
     map_with_date: {
@@ -13,12 +14,21 @@ export default function ReportForLineChart({ map_with_date }: ReportForLineChart
         map_with_date.length === 0 ? (
             <p className="text-center text-gray-500">Không có dữ liệu</p>
         ) : (
-            <div className="space-y-2">
+            <motion.div
+                className="space-y-2"
+                initial="hidden"
+                animate="visible"
+                variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
+            >
                 {map_with_date.map((item) => {
                     return (
-                        <div key={item.date} className={`flex items-center border-b-2 border-gray-400/40 rounded-lg transition pr-2`}>
-                            <div className="flex items-center justify-between gap-3">
-                                <div className="flex-1 flex items-center justify-center">
+                        <motion.div
+                            key={item.date}
+                            variants={{ hidden: { opacity: 0, x: -8 }, visible: { opacity: 1, x: 0 } }}
+                            className="flex items-center rounded-xl border border-white/30 bg-white/15 backdrop-blur-sm px-3 py-2.5 transition"
+                        >
+                            <div className="flex items-center justify-between gap-3 flex-1">
+                                <div className="flex-1 flex items-center justify-start text-slate-800 font-medium">
                                     {item.date}
                                 </div>
                             </div>
@@ -28,10 +38,10 @@ export default function ReportForLineChart({ map_with_date }: ReportForLineChart
                                 <div className="flex-1 text-right text-red-600">- {formatVND(item.expense)}đ
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     );
                 })}
-            </div>
+            </motion.div>
 
         )
     )

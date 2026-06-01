@@ -14,6 +14,7 @@ import LineChartComponent from "../Chart/LineChart";
 import ReportForPieChart from "./Report_for_piechart";
 import ReportForLineChart from "./Report_for_linechart";
 import BarChartComponent from "../Chart/BarChart";
+
 type chartDate = 'pie' | 'line' | 'bar';
 type FilterMode = "month" | "year";
 export default function ReportTransaction() {
@@ -111,31 +112,31 @@ export default function ReportTransaction() {
         <div className="min-h-screen">
             <h2 className="text-lg md:text-2xl font-bold mb-2">Báo cáo giao dịch</h2>
 
-            <div className="w-full max-w-4xl mx-auto space-y-2 border border-gray-100 rounded-xl p-3 shadow-sm">
-                <div className="flex flex-1  w-full border border-gray-200 rounded-lg">
-                    <button type="button" onClick={() => { setFilterMode("month") }} className={'flex-1 text-center px-2 rounded-lg p-1 ' + (filterMode === "month" ? "bg-theme text-white" : "")}>Hàng tháng</button>
-                    <button type="button" onClick={() => { setFilterMode("year") }} className={'flex-1 text-center px-2 rounded-lg p-1 ' + (filterMode === "year" ? "bg-theme text-white" : "")}>Hàng năm</button>
+            <div className="w-full max-w-4xl mx-auto space-y-2 border border-white/40 bg-white/15 backdrop-blur-lg rounded-xl p-3 shadow-lg">
+                <div className="flex flex-1 w-full border border-white/30 bg-white/20 backdrop-blur-sm rounded-lg">
+                    <button type="button" onClick={() => { setFilterMode("month") }} className={'flex-1 text-center px-2 rounded-lg p-1 transition ' + (filterMode === "month" ? "bg-theme text-white" : "text-slate-600")}>Hàng tháng</button>
+                    <button type="button" onClick={() => { setFilterMode("year") }} className={'flex-1 text-center px-2 rounded-lg p-1 transition ' + (filterMode === "year" ? "bg-theme text-white" : "text-slate-600")}>Hàng năm</button>
                 </div>
                 {filterMode === "month" && (<MonthControl currentDate={currentDate} setMonth={setcurrentDate} />)}
                 {filterMode === "year" && (<YearControl currentDate={currentDate} setYear={setcurrentDate} />)}
 
-                <div className="w-full flex space-x-2 text-gray-500 bg-white rounded-lg">
-                    <div className="flex flex-1  w-full border border-gray-200 rounded-lg md:px-8">
+                <div className="w-full flex space-x-2 text-slate-600 bg-white/10 backdrop-blur-sm rounded-lg">
+                    <div className="flex flex-1 w-full border border-white/30 rounded-lg md:px-8">
                         <span className="flex-1 text-left px-2">Chi Tiêu</span>
                         <span className="flex-1 text-right px-2 text-red-500 text-nowrap">- {formatVND(totalExpense)}đ</span>
                     </div>
-                    <div className="flex flex-1  w-full border border-gray-200 rounded-lg md:px-8">
+                    <div className="flex flex-1 w-full border border-white/30 rounded-lg md:px-8">
                         <span className="flex-1 text-left px-2">Thu Nhập</span>
                         <span className="flex-1 text-right px-2 text-green-500 text-nowrap">+ {formatVND(totalIncome)}đ</span>
                     </div>
                 </div>
-                <div className="flex flex-1  w-full border border-gray-200 rounded-lg md:px-8 text-gray-500 bg-white">
+                <div className="flex flex-1 w-full border border-white/30 bg-white/10 backdrop-blur-sm rounded-lg md:px-8 text-slate-600">
                     <span className="flex-1 text-left px-2">Thu Chi</span>
-                    <span className="flex-1 text-right px-2 text-stone-900 text-nowrap">{formatVND(balance)}đ</span>
+                    <span className="flex-1 text-right px-2 text-slate-900 text-nowrap">{formatVND(balance)}đ</span>
                 </div>
 
             </div>
-            <div className="w-full h-100 bg-white rounded-2xl shadow-md border my-2 p-4">
+            <div className="w-full h-100 bg-white/15 backdrop-blur-lg rounded-2xl shadow-lg border border-white/40 my-2 p-4">
                 <div className="flex h-full w-full">
                     <div className="hidden md:block"><ChartSwitcher chartType={currentChart} setChartType={setCurrentChart}></ChartSwitcher></div>
                     <div className="flex-1 md:ml-4 md:p-2">

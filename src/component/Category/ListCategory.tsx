@@ -9,6 +9,7 @@ import UpdateCategory from './UpdateCategory'
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import type { TCategoryType, IconName , TColor} from "../../types/ICategories";
+import { motion } from "motion/react"
 export default function ListCategory() {
     const [activeType, setActiveType] = useState<TCategoryType>('expense');
     const { deleteCategory } = useCategoryStore();
@@ -71,52 +72,68 @@ export default function ListCategory() {
                 <button onClick={() => setIsShowDeleteConfirm(!isShowDeleteConfirm)} className="border rounded-lg">Chỉnh sửa danh mục</button >
 
                 {filteredCategories.length === 0 ? (
-                    <p className="text-center text-gray-500">Không có category</p>
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center text-gray-500"
+                    >
+                        Không có category
+                    </motion.p>
                 ) : (
-                    <div className="space-y-2">
+                    <motion.div
+                        className="space-y-2"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
+                    >
                         {filteredCategories.map((category) => {
                             const Icon = icons[category.icon as IconName];
                             return (
-                                <div onClick={() => { if (category.is_default) return; setshowUpdateForm(true), setSelectedCategory(category) }}
+                                <motion.div
+                                    variants={{
+                                        hidden: { opacity: 0, x: -8 },
+                                        visible: { opacity: 1, x: 0 }
+                                    }}
+                                    onClick={() => { if (category.is_default) return; setshowUpdateForm(true), setSelectedCategory(category) }}
                                     key={category.id}
-                                    className={`flex items-center justify-between border-b-2 border-gray-400/40 rounded-lg transition pr-2
-        ${category.is_default ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100 cursor-pointer"}`}
+                                    className={`flex items-center justify-between rounded-xl border border-white/30 bg-white/15 backdrop-blur-sm px-3 py-2.5 transition pr-2
+        ${category.is_default ? "opacity-50 cursor-not-allowed" : "hover:bg-white/30 cursor-pointer"}`}
                                 >
                                     <div className="flex items-center gap-3">
                                         {!category.is_default && isShowDeleteConfirm && (
-                                            <button onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (window.confirm("Bạn có chắc muốn xóa danh mục này?")) {
-                                                    handleDeleteCategory(category.id);
-                                                }
-                                            }}
+                                            <motion.button
+                                                whileTap={{ scale: 0.9 }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (window.confirm("Bạn có chắc muốn xóa danh mục này?")) {
+                                                        handleDeleteCategory(category.id);
+                                                    }
+                                                }}
                                                 className="text-gray-400 hover:text-red-500 transition"
                                             >
                                                 {isShowDeleteConfirm && (
                                                     <Trash2 className="w-4 h-4" />
                                                 )}
-                                            </button>
+                                            </motion.button>
                                         )}
                                         <div
                                             className="w-10 h-10 flex items-center justify-center rounded-full"
-
                                         >
-                                            {Icon && <Icon className="w-5 h-5 text-white" style={{ color: colors[category.color as TColor] || "#E5E7EB" }} />}
+                                            {Icon && <Icon className="w-5 h-5" style={{ color: colors[category.color as TColor] || "#E5E7EB" }} />}
                                         </div>
 
-                                        <h3 className="font-medium text-state-700">{category.name}</h3>
+                                        <h3 className="font-medium text-slate-800">{category.name}</h3>
                                     </div>
 
-                                    {/* Right: button go to edit */}
                                     <button
                                         className="text-gray-400 hover:text-gray-700"
                                     >
                                         &gt;
                                     </button>
-                                </div>
+                                </motion.div>
                             );
                         })}
-                    </div>
+                    </motion.div>
 
                 )}
             </div>

@@ -153,7 +153,7 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
 
     }
     return (
-        < div className="bg-white rounded-3xl p-6 shadow-sm border-gray-100 w-full max-w-4xl mx-auto" >
+        < div className="bg-white/15 backdrop-blur-xl rounded-3xl p-6 shadow-lg border border-white/40 w-full max-w-4xl mx-auto" >
             <div className="flex items-center justify-between">
                 <div className="md:flex md:gap-2 md:items-center ">
                     <h2 className="flex-1 text-2xl font-bold md:mb-5">
@@ -366,7 +366,7 @@ export default function BudgetForm({ defaultValue, mode = 'create', onClose }: B
                                     </button>
                                     {/* DROPDOWN */}
                                     {
-                                        openCategory && (<div className="right-0 absolute z-50 w-full bg-white border border-gray-400 shadow-lg p-3 max-h-72 overflow-y-auto no-scrollbar">
+                                        openCategory && (<div className="right-0 absolute z-50 w-full bg-white/20 backdrop-blur-xl border border-white/40 shadow-lg p-3 max-h-72 overflow-y-auto no-scrollbar">
                                             <div>{categories.map(category => {
                                                 const Icon = icons[category.icon as IconName];
                                                 const isSelected = field.value.includes(category.id);

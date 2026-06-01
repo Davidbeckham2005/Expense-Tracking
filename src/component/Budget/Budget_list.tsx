@@ -11,6 +11,7 @@ import type { IBudget } from '../../types/IBudget'
 import BudgetForm from "./Budget_form";
 import type { TColor } from "../../types/ICategories";
 import { colors } from "../../constants/color";
+import { motion, AnimatePresence } from "motion/react"
 
 type statusBudget = 'onLimited' | 'overLimit' | 'allLimited'
 type selectModeShowBudget = 'all' | 'current_month' | 'year'
@@ -118,23 +119,49 @@ export default function BudgetPage() {
     // console.log('Budgets match spent:', budgetsMatchSpent);
     // console.log('Budgets with spent amount:', budgetsWithSpent);
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-            {isOpenCreate && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/40" onClick={() => setIsOpenCreate(false)} />
-                    <div className="relative z-10 w-full max-w-xl bg-white rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar">
-                        <BudgetForm mode="create" onClose={() => setIsOpenCreate(false)} />
-                    </div>
-                </div>
-            )}
-            {isOpenUpdate && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/40" onClick={() => setIsOpenUpdate(false)} />
-                    <div className="relative z-10 w-full max-w-4xl bg-white rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar">
-                        <BudgetForm mode="update" onClose={() => setIsOpenUpdate(false)} defaultValue={selectedBudget} />
-                    </div>
-                </div>
-            )}
+        <div className="min-h-screen p-4 md:p-6">
+            <AnimatePresence>
+                {isOpenCreate && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex items-center justify-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsOpenCreate(false)} />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.92 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.92 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                            className="relative z-10 w-full max-w-xl bg-white/20 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar"
+                        >
+                            <BudgetForm mode="create" onClose={() => setIsOpenCreate(false)} />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            <AnimatePresence>
+                {isOpenUpdate && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex items-center justify-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsOpenUpdate(false)} />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.92 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.92 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                            className="relative z-10 w-full max-w-4xl bg-white/20 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl p-4 mx-4 max-h-[96vh] overflow-y-auto no-scrollbar"
+                        >
+                            <BudgetForm mode="update" onClose={() => setIsOpenUpdate(false)} defaultValue={selectedBudget} />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between w-full mb-3">
@@ -162,23 +189,41 @@ export default function BudgetPage() {
                         </div>
                     </div>
 
-                    <div className="inline-flex items-center gap-2 self-start md:self-auto bg-theme/90 text-white px-3 py-2 rounded-xl hover:opacity-90 transition text-nowrap shadow-sm">
+                    <motion.div
+                        whileTap={{ scale: 0.95 }}
+                        className="inline-flex items-center gap-2 self-start md:self-auto bg-theme/90 text-white px-3 py-2 rounded-xl hover:opacity-90 transition text-nowrap shadow-sm cursor-pointer"
+                    >
                         <Plus className="h-4 w-4" />
                         <button type="button" onClick={() => setIsOpenCreate(true)}> Thêm mới
                         </button>
-                    </div>
+                    </motion.div>
 
                 </div>
                 {(filteredBudgets.length === 0) ? (
-                    <div className="text-center text-gray-500 py-20">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center text-gray-500 py-20"
+                    >
                         Không có ngân sách nào trong tháng này.
-                    </div>
+                    </motion.div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <motion.div
+                        className="grid grid-cols-1 md:grid-cols-2 gap-5"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+                    >
                         {filteredBudgets.map((budget) => (
-                            <div
+                            <motion.div
                                 key={budget.id}
-                                className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100"
+                                variants={{
+                                    hidden: { opacity: 0, y: 12 },
+                                    visible: { opacity: 1, y: 0 }
+                                }}
+                                whileHover={{ scale: 1.01 }}
+                                whileTap={{ scale: 0.99 }}
+                                className="bg-white/15 backdrop-blur-lg rounded-3xl p-5 shadow-lg border border-white/40"
                                 onClick={() => { setSelectedBudget(budget); setIsOpenUpdate(true) }}
                             >
                                 <div className="flex items-start justify-between w-full">
@@ -237,9 +282,9 @@ export default function BudgetPage() {
                                         ))}
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 )}</div>
         </div >
     );

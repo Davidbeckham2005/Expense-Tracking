@@ -126,7 +126,7 @@ export default function TransactionForm({ mode = 'create', transaction, onClose,
 
                 />
             )}
-            <form onSubmit={handleSubmit(onSubmit)} className="mx-auto space-y-2 border border-gray-200 rounded-xl p-4 shadow-sm">
+            <form onSubmit={handleSubmit(onSubmit)} className="mx-auto space-y-2 border border-white/40 rounded-xl p-4 shadow-lg bg-white/15 backdrop-blur-lg">
                 <div className="flex gap-2 max-w-xs mx-auto">
                     {/* switch type transactions */}
                     <button

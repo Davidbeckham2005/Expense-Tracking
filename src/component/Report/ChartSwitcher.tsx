@@ -1,5 +1,6 @@
 type chartDate = 'pie' | 'line' | 'bar';
 import { PieChart, ChartColumn, ChartSpline } from 'lucide-react'
+import { motion } from "motion/react"
 
 interface ChartSwitcherProps {
     chartType: chartDate;
@@ -33,17 +34,18 @@ export default function ChartSwitcher({ chartType, setChartType }: ChartSwitcher
                 const active = chartType === item.type;
 
                 return (
-                    <button
+                    <motion.button
                         key={item.type}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => setChartType(item.type)}
-                        className={`min-w-24 h-9 md:min-w-16 items-center flex gap-2 px-3 border border-gray-200 py-1 rounded-xl transition-all duration-300 font-medium text-sm
-                            ${active ? 'bg-theme text-white shadow-lg md:scale-105' : 'bg-white text-stone-500 hover:text-stone-900 hover:bg-stone-100'}`}>
+                        className={`min-w-24 h-9 md:min-w-16 items-center flex gap-2 px-3 border py-1 rounded-xl transition-all duration-300 font-medium text-sm
+                            ${active ? 'bg-theme text-white shadow-lg md:scale-105 border-theme/50' : 'bg-white/20 backdrop-blur-sm border-white/30 text-slate-600 hover:text-slate-800 hover:bg-white/30'}`}>
                         <Icon size={16} />
                         <span className="">
                             {item.label}
                         </span>
 
-                    </button>
+                    </motion.button>
                 );
             })}
         </div>

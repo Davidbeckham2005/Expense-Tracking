@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import NavBar from './NavBar';
 import type { TabType } from '../types/tab';
-import Setting from './Setting';
 import ExpenseManager from '../component/Transactions/AddTransaction';
 import ListCategory from '../component/Category/ListCategory';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +11,7 @@ import ListTransaction from '../component/Transactions/ListTransaction';
 import ReportTransaction from '../component/Report/Report_form';
 import BudgetPage from '../component/Budget/Budget_list';
 import { useBudgetStore } from '../store/useBudgetStore';
+import { AnimatePresence, motion } from "motion/react"
 
 
 export default function DashBroad() {
@@ -32,21 +32,31 @@ export default function DashBroad() {
 
 
     return (
-        <div className="min-h-screen bg-white max-w-6xl w-full mx-auto *:bg-slate-50 rounded-3xl overflow-hidden shadow-xl border border-gray-100 ">
-            <div className="grid grid-cols-1 lg:grid-cols-12">
-                <div className="lg:col-span-12 text-white">
-                    <NavBar tab={tab} setTab={setTab}></NavBar>
+        <div className="min-h-screen max-w-6xl w-full mx-auto">
+            <div className="bg-white/70 backdrop-blur-xl border border-white/40 rounded-3xl shadow-xl overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-12">
+                    <div className="lg:col-span-12 text-white">
+                        <NavBar tab={tab} setTab={setTab}></NavBar>
+                    </div>
 
+                    <main className="lg:col-span-12 p-4 md:p-8 max-w-6xl w-full mx-auto">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={tab}
+                                initial={{ opacity: 0, y: 12 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -12 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                {tab === 'category' && <ListCategory />}
+                                {tab === 'lich' && <ListTransaction />}
+                                {tab === 'bao-cao' && <ReportTransaction />}
+                                {tab === 'nhap-vao' && <ExpenseManager />}
+                                {tab === 'budget' && <BudgetPage />}
+                            </motion.div>
+                        </AnimatePresence>
+                    </main>
                 </div>
-
-                <main className="lg:col-span-12 p-4 md:p-8 max-w-6xl w-full mx-auto">
-                    {tab === 'category' && <ListCategory></ListCategory>}
-                    {tab === 'lich' && <ListTransaction></ListTransaction>}
-                    {/* {tab === 'khac' && <Setting></Setting>} */}
-                    {tab === 'bao-cao' && <ReportTransaction></ReportTransaction>}
-                    {tab === 'nhap-vao' && <ExpenseManager></ExpenseManager>}
-                    {tab === 'budget' && <BudgetPage></BudgetPage>}
-                </main>
             </div>
         </div>
     );
